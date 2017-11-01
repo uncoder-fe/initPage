@@ -1,0 +1,10 @@
+{
+  "presets": [[
+    "env",
+    {
+      // 禁止babel翻译，https://babeljs.io/docs/plugins/preset-env#optionsmodules
+      "modules": false
+    }
+  ], "react", "stage-0"],
+  "plugins": [ "lodash", "syntax-dynamic-import" ]
+}

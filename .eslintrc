@@ -1,0 +1,47 @@
+{
+	"extends": "eslint-config-standard",
+	"env": {
+		"browser": true,
+		"node": true,
+		"es6": true
+	},
+	"parser": "babel-eslint",
+	"globals": {
+		"$": false,
+		"React": false,
+		"ReactDOM": false
+	},
+	"parserOptions": {
+		"ecmaFeatures": {
+			"experimentalObjectRestSpread": true,
+			"jsx": true
+		},
+		"sourceType": "module"
+	},
+	"plugins": [
+		"import",
+		"react",
+		"babel"
+	],
+	"rules": {
+		"indent": [
+			"warn",
+			"tab"
+		],
+		"linebreak-style": [
+			"warn",
+			"unix"
+		],
+		"quotes": [
+			"warn",
+			"double"
+		],
+		"semi": [
+			"warn",
+			"always"
+		],
+		"no-console": [
+			"warn"
+		]
+	}
+}
