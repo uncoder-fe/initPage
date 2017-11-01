@@ -8,40 +8,17 @@
 	"parser": "babel-eslint",
 	"globals": {
 		"$": false,
+		"jQuery": false,
 		"React": false,
 		"ReactDOM": false
 	},
-	"parserOptions": {
-		"ecmaFeatures": {
-			"experimentalObjectRestSpread": true,
-			"jsx": true
-		},
-		"sourceType": "module"
-	},
 	"plugins": [
-		"import",
 		"react",
 		"babel"
 	],
 	"rules": {
-		"indent": [
-			"warn",
-			"tab"
-		],
-		"linebreak-style": [
-			"warn",
-			"unix"
-		],
-		"quotes": [
-			"warn",
-			"double"
-		],
-		"semi": [
-			"warn",
-			"always"
-		],
-		"no-console": [
-			"warn"
-		]
+		"indent": ["error", "tab", { "SwitchCase": 1 }],
+		"no-tabs": 0,
+		"react/jsx-uses-vars": 2
 	}
 }

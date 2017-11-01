@@ -1,12 +1,9 @@
 class Detail extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-	render() {
+	render () {
 		return (<div>
 			我是{this.props.match.params.id}
-		</div>);
+		</div>)
 	}
 }
 
-export default Detail;
+export default Detail

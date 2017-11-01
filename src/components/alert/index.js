@@ -1,44 +1,44 @@
-import "./index.less";
+import './index.less'
 
-const alertContainer = document.createElement("div");
+const alertContainer = document.createElement('div')
 
 class Alert {
-	static confirm(opt) {
-		const options = opt;
-		document.body.appendChild(alertContainer);
-		ReactDOM.render(<Modal config={options} />, alertContainer);
+	static confirm (opt) {
+		const options = opt
+		document.body.appendChild(alertContainer)
+		ReactDOM.render(<Modal config={options} />, alertContainer)
 	}
-	static close() {
-		ReactDOM.unmountComponentAtNode(alertContainer);
-		document.body.removeChild(alertContainer);
+	static close () {
+		ReactDOM.unmountComponentAtNode(alertContainer)
+		document.body.removeChild(alertContainer)
 	}
 }
 
 class Modal extends React.Component {
-	constructor(props) {
-		super();
+	constructor (props) {
+		super()
 	}
 	handleConfirm = (e) => {
-		const ok = this.props.config.onOk;
+		const ok = this.props.config.onOk
 		if (ok) {
-			ok(e);
+			ok(e)
 		}
-		Alert.close();
+		Alert.close()
 	}
 	handleCancel = (e) => {
-		const cancel = this.props.config.onCancel;
+		const cancel = this.props.config.onCancel
 		if (cancel) {
-			cancel(e);
+			cancel(e)
 		}
-		Alert.close();
+		Alert.close()
 	}
-	render() {
-		const config = this.props.config;
-		const title = config.title;
-		const subTitle = config.subTitle;
-		const content = config.content;
-		const confimText = config.okText || "确定";
-		const cancelText = config.cancelText || "取消";
+	render () {
+		const config = this.props.config
+		const title = config.title
+		const subTitle = config.subTitle
+		const content = config.content
+		const confimText = config.okText || '确定'
+		const cancelText = config.cancelText || '取消'
 		return (<div className="mask">
 			<div className="modal-container">
 				<p className="title">{title}</p>
@@ -53,4 +53,4 @@ class Modal extends React.Component {
 	}
 }
 
-export default Alert;
+export default Alert
