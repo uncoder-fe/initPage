@@ -6,7 +6,7 @@ require('core-js/fn/array/find')
 
 class Index extends React.Component {
 	handleLazyLoad () {
-		import(/* webpackChunkName: "lazyModule" */ '../lazy-module.js')
+		import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js')
 			.then((module) => {
 				const sayFn = module.default
 				sayFn()
