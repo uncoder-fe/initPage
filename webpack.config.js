@@ -83,6 +83,10 @@ module.exports = {
 				target: "http://www.xxxx.com",
 				secure: false
 			}
+		},
+		overlay: {
+			warnings: true,
+			errors: true
 		}
 	},
 	// 插件
