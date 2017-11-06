@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const WebpackMonitor = require('webpack-monitor');
 
 const path = require("path");
 const ROOT_PATH = path.resolve(__dirname);
@@ -11,7 +12,7 @@ const BUILD_PATH = path.resolve(ROOT_PATH, "dist");
 
 module.exports = {
 	// 源码调试"source-map"
-	devtool: 'source-map' || false,
+	devtool: false,
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件
@@ -115,18 +116,17 @@ module.exports = {
 			chunks: ["index"]
 		}),
 		// 压缩
-		// new UglifyJSPlugin({
-		//     compress: {
-		//       warnings: false,
-		//       drop_console: true,
-		//       pure_funcs: ["console.log"]
-		//     },
-		//     sourceMap: false
-		// }),
+		// new UglifyJSPlugin(),
+		// 定义全局变量,打包时替换
 		new webpack.DefinePlugin({
-			"process.env": {
-				NODE_ENV: JSON.stringify("production")
-			}
+			NODE_ENV: JSON.stringify("production")
+		}),
+		// 包大小分析
+		new WebpackMonitor({
+			capture: true, // -> default 'true'
+			target: '../monitor/myStatsStore.json', // default -> '../monitor/stats.json'
+			launch: true, // -> default 'false'
+			port: 3030, // default -> 8081
 		})
 	]
 };
