@@ -3,7 +3,6 @@ const webpack = require("webpack");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const WebpackMonitor = require('webpack-monitor');
 
 const path = require("path");
 const ROOT_PATH = path.resolve(__dirname);
@@ -94,15 +93,6 @@ module.exports = {
 	plugins: [
 		// 合并css
 		new ExtractTextPlugin('[name].css'),
-		// 设置全局变量,无法从bundle里移除，也会打包进去
-		new webpack.ProvidePlugin({
-			// $: "jquery",
-			// jQuery: "jquery"
-		}),
-		// 公共模块抽取
-		// new webpack.optimize.CommonsChunkPlugin({
-		// 	name: "vendor"
-		// }),
 		new HtmlWebpackPlugin({
 			title: "举个栗子",
 			filename: "./example.html",
@@ -115,18 +105,20 @@ module.exports = {
 			template: "./src/assets/index.html",
 			chunks: ["index"]
 		}),
+		// 设置全局变量,无法从bundle里移除，也会打包进去
+		// new webpack.ProvidePlugin({
+		// 	$: "jquery",
+		// 	jQuery: "jquery"
+		// }),
+		// 公共模块抽取
+		// new webpack.optimize.CommonsChunkPlugin({
+		// 	name: "vendor"
+		// }),
 		// 压缩
 		// new UglifyJSPlugin(),
 		// 定义全局变量,打包时替换
-		new webpack.DefinePlugin({
-			NODE_ENV: JSON.stringify("production")
-		}),
-		// 包大小分析
-		new WebpackMonitor({
-			capture: true, // -> default 'true'
-			target: '../monitor/myStatsStore.json', // default -> '../monitor/stats.json'
-			launch: true, // -> default 'false'
-			port: 3030, // default -> 8081
-		})
+		// new webpack.DefinePlugin({
+		// 	NODE_ENV: JSON.stringify("production")
+		// })
 	]
 };
