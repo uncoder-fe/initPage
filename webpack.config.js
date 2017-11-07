@@ -1,10 +1,16 @@
-
-const webpack = require("webpack");
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-
 const path = require("path");
+const webpack = require("webpack");
+
+// 压缩
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+// 模版
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+// 合并
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+// 监控
+const Dashboard = require('webpack-dashboard');
+const DashboardPlugin = require('webpack-dashboard/plugin');
+// 文件路径
 const ROOT_PATH = path.resolve(__dirname);
 const APP_PATH = path.resolve(ROOT_PATH, "src");
 const BUILD_PATH = path.resolve(ROOT_PATH, "dist");
@@ -77,6 +83,7 @@ module.exports = {
 		port: 9000,
 		contentBase: BUILD_PATH,
 		publicPath: "/",
+		quiet: true,
 		proxy: {
 			"/api/*": {
 				changeOrigin: true,
@@ -84,10 +91,10 @@ module.exports = {
 				secure: false
 			}
 		},
-		overlay: {
-			warnings: true,
-			errors: true
-		}
+		// overlay: {
+		// 	warnings: true,
+		// 	errors: true
+		// }
 	},
 	// 插件
 	plugins: [
@@ -120,5 +127,9 @@ module.exports = {
 		// new webpack.DefinePlugin({
 		// 	NODE_ENV: JSON.stringify("production")
 		// })
+		new DashboardPlugin({
+			port: 9000,
+			handler: (new Dashboard()).setData
+		})
 	]
 };
