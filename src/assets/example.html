@@ -1,15 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><%= htmlWebpackPlugin.options.title %></title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>
+		<%= htmlWebpackPlugin.options.title %>
+	</title>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			extensions: ['tex2jax.js'],
+			showProcessingMessages: false,
+            showMathMenu: false,
+            showMathMenuMSIE: false,
+            messageStyle: 'none',
+			skipStartupTypeset: true,
+			jax: ["input/TeX","output/HTML-CSS"],
+			tex2jax: {
+				inlineMath: [
+					['$', '$'],
+					['\\(', '\\)'],
+					['<tex>', '</tex>']
+				],
+				displayMath: [
+					['$$', '$$'],
+					['\\[', '\\]'],
+					['<tex>', '</tex>']
+				],
+				processEscapes: false
+			}
+		})
+		</script>
+	<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0//MathJax.js?config=default"></script>
 </head>
+
 <body>
-    <div id="app"></div>
-    <script src="https://unpkg.com/jquery"></script>
-    <script src="https://unpkg.com/react@15.6.2/dist/react.min.js"></script>
-    <script src="https://unpkg.com/react-dom@15.6.2/dist/react-dom.min.js"></script>
+	<div id="app"></div>
+	<script src="https://unpkg.com/jquery"></script>
+	<script src="https://unpkg.com/react@15.6.2/dist/react.min.js"></script>
+	<script src="https://unpkg.com/react-dom@15.6.2/dist/react-dom.min.js"></script>
 </body>
+
 </html>

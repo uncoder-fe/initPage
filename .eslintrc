@@ -10,7 +10,8 @@
 		"$": false,
 		"jQuery": false,
 		"React": false,
-		"ReactDOM": false
+		"ReactDOM": false,
+		"MathJax": false
 	},
 	"plugins": [
 		"react",

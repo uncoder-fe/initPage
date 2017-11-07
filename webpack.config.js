@@ -17,7 +17,7 @@ const BUILD_PATH = path.resolve(ROOT_PATH, "dist");
 
 module.exports = {
 	// 源码调试"source-map"
-	devtool: false,
+	devtool: 'source-map',
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件

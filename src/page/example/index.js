@@ -1,6 +1,7 @@
-import Toast from '../../components/toast/index.js'
-import Alert from '../../components/alert/index.js'
-import Test from './hello-world.js'
+import Toast from '../../components/toast/index'
+import Alert from '../../components/alert/index'
+import Test from './hello-world'
+import MathPage from './mathjax-test'
 
 require('core-js/fn/array/find')
 
@@ -42,6 +43,7 @@ class Index extends React.Component {
 			<button onClick={() => this.handleLazyLoad()}>click me to load lazy module</button>
 			<button onClick={() => this.handleJuqery()}>click me to check jquery</button>
 			<button onClick={this.handleToast}>click me to toast</button>
+			<MathPage />
 		</div>)
 	}
 }
