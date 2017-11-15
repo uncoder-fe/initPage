@@ -31,7 +31,7 @@ module.exports = {
 	entry: {
 		example: "./src/page/example/app",
 		index: "./src/page/index/app",
-		// vendor: ["babel-polyfill"]
+		vendor: ["babel-polyfill"]
 	},
 	// 出口
 	output: {
@@ -117,10 +117,10 @@ module.exports = {
 		// 	$: "jquery",
 		// 	jQuery: "jquery"
 		// }),
-		// 公共模块抽取
-		// new webpack.optimize.CommonsChunkPlugin({
-		// 	name: "vendor"
-		// }),
+		// 公共模块抽取, runtime可以是chunkhash保持不变
+		new webpack.optimize.CommonsChunkPlugin({
+			name: ["vendor", "runtime"]
+		}),
 		// 压缩
 		// new UglifyJSPlugin(),
 		// 定义全局变量,打包时替换
