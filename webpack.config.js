@@ -35,7 +35,7 @@ module.exports = {
 	},
 	// 出口
 	output: {
-		filename: "[name].[hash:5].js",
+		filename: "[name].[chunkHash:5].js",
 		// 指定非入口块文件输出的名字
 		chunkFilename: "[name].bundle.js",
 		path: BUILD_PATH,
@@ -127,9 +127,9 @@ module.exports = {
 		// new webpack.DefinePlugin({
 		// 	NODE_ENV: JSON.stringify("production")
 		// })
-		new DashboardPlugin({
-			port: 9000,
-			handler: (new Dashboard()).setData
-		})
+		// new DashboardPlugin({
+		// 	port: 9000,
+		// 	handler: (new Dashboard()).setData
+		// })
 	]
 };

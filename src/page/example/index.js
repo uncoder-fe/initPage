@@ -35,7 +35,7 @@ class Index extends React.Component {
 		console.log('Dom的event', event.target.innerHTML)
 	}
 	componentDidMount () {
-
+		console.log('did')
 	}
 	render () {
 		return (<div>
