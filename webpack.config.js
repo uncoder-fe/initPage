@@ -110,7 +110,7 @@ module.exports = {
 			title: "首页",
 			filename: "./index.html",
 			template: "./src/assets/index.html",
-			chunks: ["index"]
+			chunks: ["vendor", "index"]
 		}),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
 		// new webpack.ProvidePlugin({
