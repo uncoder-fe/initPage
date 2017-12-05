@@ -36,7 +36,7 @@ module.exports = {
 	// 出口
 	output: {
 		filename: "[name].[chunkHash:5].js",
-		// 指定非入口块文件输出的名字
+		// 指定非入口块文件输出的名字，动态加载的模块
 		chunkFilename: "[name].bundle.js",
 		path: BUILD_PATH,
 		publicPath: ""
@@ -110,7 +110,7 @@ module.exports = {
 			title: "首页",
 			filename: "./index.html",
 			template: "./src/assets/index.html",
-			chunks: ["vendor", "index"]
+			chunks: ["index", "vendor"]
 		}),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
 		// new webpack.ProvidePlugin({
