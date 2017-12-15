@@ -1,7 +1,8 @@
-import Toast from '../../components/toast/index'
-import Alert from '../../components/alert/index'
+import Toast from '../../components/toast'
+import Alert from '../../components/alert'
 import Test from './hello-world'
 import MathPage from './mathjax-test'
+import Tree from '../../components/tree'
 
 require('core-js/fn/array/find')
 
@@ -44,6 +45,9 @@ class Index extends React.Component {
 			<button onClick={() => this.handleJuqery()}>click me to check jquery</button>
 			<button onClick={this.handleToast}>click me to toast</button>
 			<MathPage />
+			<div>
+				<Tree />
+			</div>
 		</div>)
 	}
 }

@@ -18,8 +18,15 @@
 		"babel"
 	],
 	"rules": {
-		"indent": ["error", "tab", { "SwitchCase": 1 }],
+		"indent": [
+			"error",
+			"tab",
+			{
+				"SwitchCase": 1
+			}
+		],
 		"no-tabs": 0,
-		"react/jsx-uses-vars": 2
+		"react/jsx-uses-vars": 2,
+		"space-before-function-paren": 0
 	}
 }

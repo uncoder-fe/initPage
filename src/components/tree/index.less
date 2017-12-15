@@ -1,0 +1,88 @@
+.ul-tree {
+    height: 564px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.ul-tree li {
+    position: relative;
+    padding-left: 25px;
+    div {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+}
+
+.ul-tree li.normal::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background: url(./img/arrow.png);
+    background-size: 30%;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: rotateZ(0deg);
+}
+
+.ul-tree li.active::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-image: url(./img/arrow.png);
+    background-size: 30%;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: rotateZ(90deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.ul-tree li.highlight {
+    color: #0853ff;
+}
+
+.ul-tree li.highlight ul {
+    color: #0d1f2a;
+}
+
+.level-1 {
+    color: #0d1f2a;
+    font-weight: 400;
+    border-bottom: 1px solid #c0c5d3;
+}
+
+.level-2 {
+    color: #0d1f2a;
+    font-weight: normal;
+}
+
+.level-3 {
+    color: #0d1f2a;
+    font-weight: normal;
+}
+
+.level-4 {
+    color: #0d1f2a;
+    font-weight: normal;
+}
+
+.ul-tree li>.item {
+    line-height: 46px;
+}
+
+.ul-tree li.highlight>.item>.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: -400px;
+    width: 300%;
+    height: 46px;
+    z-index: -1;
+    background-color: #e7eeff;
+}
