@@ -3,18 +3,18 @@ import Alert from '../../components/alert'
 import Test from './hello-world'
 import MathPage from './mathjax-test'
 import Tree from '../../components/tree'
-
+import Http from './http'
 require('core-js/fn/array/find')
 
 class Index extends React.Component {
-	handleLazyLoad () {
+	handleLazyLoad() {
 		import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js')
 			.then((module) => {
 				const sayFn = module.default
 				sayFn()
 			})
 	}
-	handleJuqery () {
+	handleJuqery() {
 		Alert.confirm({
 			type: '娜娜',
 			title: '我是标题',
@@ -30,17 +30,17 @@ class Index extends React.Component {
 		})
 		console.log('jquery选择器测试', jQuery('#app'))
 	}
-	handleToast (event) {
+	handleToast(event) {
 		let string = [1, 3, 4, 5, 6].find((item) => item === 3)
 		Toast.info(`toast测试内容${string}`)
 		console.log('Dom的event', event.target.innerHTML)
 	}
-	componentDidMount () {
-		console.log('did')
+	componentDidMount() {
+		Http.get()
 	}
-	render () {
+	render() {
 		return (<div>
-			<Test text="hello world"/>
+			<Test text="hello world" />
 			<button onClick={() => this.handleLazyLoad()}>click me to load lazy module</button>
 			<button onClick={() => this.handleJuqery()}>click me to check jquery</button>
 			<button onClick={this.handleToast}>click me to toast</button>

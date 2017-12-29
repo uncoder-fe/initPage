@@ -27,6 +27,7 @@
 		],
 		"no-tabs": 0,
 		"react/jsx-uses-vars": 2,
-		"space-before-function-paren": 0
+		"space-before-function-paren": 0,
+		"no-useless-constructor": 0
 	}
 }
