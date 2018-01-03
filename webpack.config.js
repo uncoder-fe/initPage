@@ -8,7 +8,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 // 合并
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 // 监控
-const Dashboard = require('webpack-dashboard')
 const DashboardPlugin = require('webpack-dashboard/plugin')
 // 文件路径
 const ROOT_PATH = path.resolve(__dirname)
@@ -140,9 +139,6 @@ module.exports = {
 		// new webpack.DefinePlugin({
 		// 	NODE_ENV: JSON.stringify('production')
 		// })
-		// new DashboardPlugin({
-		// 	port: 9000,
-		// 	handler: (new Dashboard()).setData
-		// })
+		new DashboardPlugin()
 	]
 }
