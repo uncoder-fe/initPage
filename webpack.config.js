@@ -25,7 +25,14 @@ module.exports = {
 	externals: {
 		'jquery': 'window.jQuery',
 		'react': 'React',
-		'react-dom': 'ReactDOM'
+		'react-dom': 'ReactDOM',
+// 		'echarts': 'window.echarts',
+//     	'react": 'React',
+//     	'react-dom": 'ReactDOM',
+//     	'react-router': 'ReactRouter',
+//     	'redux': 'Redux',
+//     	'react-redux': 'ReactRedux',
+//     	'react-router-redux':'ReactRouterRedux'
 	},
 	// 入口
 	entry: {
