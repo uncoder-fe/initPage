@@ -12,11 +12,14 @@ http://localhost:9000/example.html#/
 # webpack相关
 - externals消除库的打包依赖，使用cdn来缩小体积
 - proxy本地请求代理转发
-- webpack插件
+- 插件
 	1. UglifyJSPlugin(压缩)
 	2. HtmlWebpackPlugin(模版)
 	3. ExtractTextPlugin(css合并)
 	4. DashboardPlugin(bundle文件分析监控)
 	5. CommonsChunkPlugin（抽取公共模块，根据内容生成hash）
-
+# postCss相关
+- 插件
+	1. autoprefixer(前缀补全)
+	2. cssnano(样式压缩)
 
