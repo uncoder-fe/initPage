@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "webpack-dev-server",
+		"start": "webpack-dashboard -- webpack-dev-server",
 		"build": "rm -rf dist && NODE_ENV=production && webpack",
 		"server": "babel-node server/app.js",
 		"eslint": "eslint src --ext .js --ext .jsx",
