@@ -1,25 +1,15 @@
-# 克隆项目
+# 项目运行
 
 ```bash
 git clone git@github.com:uncoder-/initPage.git
-```
-# 安装依赖
-
-```bash
+// 安装依赖
 yarn
-```
-# 运行
-
-```bash
+// 运行
 yarn start
-```
-
-# 打开浏览器
-
-```
+// 打开浏览器
 http://localhost:9000/example.html#/
 ```
-# webpack
+# webpack相关
 - externals消除库的依赖，使用cdn来缩小体积
 - proxy本地请求代理转发
 - webpack插件
