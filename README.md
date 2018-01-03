@@ -1,7 +1,7 @@
-# 克隆
+# 克隆项目
 
 ```bash
-不用教了吧！
+git clone git@github.com:uncoder-/initPage.git
 ```
 # 安装依赖
 
@@ -11,7 +11,7 @@ yarn
 # 跑起来
 
 ```bash
-npm run start
+yarn start
 ```
 
 # 打开浏览器
