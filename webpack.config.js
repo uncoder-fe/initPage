@@ -139,6 +139,9 @@ module.exports = {
 		// new webpack.DefinePlugin({
 		// 	NODE_ENV: JSON.stringify('production')
 		// })
+		// 减少闭包函数数量从而加快js执行速度
+		new webpack.optimize.ModuleConcatenationPlugin(),
+		// 监控
 		new DashboardPlugin()
 	]
 }
