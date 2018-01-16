@@ -110,7 +110,7 @@ module.exports = {
 	},
 	// 插件
 	plugins: [
-		// 合并css
+		// 从js文件中分离css出来
 		new ExtractTextPlugin('[name].css'),
 		new HtmlWebpackPlugin({
 			title: '举个栗子',
