@@ -3,7 +3,8 @@ import Alert from '../../components/alert'
 import Test from './hello-world'
 import MathPage from './mathjax-test'
 import Tree from '../../components/tree'
-import Http from './http'
+import Http from 'assets/util/http'
+import './index.less'
 require('core-js/fn/array/find')
 
 class Index extends React.Component {

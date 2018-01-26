@@ -11,7 +11,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const DashboardPlugin = require('webpack-dashboard/plugin')
 // 文件路径
 const ROOT_PATH = path.resolve(__dirname)
-const APP_PATH = path.resolve(ROOT_PATH, 'src')
+const APP_PATH = path.resolve(ROOT_PATH, '/')
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
 
 module.exports = {
@@ -25,12 +25,14 @@ module.exports = {
 		'jquery': 'window.jQuery',
 		'react': 'React',
 		'react-dom': 'ReactDOM',
-// 		'echarts': 'window.echarts',
-//     	'react-router': 'ReactRouter',
-//     	'redux': 'Redux',
-//     	'react-redux': 'ReactRedux',
-//     	'react-router-redux':'ReactRouterRedux'
+		// 		'echarts': 'window.echarts',
+		//     	'react-router': 'ReactRouter',
+		//     	'redux': 'Redux',
+		//     	'react-redux': 'ReactRedux',
+		//     	'react-router-redux':'ReactRouterRedux'
 	},
+	// 指定根目录
+	context: ROOT_PATH,
 	// 入口
 	entry: {
 		example: './src/page/example/app',
@@ -46,9 +48,16 @@ module.exports = {
 		publicPath: ''
 	},
 	resolve: {
-		// 默认主文件名称
+		// 解析模块时应该搜索的目录
+		modules: [APP_PATH, 'node_modules'],
+		// 自动解析确定的扩展
 		extensions: ['.js', '.jsx'],
-		mainFiles: ['index.web', 'index']
+		// 优先引入的文件名
+		mainFiles: ['index'],
+		// 模块别名列表
+		alias: {
+			assets: path.join(ROOT_PATH, 'assets')
+		}
 	},
 	// 模块
 	module: {
@@ -103,10 +112,10 @@ module.exports = {
 				secure: false
 			}
 		},
-		// overlay: {
-		// 	warnings: true,
-		// 	errors: true
-		// }
+		overlay: {
+			warnings: true,
+			errors: true
+		}
 	},
 	// 插件
 	plugins: [
@@ -115,15 +124,15 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			title: '举个栗子',
 			filename: './example.html',
-			template: './src/assets/example.html',
+			template: './assets/template/example.html',
 			chunks: ['example', 'vendor', 'runtime']
 		}),
-		new HtmlWebpackPlugin({
-			title: '首页',
-			filename: './index.html',
-			template: './src/assets/index.html',
-			chunks: ['index', 'vendor', 'runtime']
-		}),
+		// new HtmlWebpackPlugin({
+		// 	title: '首页',
+		// 	filename: './index.html',
+		// 	template: './assets/template/index.html',
+		// 	chunks: ['index']
+		// }),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
 		// new webpack.ProvidePlugin({
 		// 	$: 'jquery',
