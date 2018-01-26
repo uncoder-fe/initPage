@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
-
+// 环境
+var ENV = process.env.NODE_ENV || 'development'
 // 压缩
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 // 模版
@@ -13,6 +14,7 @@ const DashboardPlugin = require('webpack-dashboard/plugin')
 const ROOT_PATH = path.resolve(__dirname)
 const APP_PATH = path.resolve(ROOT_PATH, 'src')
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
+const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules')
 module.exports = {
 	// 源码调试'source-map'
 	devtool: 'source-map',
@@ -69,8 +71,8 @@ module.exports = {
 						options: { cacheDirectory: true }
 					}
 				],
-				include: [path.resolve('src')],
-				exclude: /node_modules/
+				include: [APP_PATH],
+				exclude: [NODE_MODULES_PATH]
 			},
 			{
 				test: /\.(css|less)(\?.+)?$/,
@@ -126,12 +128,12 @@ module.exports = {
 			template: './assets/template/example.html',
 			chunks: ['example', 'vendor', 'runtime']
 		}),
-		// new HtmlWebpackPlugin({
-		// 	title: '首页',
-		// 	filename: './index.html',
-		// 	template: './assets/template/index.html',
-		// 	chunks: ['index']
-		// }),
+		new HtmlWebpackPlugin({
+			title: '首页',
+			filename: './index.html',
+			template: './assets/template/index.html',
+			chunks: ['index', 'vendor', 'runtime']
+		}),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
 		// new webpack.ProvidePlugin({
 		// 	$: 'jquery',
@@ -144,12 +146,13 @@ module.exports = {
 		// 压缩
 		// new UglifyJSPlugin(),
 		// 定义全局变量,打包时替换
-		// new webpack.DefinePlugin({
-		// 	NODE_ENV: JSON.stringify('production')
-		// })
+		new webpack.DefinePlugin({
+			'process.env.NODE_ENV': '"production"',
+			PRODUCTION: JSON.stringify(true)
+		}),
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		// 监控
-		new DashboardPlugin()
+		ENV === 'production' ? '' : new DashboardPlugin()
 	]
 }
