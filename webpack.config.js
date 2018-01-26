@@ -18,7 +18,7 @@ const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules')
 
 const config = {
 	// 源码调试'source-map'
-	devtool: 'source-map',
+	devtool: ENV === 'develop' ? 'source-map' : false,
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件
@@ -144,8 +144,6 @@ const config = {
 		new webpack.optimize.CommonsChunkPlugin({
 			name: ['vendor', 'runtime']
 		}),
-		// 压缩
-		new UglifyJSPlugin(),
 		// 定义全局变量,打包时替换
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': '"production"',
@@ -153,11 +151,21 @@ const config = {
 		}),
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
-		// 监控
-		// new DashboardPlugin()
 	]
 }
 if (ENV !== 'production') {
+	// 监控
 	config.plugins.push(new DashboardPlugin())
+} else {
+	// 压缩
+	config.plugins.push(new UglifyJSPlugin())
+	// 将 bundle 拆分成更小的 chunk
+	config.plugins.push(new webpack.optimize.AggressiveSplittingPlugin({
+		minSize: 30000, // 字节，分割点。默认：30720
+		maxSize: 50000, // 字节，每个文件最大字节。默认：51200
+		chunkOverhead: 0, // 默认：0
+		entryChunkMultiplicator: 1 // 默认：1
+	}))
+	config.recordsOutputPath = path.join(__dirname, 'dist', 'records.json')
 }
 module.exports = config
