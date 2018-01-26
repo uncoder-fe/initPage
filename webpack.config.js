@@ -11,9 +11,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const DashboardPlugin = require('webpack-dashboard/plugin')
 // 文件路径
 const ROOT_PATH = path.resolve(__dirname)
-const APP_PATH = path.resolve(ROOT_PATH, '/')
+const APP_PATH = path.resolve(ROOT_PATH, 'src')
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
-
 module.exports = {
 	// 源码调试'source-map'
 	devtool: 'source-map',
