@@ -20,7 +20,7 @@ http://localhost:9000/example.html#/
 	5. CommonsChunkPlugin（抽取公共模块，根据内容生成hash）
 	6. ModuleConcatenationPlugin减少闭包数量，提升js运行效率
 	7. DefinePlugin(全局替换)
-	8. ModuleConcatenationPlugin(chunk拆包)
+	8. AggressiveSplittingPlugin(chunk拆包)
 # postCss相关
 - 插件
 	1. autoprefixer(前缀补全)
