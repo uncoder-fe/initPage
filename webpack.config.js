@@ -15,7 +15,8 @@ const ROOT_PATH = path.resolve(__dirname)
 const APP_PATH = path.resolve(ROOT_PATH, 'src')
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
 const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules')
-module.exports = {
+
+const config = {
 	// 源码调试'source-map'
 	devtool: 'source-map',
 	// 将库的对象挂靠在全局对象中，
@@ -144,7 +145,7 @@ module.exports = {
 			name: ['vendor', 'runtime']
 		}),
 		// 压缩
-		// new UglifyJSPlugin(),
+		new UglifyJSPlugin(),
 		// 定义全局变量,打包时替换
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': '"production"',
@@ -153,6 +154,10 @@ module.exports = {
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		// 监控
-		ENV === 'production' ? '' : new DashboardPlugin()
+		// new DashboardPlugin()
 	]
 }
+if (ENV !== 'production') {
+	config.plugins.push(new DashboardPlugin())
+}
+module.exports = config
