@@ -10,36 +10,36 @@ class Tree extends React.Component {
 					id: 1,
 					name: '1级目录1',
 					sons: [
-						{id: 21, name: '2级目录1'},
-						{id: 22, name: '2级目录2'},
+						{ id: 21, name: '2级目录1' },
+						{ id: 22, name: '2级目录2' },
 						{
 							id: 23,
 							name: '2级目录3',
 							sons: [
-								{id: 31, name: '3级目录1'},
-								{id: 32, name: '3级目录2'},
-								{id: 33, name: '3级目录3'},
-								{id: 34, name: '3级目录4'},
-								{id: 35, name: '3级目录5'},
+								{ id: 31, name: '3级目录1' },
+								{ id: 32, name: '3级目录2' },
+								{ id: 33, name: '3级目录3' },
+								{ id: 34, name: '3级目录4' },
+								{ id: 35, name: '3级目录5' },
 							],
 						},
-						{id: 24, name: '2级目录4'},
-						{id: 25, name: '2级目录5'},
-						{id: 26, name: '2级目录6'},
+						{ id: 24, name: '2级目录4' },
+						{ id: 25, name: '2级目录5' },
+						{ id: 26, name: '2级目录6' },
 					],
 				},
-				{id: 2, name: '1级目录2'},
-				{id: 3, name: '1级目录3'},
-				{id: 4, name: '1级目录4'},
-				{id: 5, name: '1级目录5'},
-				{id: 6, name: '1级目录6'},
+				{ id: 2, name: '1级目录2' },
+				{ id: 3, name: '1级目录3' },
+				{ id: 4, name: '1级目录4' },
+				{ id: 5, name: '1级目录5' },
+				{ id: 6, name: '1级目录6' },
 			],
 			treeNode: [],
 		};
 		this.restore = [];
 	}
 	componentDidMount() {
-		const {treeData} = this.state;
+		const { treeData } = this.state;
 		const treeNode = this.loop(treeData, true);
 		this.setState({
 			treeNode,
@@ -61,7 +61,7 @@ class Tree extends React.Component {
 		// 存储选择
 		this.storeResult(item);
 		// 刷新数据
-		const {treeData} = this.state;
+		const { treeData } = this.state;
 		const treeNode = this.loop(treeData, false);
 		this.setState({
 			treeData,
@@ -71,7 +71,7 @@ class Tree extends React.Component {
 	hideChildren(arry) {
 		if (arry && arry.length > 0) {
 			arry.forEach(item => {
-				const {sons} = item;
+				const { sons } = item;
 				item.visibility = false;
 				if (sons && sons.length > 0) {
 					this.hideChildren(sons);
@@ -80,11 +80,11 @@ class Tree extends React.Component {
 		}
 	}
 	loop(nodes, level = 0) {
-		const {restore} = this;
+		const { restore } = this;
 		++level;
 		return nodes.map(item => {
-			const {name, sons, id} = item;
-			let {visibility} = item;
+			const { name, sons, id } = item;
+			let { visibility } = item;
 			item.level = level;
 			// 最后点击的点高亮
 			let highlight = false;
@@ -127,14 +127,14 @@ class Tree extends React.Component {
 		});
 	}
 	storeResult(item) {
-		const {id, level} = item;
+		const { id, level } = item;
 		const arry = this.restore.slice(0, level - 1);
 		arry[level - 1] = id;
 		this.restore = arry;
 	}
 	render() {
 		// console.log("刷新tree")
-		const {treeNode} = this.state;
+		const { treeNode } = this.state;
 		return <ul className="ul-tree">{treeNode}</ul>;
 	}
 }
