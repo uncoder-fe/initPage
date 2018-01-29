@@ -1,7 +1,7 @@
-import { HashRouter, Route, Switch, Link } from 'react-router-dom'
+import { HashRouter, Route, Switch, Link } from 'react-router-dom';
 
-import IndexPage from './index'
-import detailPage from './detail'
+import IndexPage from './index';
+import detailPage from './detail';
 
 const App = () => (
 	<HashRouter>
@@ -18,7 +18,7 @@ const App = () => (
 			</section>
 		</div>
 	</HashRouter>
-)
+);
 
 // 渲染
-ReactDOM.render(<App />, document.querySelector('#app'))
+ReactDOM.render(<App />, document.querySelector('#app'));
