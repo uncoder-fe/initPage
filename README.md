@@ -25,6 +25,7 @@ http://localhost:9000/example.html#/
 - 插件
 	1. autoprefixer(前缀补全)
 	2. cssnano(样式压缩)
+	3. stylelint(格式化)
 # 代码风格相关
 - eslint、stylelint
 - prettier
