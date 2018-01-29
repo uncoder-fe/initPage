@@ -3,7 +3,7 @@ import Alert from '../../components/alert';
 import Test from './hello-world';
 import MathPage from './mathjax-test';
 import Tree from '../../components/tree';
-import Http from 'assets/util/http';
+import * as Api from 'common/api';
 import './index.less';
 require('core-js/fn/array/find');
 
@@ -37,8 +37,9 @@ class Index extends React.Component {
 		Toast.info(`toast测试内容${string}`);
 		console.log('Dom的event', event.target.innerHTML);
 	}
-	componentDidMount() {
-		Http.get();
+	async componentDidMount() {
+		const res = await Api.test({ id: 1 });
+		console.log('res', res);
 	}
 	render() {
 		return (

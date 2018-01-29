@@ -1,20 +1,21 @@
-const path = require('path')
-const webpack = require('webpack')
+const path = require('path');
+const webpack = require('webpack');
 // 环境
-var ENV = process.env.NODE_ENV || 'development'
+var ENV = process.env.NODE_ENV || 'development';
 // 压缩
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 // 模版
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 合并
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 // 监控
-const DashboardPlugin = require('webpack-dashboard/plugin')
+const DashboardPlugin = require('webpack-dashboard/plugin');
 // 文件路径
-const ROOT_PATH = path.resolve(__dirname)
-const APP_PATH = path.resolve(ROOT_PATH, 'src')
-const BUILD_PATH = path.resolve(ROOT_PATH, 'dist')
-const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules')
+const ROOT_PATH = path.resolve(__dirname);
+const ASSETS_PATH = path.resolve(ROOT_PATH, 'assets');
+const APP_PATH = path.resolve(ROOT_PATH, 'src');
+const BUILD_PATH = path.resolve(ROOT_PATH, 'dist');
+const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules');
 
 const config = {
 	// 源码调试'source-map'
@@ -24,8 +25,8 @@ const config = {
 	// 直接在html模版里使用库的CDN文件
 	// 从输出的 bundle 中排除依赖
 	externals: {
-		'jquery': 'window.jQuery',
-		'react': 'React',
+		jquery: 'window.jQuery',
+		react: 'React',
 		'react-dom': 'ReactDOM',
 		// 		'echarts': 'window.echarts',
 		//     	'react-router': 'ReactRouter',
@@ -39,7 +40,7 @@ const config = {
 	entry: {
 		example: './src/page/example/app',
 		index: './src/page/index/app',
-		vendor: ['babel-polyfill']
+		vendor: ['babel-polyfill'],
 	},
 	// 出口
 	output: {
@@ -47,7 +48,7 @@ const config = {
 		// 指定非入口块文件输出的名字，动态加载的模块
 		chunkFilename: '[name].bundle.js',
 		path: BUILD_PATH,
-		publicPath: ''
+		publicPath: '',
 	},
 	resolve: {
 		// 解析模块时应该搜索的目录
@@ -58,8 +59,9 @@ const config = {
 		mainFiles: ['index'],
 		// 模块别名列表
 		alias: {
-			assets: path.join(ROOT_PATH, 'assets')
-		}
+			assets: path.join(ROOT_PATH, 'assets'),
+			common: path.join(ROOT_PATH, 'src/common'),
+		},
 	},
 	// 模块
 	module: {
@@ -69,33 +71,29 @@ const config = {
 				use: [
 					{
 						loader: 'babel-loader',
-						options: { cacheDirectory: true }
-					}
+						options: { cacheDirectory: true },
+					},
 				],
-				include: [APP_PATH],
-				exclude: [NODE_MODULES_PATH]
+				include: [ASSETS_PATH, APP_PATH],
+				exclude: [NODE_MODULES_PATH],
 			},
 			{
 				test: /\.(css|less)(\?.+)?$/,
 				use: ExtractTextPlugin.extract({
 					fallback: 'style-loader',
-					use: [
-						'css-loader',
-						'postcss-loader',
-						'less-loader'
-					]
-				})
+					use: ['css-loader', 'postcss-loader', 'less-loader'],
+				}),
 			},
 			{
 				test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
 				use: {
 					loader: 'url-loader',
 					options: {
-						limit: 10000
-					}
-				}
-			}
-		]
+						limit: 10000,
+					},
+				},
+			},
+		],
 	},
 	// server
 	devServer: {
@@ -111,13 +109,13 @@ const config = {
 			'/api/*': {
 				changeOrigin: true,
 				target: 'http://www.xxxx.com',
-				secure: false
-			}
+				secure: false,
+			},
 		},
 		overlay: {
 			warnings: true,
-			errors: true
-		}
+			errors: true,
+		},
 	},
 	// 插件
 	plugins: [
@@ -127,13 +125,13 @@ const config = {
 			title: '举个栗子',
 			filename: './example.html',
 			template: './assets/template/example.html',
-			chunks: ['example', 'vendor', 'runtime']
+			chunks: ['example', 'vendor', 'runtime'],
 		}),
 		new HtmlWebpackPlugin({
 			title: '首页',
 			filename: './index.html',
 			template: './assets/template/index.html',
-			chunks: ['index', 'vendor', 'runtime']
+			chunks: ['index', 'vendor', 'runtime'],
 		}),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
 		// new webpack.ProvidePlugin({
@@ -142,30 +140,32 @@ const config = {
 		// }),
 		// 公共模块抽取, runtime可以是chunkhash保持不变
 		new webpack.optimize.CommonsChunkPlugin({
-			name: ['vendor', 'runtime']
+			name: ['vendor', 'runtime'],
 		}),
 		// 定义全局变量,打包时替换
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': '"production"',
-			PRODUCTION: JSON.stringify(true)
+			PRODUCTION: JSON.stringify(true),
 		}),
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
-	]
-}
+	],
+};
 if (ENV !== 'production') {
 	// 监控
-	config.plugins.push(new DashboardPlugin())
+	config.plugins.push(new DashboardPlugin());
 } else {
 	// 压缩
-	config.plugins.push(new UglifyJSPlugin())
+	config.plugins.push(new UglifyJSPlugin());
 	// 将 bundle 拆分成更小的 chunk
-	config.plugins.push(new webpack.optimize.AggressiveSplittingPlugin({
-		minSize: 30000, // 字节，分割点。默认：30720
-		maxSize: 50000, // 字节，每个文件最大字节。默认：51200
-		chunkOverhead: 0, // 默认：0
-		entryChunkMultiplicator: 1 // 默认：1
-	}))
-	config.recordsOutputPath = path.join(__dirname, 'dist', 'records.json')
+	config.plugins.push(
+		new webpack.optimize.AggressiveSplittingPlugin({
+			minSize: 30000, // 字节，分割点。默认：30720
+			maxSize: 50000, // 字节，每个文件最大字节。默认：51200
+			chunkOverhead: 0, // 默认：0
+			entryChunkMultiplicator: 1, // 默认：1
+		}),
+	);
+	config.recordsOutputPath = path.join(__dirname, 'dist', 'records.json');
 }
-module.exports = config
+module.exports = config;
