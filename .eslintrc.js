@@ -22,7 +22,7 @@ module.exports = {
 			"tabWidth": 4,
 			"singleQuote": true,
 			"trailingComma": "all",
-			"bracketSpacing": true,
+			"bracketSpacing": false,
 			"jsxBracketSameLine": true
 		}],
 		"react/jsx-uses-react": "error",

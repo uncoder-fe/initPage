@@ -38,7 +38,7 @@ class Index extends React.Component {
 		console.log('Dom的event', event.target.innerHTML);
 	}
 	async componentDidMount() {
-		const res = await Api.test({ id: 1 });
+		const res = await Api.test({id: 1});
 		console.log('res', res);
 	}
 	render() {

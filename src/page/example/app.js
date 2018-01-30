@@ -1,4 +1,4 @@
-import { HashRouter, Route, Switch, Link } from 'react-router-dom';
+import {HashRouter, Route, Switch, Link} from 'react-router-dom';
 
 import IndexPage from './index';
 import detailPage from './detail';

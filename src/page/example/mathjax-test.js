@@ -17,10 +17,10 @@ class Page extends React.Component {
 		}
 	}
 	createMarkup(str) {
-		return { __html: str };
+		return {__html: str};
 	}
 	render() {
-		const { latex } = this.state;
+		const {latex} = this.state;
 		return (
 			<div
 				ref={node => {
