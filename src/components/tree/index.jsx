@@ -106,9 +106,7 @@ class Tree extends React.Component {
 						visibility={visibility || false}
 						title={name}
 						nodes={childrenNodes}
-						onSelect={() =>
-							this.onSelect(nodes, item, visibility || false)
-						}
+						onSelect={() => this.onSelect(nodes, item, visibility || false)}
 					/>
 				);
 			}
@@ -119,9 +117,7 @@ class Tree extends React.Component {
 					highlight={highlight}
 					level={level}
 					title={name}
-					onSelect={() =>
-						this.onSelect(nodes, item, visibility || false)
-					}
+					onSelect={() => this.onSelect(nodes, item, visibility || false)}
 				/>
 			);
 		});

@@ -9,12 +9,10 @@ require('core-js/fn/array/find');
 
 class Index extends React.Component {
 	handleLazyLoad() {
-		import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js').then(
-			module => {
-				const sayFn = module.default;
-				sayFn();
-			},
-		);
+		import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js').then(module => {
+			const sayFn = module.default;
+			sayFn();
+		});
 	}
 	handleJuqery() {
 		Alert.confirm({
@@ -45,12 +43,8 @@ class Index extends React.Component {
 		return (
 			<div>
 				<Test text="hello world" />
-				<button onClick={() => this.handleLazyLoad()}>
-					click me to load lazy module
-				</button>
-				<button onClick={() => this.handleJuqery()}>
-					click me to check jquery
-				</button>
+				<button onClick={() => this.handleLazyLoad()}>click me to load lazy module</button>
+				<button onClick={() => this.handleJuqery()}>click me to check jquery</button>
 				<button onClick={this.handleToast}>click me to toast</button>
 				<MathPage />
 				<div>
