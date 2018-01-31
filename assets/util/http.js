@@ -2,7 +2,7 @@
  * @Author: uncoder
  * @Date: 2018-01-29 16:11:07
  * @Last Modified by: uncoder
- * @Last Modified time: 2018-01-29 17:57:22
+ * @Last Modified time: 2018-01-31 10:44:16
  */
 import axios from 'axios';
 // 获取token
@@ -60,7 +60,7 @@ export function get(url, params, headers) {
 	const h = headers || {};
 	const config = {
 		url,
-		params: { ...p },
+		params: {...p},
 		headers: {
 			...h,
 		},
@@ -72,7 +72,7 @@ export function post(url, data, headers) {
 	const h = headers || {};
 	const config = {
 		url,
-		data: { ...p },
+		data: {...p},
 		headers: {
 			...h,
 		},
@@ -80,4 +80,4 @@ export function post(url, data, headers) {
 	request(config);
 }
 
-export default { get, post };
+export default {get, post};
