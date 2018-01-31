@@ -11,17 +11,7 @@ module.exports = {
 	},
 	plugins: ['prettier', 'react', 'import'],
 	rules: {
-		'prettier/prettier': [
-			'error',
-			{
-				useTabs: true,
-				tabWidth: 4,
-				singleQuote: true,
-				trailingComma: 'all',
-				bracketSpacing: false,
-				jsxBracketSameLine: true,
-			},
-		],
+		'prettier/prettier': 'error',
 		'react/jsx-uses-react': 'error',
 		'react/jsx-uses-vars': 'error',
 	},
