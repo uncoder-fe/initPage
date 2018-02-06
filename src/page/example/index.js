@@ -5,6 +5,7 @@ import MathPage from './mathjax-test';
 import Tree from '../../components/tree';
 import * as Api from 'common/api';
 import './index.less';
+
 require('core-js/fn/array/find');
 
 class Index extends React.Component {

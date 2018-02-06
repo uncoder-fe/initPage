@@ -2,7 +2,7 @@
  * @Author: uncoder
  * @Date: 2018-01-29 16:11:07
  * @Last Modified by: uncoder
- * @Last Modified time: 2018-01-31 10:44:16
+ * @Last Modified time: 2018-02-06 17:25:05
  */
 import axios from 'axios';
 // 获取token
@@ -30,7 +30,7 @@ xhr.interceptors.request.use(
 	error => {
 		// Do something with request error
 		return Promise.reject(error);
-	},
+	}
 );
 // response拦截
 xhr.interceptors.response.use(
@@ -41,7 +41,7 @@ xhr.interceptors.response.use(
 	function(error) {
 		// Do something with response error
 		return Promise.reject(error);
-	},
+	}
 );
 // 发起请求
 function request(config) {

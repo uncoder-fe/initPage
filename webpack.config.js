@@ -12,7 +12,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const DashboardPlugin = require('webpack-dashboard/plugin');
 // 文件路径
 const ROOT_PATH = path.resolve(__dirname);
-const ASSETS_PATH = path.resolve(ROOT_PATH, 'assets');
 const APP_PATH = path.resolve(ROOT_PATH, 'src');
 const BUILD_PATH = path.resolve(ROOT_PATH, 'dist');
 const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules');
@@ -59,8 +58,8 @@ const config = {
 		mainFiles: ['index'],
 		// 模块别名列表
 		alias: {
-			assets: path.join(ROOT_PATH, 'assets'),
-			common: path.join(ROOT_PATH, 'src/common'),
+			assets: path.join(APP_PATH, 'assets'),
+			common: path.join(APP_PATH, 'common'),
 		},
 	},
 	// 模块
@@ -71,10 +70,10 @@ const config = {
 				use: [
 					{
 						loader: 'babel-loader',
-						options: { cacheDirectory: true },
+						options: {cacheDirectory: true},
 					},
 				],
-				include: [ASSETS_PATH, APP_PATH],
+				include: [APP_PATH],
 				exclude: [NODE_MODULES_PATH],
 			},
 			{
@@ -124,13 +123,13 @@ const config = {
 		new HtmlWebpackPlugin({
 			title: '举个栗子',
 			filename: './example.html',
-			template: './assets/template/example.html',
+			template: './src/assets/template/example.html',
 			chunks: ['example', 'vendor', 'runtime'],
 		}),
 		new HtmlWebpackPlugin({
 			title: '首页',
 			filename: './index.html',
-			template: './assets/template/index.html',
+			template: './src/assets/template/index.html',
 			chunks: ['index', 'vendor', 'runtime'],
 		}),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
@@ -164,7 +163,7 @@ if (ENV !== 'production') {
 			maxSize: 50000, // 字节，每个文件最大字节。默认：51200
 			chunkOverhead: 0, // 默认：0
 			entryChunkMultiplicator: 1, // 默认：1
-		}),
+		})
 	);
 	config.recordsOutputPath = path.join(__dirname, 'dist', 'records.json');
 }
