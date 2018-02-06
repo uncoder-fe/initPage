@@ -39,7 +39,7 @@ const config = {
 	entry: {
 		example: './src/page/example/app',
 		index: './src/page/index/app',
-		vendor: ['babel-polyfill'],
+		// vendor: ['babel-polyfill'],
 	},
 	// 出口
 	output: {
@@ -124,13 +124,19 @@ const config = {
 			title: '举个栗子',
 			filename: './example.html',
 			template: './src/assets/template/example.html',
-			chunks: ['example', 'vendor', 'runtime'],
+			chunks: [
+				'example',
+				// 'vendor', 'runtime'
+			],
 		}),
 		new HtmlWebpackPlugin({
 			title: '首页',
 			filename: './index.html',
 			template: './src/assets/template/index.html',
-			chunks: ['index', 'vendor', 'runtime'],
+			chunks: [
+				'index',
+				// 'vendor', 'runtime'
+			],
 		}),
 		// 设置全局变量,无法从bundle里移除，也会打包进去
 		// new webpack.ProvidePlugin({
@@ -138,9 +144,9 @@ const config = {
 		// 	jQuery: 'jquery'
 		// }),
 		// 公共模块抽取, runtime可以是chunkhash保持不变
-		new webpack.optimize.CommonsChunkPlugin({
-			name: ['vendor', 'runtime'],
-		}),
+		// new webpack.optimize.CommonsChunkPlugin({
+		// 	name: ['vendor', 'runtime'],
+		// }),
 		// 定义全局变量,打包时替换
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': '"production"',
