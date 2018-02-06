@@ -158,7 +158,12 @@ const config = {
 };
 if (ENV !== 'production') {
 	// 监控
-	config.plugins.push(new DashboardPlugin());
+	config.plugins.push(
+		new DashboardPlugin({
+			minified: false,
+			gzip: false,
+		})
+	);
 } else {
 	// 压缩
 	config.plugins.push(new UglifyJSPlugin());
