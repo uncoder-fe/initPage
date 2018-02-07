@@ -170,8 +170,8 @@ if (ENV !== 'production') {
 	// 将 bundle 拆分成更小的 chunk
 	config.plugins.push(
 		new webpack.optimize.AggressiveSplittingPlugin({
-			minSize: 30000, // 字节，分割点。默认：30720
-			maxSize: 50000, // 字节，每个文件最大字节。默认：51200
+			minSize: 30720, // 字节，分割点。默认：30720
+			maxSize: 51200, // 字节，每个文件最大字节。默认：51200
 			chunkOverhead: 0, // 默认：0
 			entryChunkMultiplicator: 1, // 默认：1
 		})
