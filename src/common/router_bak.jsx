@@ -71,7 +71,7 @@ class Router extends React.Component {
 			},
 			() => {
 				this.push(title);
-			},
+			}
 		);
 	};
 	componentWillMount() {

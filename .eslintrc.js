@@ -5,19 +5,20 @@ const ERROR = 2; //"error" or 2 - turn the rule on as an error (exit code will b
 module.exports = {
 	extends: ['plugin:prettier/recommended'],
 	parser: 'babel-eslint',
+	parserOptions: {
+		ecmaVersion: 6,
+		sourceType: 'module',
+		ecmaFeatures: {
+			jsx: true,
+		},
+	},
 	env: {
 		browser: true,
+		node: true,
 		es6: true,
 	},
-	plugins: ['prettier', 'react', 'import'],
+	plugins: ['react', 'import'],
 	rules: {
-		'prettier/prettier': [
-			'error',
-			{
-				useTabs: true,
-				tabWidth: 4,
-			},
-		],
 		'react/jsx-uses-react': 'error',
 		'react/jsx-uses-vars': 'error',
 	},
