@@ -95,7 +95,6 @@ class HandWriting extends React.Component {
 		let oldTime = Date.now();
 		this.rafid = window.requestAnimationFrame(renderLoop.bind(this));
 		function renderLoop() {
-			console.log('this.hkey', this.hkey);
 			const newTime = Date.now();
 			if (newTime - oldTime > tick) {
 				oldTime = newTime;
