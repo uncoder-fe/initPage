@@ -3,12 +3,20 @@ import Alert from '../../components/alert';
 import Test from './hello-world';
 import MathPage from './mathjax-test';
 import Tree from '../../components/tree';
+import HandWriting from '../../components/handwriting';
 import * as Api from 'common/api';
 import './index.less';
 
 require('core-js/fn/array/find');
 
 class Index extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			hkey: 1,
+			handWrtingData: [],
+		};
+	}
 	handleLazyLoad() {
 		import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js').then(module => {
 			const sayFn = module.default;
@@ -16,6 +24,11 @@ class Index extends React.Component {
 		});
 	}
 	handleJuqery() {
+		this.setState({
+			hkey: ++this.state.hkey,
+			handWrtingData: this.state.handWrtingData,
+		});
+		return;
 		Alert.confirm({
 			type: '娜娜',
 			title: '我是标题',
@@ -39,17 +52,26 @@ class Index extends React.Component {
 	async componentDidMount() {
 		const res = await Api.test({id: 1});
 		console.log('res', res);
+		$.getJSON('./data.json', json => {
+			const data = json.beautificated_pages[0].strokes;
+			this.setState({
+				hkey: 1,
+				handWrtingData: data,
+			});
+		});
 	}
 	render() {
+		const {hkey, handWrtingData} = this.state;
 		return (
 			<div>
 				<Test text="hello world" />
 				<button onClick={() => this.handleLazyLoad()}>click me to load lazy module</button>
 				<button onClick={() => this.handleJuqery()}>click me to check jquery</button>
 				<button onClick={this.handleToast}>click me to toast</button>
-				<MathPage />
+				<div>{/* <MathPage /> */}</div>
+				<div>{/* <Tree /> */}</div>
 				<div>
-					<Tree />
+					<HandWriting key={hkey} data={handWrtingData} hkey={hkey} />
 				</div>
 			</div>
 		);

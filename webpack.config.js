@@ -8,6 +8,8 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 合并
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+// 拷贝
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 // 监控
 const DashboardPlugin = require('webpack-dashboard/plugin');
 // 文件路径
@@ -165,6 +167,8 @@ if (ENV !== 'production') {
 		})
 	);
 } else {
+	// 复制
+	config.plugins.push(new CopyWebpackPlugin([{from: './data.json', to: 'data.json'}]));
 	// 压缩
 	config.plugins.push(new UglifyJSPlugin());
 	// 将 bundle 拆分成更小的 chunk
