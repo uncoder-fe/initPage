@@ -71,7 +71,8 @@ class Index extends React.Component {
 				<div>{/* <MathPage /> */}</div>
 				<div>{/* <Tree /> */}</div>
 				<div>
-					<HandWriting key={hkey} data={handWrtingData} />
+					<HandWriting data={handWrtingData.slice(0, 2)} hkey={hkey} />
+					<HandWriting data={handWrtingData.slice(0, 2)} hkey={hkey} />
 				</div>
 			</div>
 		);

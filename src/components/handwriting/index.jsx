@@ -36,6 +36,10 @@ class HandWriting extends React.Component {
 		};
 	};
 	_init = async data => {
+		if (Object.prototype.toString.call(data) !== '[object Array]' || data.length <= 0) {
+			console.log('无笔迹');
+			return;
+		}
 		let {scale} = this;
 		const size = this._getImageSize(data);
 		const averageLineLength = size.average;
@@ -91,6 +95,7 @@ class HandWriting extends React.Component {
 		let oldTime = Date.now();
 		this.rafid = window.requestAnimationFrame(renderLoop.bind(this));
 		function renderLoop() {
+			console.log('this.hkey', this.hkey);
 			const newTime = Date.now();
 			if (newTime - oldTime > tick) {
 				oldTime = newTime;
@@ -134,17 +139,22 @@ class HandWriting extends React.Component {
 	_destory = () => {
 		// 销毁当前动画
 		window.cancelAnimationFrame(this.rafid);
+		// 销毁缓存
+		this.canvasCache = null;
+		// 销毁canvas
+		this.myCanvasContainer.innerHTML = '';
 	};
 	componentWillUnmount() {
 		this._destory();
 	}
 	componentDidMount() {
+		// 当组件通过key销毁时，重新创建
 		const {data} = this.props;
-		if (data.length > 0) {
-			this._init(data);
-		}
+		this._init(data);
 	}
 	componentWillReceiveProps(nextProps) {
+		// 当组件不使用key，或者key不变时
+		this._destory();
 		const {data} = nextProps;
 		this._init(data);
 	}
