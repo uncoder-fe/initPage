@@ -6,7 +6,7 @@ import Tree from '../../components/tree';
 import HandWriting from '../../components/handwriting';
 import * as Api from 'common/api';
 import './index.less';
-
+import MyPromise from './promise';
 require('core-js/fn/array/find');
 
 class Index extends React.Component {
@@ -59,6 +59,22 @@ class Index extends React.Component {
 				handWrtingData: data,
 			});
 		});
+		const myP = new MyPromise((resolve, reject) => {
+			setTimeout(() => {
+				resolve(10);
+			}, 100);
+		});
+		myP
+			.then(data => {
+				return new MyPromise((resolve, reject) => {
+					setTimeout(() => {
+						resolve(10 + data);
+					}, 100);
+				});
+			})
+			.then(data => {
+				console.log(data + 1);
+			});
 	}
 	render() {
 		const {hkey, handWrtingData} = this.state;
@@ -70,9 +86,7 @@ class Index extends React.Component {
 				<button onClick={this.handleToast}>click me to toast</button>
 				<div>{/* <MathPage /> */}</div>
 				<div>{/* <Tree /> */}</div>
-				<div>
-					<HandWriting data={handWrtingData} hkey={hkey} />
-				</div>
+				<div>{/* <HandWriting data={handWrtingData} hkey={hkey} /> */}</div>
 			</div>
 		);
 	}
