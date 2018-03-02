@@ -35,7 +35,6 @@ class MyPromise {
 		});
 	};
 	resolve = newValue => {
-		debugger;
 		if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
 			const then = newValue.then;
 			if (typeof then === 'function') {
@@ -55,6 +54,7 @@ class MyPromise {
 	};
 
 	finale = () => {
+		console.log('finale');
 		setTimeout(() => {
 			console.log(this.deferreds);
 			this.deferreds.forEach(deferred => {
