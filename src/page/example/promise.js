@@ -67,6 +67,7 @@ class MyPromise {
 	finale = () => {
 		// 定时确保执行顺序
 		setTimeout(() => {
+			// 上面都走完了，重新提取一个开始继续递归
 			this.deferreds.forEach(deferred => {
 				this.handle(deferred);
 			});
