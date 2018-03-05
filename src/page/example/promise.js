@@ -44,9 +44,11 @@ class MyPromise {
 		});
 	};
 	resolve = newValue => {
+		// 检测返回值是不是promise
 		if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
 			const then = newValue.then;
 			if (typeof then === 'function') {
+				// 若是，重新触发回调
 				then.call(newValue, this.resolve, this.reject);
 				return;
 			}
@@ -63,8 +65,8 @@ class MyPromise {
 	};
 
 	finale = () => {
+		// 定时确保执行顺序
 		setTimeout(() => {
-			console.log(this.deferreds);
 			this.deferreds.forEach(deferred => {
 				this.handle(deferred);
 			});
