@@ -7,6 +7,9 @@ class MyPromise {
 		fn(this.resolve, this.reject);
 	}
 	handle = deferred => {
+		// 这是一个递归、当正在执行的时候，
+		// 运行到then的时候会塞入队列中，
+		// 执行完后，从队列中取一个继续执行
 		if (this.status === 'pending') {
 			this.deferreds.push(deferred);
 			return;
