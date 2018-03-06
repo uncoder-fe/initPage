@@ -45,13 +45,11 @@ class MyPromise {
 	};
 	resolve = newValue => {
 		// 检测返回值是不是promise
-		if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+		if (newValue instanceof MyPromise) {
 			const then = newValue.then;
-			if (typeof then === 'function') {
-				// 若是，重新触发回调
-				then.call(newValue, this.resolve, this.reject);
-				return;
-			}
+			// 重新触发回调
+			then.call(newValue, this.resolve, this.reject);
+			return;
 		}
 		this.status = 'fulfilled';
 		this.value = newValue;
@@ -65,7 +63,7 @@ class MyPromise {
 	};
 
 	finale = () => {
-		// 定时确保执行顺序
+		// 定时确保执行顺序，最后执行
 		setTimeout(() => {
 			// 上面都走完了，重新提取一个开始继续递归
 			this.deferreds.forEach(deferred => {

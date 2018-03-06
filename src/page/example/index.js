@@ -69,8 +69,11 @@ class Index extends React.Component {
 				return new MyPromise((resolve, reject) => {
 					setTimeout(() => {
 						resolve(10 + data);
-					}, 100);
+					}, 1000);
 				});
+			})
+			.then(data => {
+				return data - 10;
 			})
 			.then(data => {
 				console.log(data + 1);
