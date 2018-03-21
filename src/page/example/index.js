@@ -50,8 +50,8 @@ class Index extends React.Component {
 		console.log('Dom的event', event.target.innerHTML);
 	}
 	async componentDidMount() {
-		const res = await Api.test({id: 1});
-		console.log('res', res);
+		const res = await Api.test({ id: 1 });
+		// console.log('res', res);
 		$.getJSON('./data.json', json => {
 			const data = json.beautificated_pages[0].strokes;
 			this.setState({
@@ -76,11 +76,11 @@ class Index extends React.Component {
 				return data - 10;
 			})
 			.then(data => {
-				console.log(data + 1);
+				// console.log(data + 1);
 			});
 	}
 	render() {
-		const {hkey, handWrtingData} = this.state;
+		const { hkey, handWrtingData } = this.state;
 		return (
 			<div>
 				<Test text="hello world" />
@@ -89,7 +89,9 @@ class Index extends React.Component {
 				<button onClick={this.handleToast}>click me to toast</button>
 				<div>{/* <MathPage /> */}</div>
 				<div>{/* <Tree /> */}</div>
-				<div>{/* <HandWriting data={handWrtingData} hkey={hkey} /> */}</div>
+				<div>
+					<HandWriting data={handWrtingData} hkey={hkey} />
+				</div>
 			</div>
 		);
 	}

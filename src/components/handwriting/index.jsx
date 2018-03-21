@@ -1,5 +1,5 @@
 import './index.less';
-
+import ControlPanel from './control-panel';
 class HandWriting extends React.Component {
 	constructor() {
 		super();
@@ -9,14 +9,17 @@ class HandWriting extends React.Component {
 		this.canvasHeigth = null;
 		this.canvasWidth = null;
 		this.rafid = null;
+		this.originData = [];
+		this.state = {
+			speed: 1,
+			range: 0
+		};
 	}
 	_getImageSize = data => {
 		let maxHeight = 0;
 		let maxWidth = 0;
-		let count = 0;
 		for (let i = 0; i < data.length; i++) {
 			const points = data[i].points.split(',');
-			count += points.length;
 			for (let j = 0; j < points.length; j++) {
 				const point = points[j].split(' ');
 				const x = parseInt(point[0]);
@@ -30,19 +33,20 @@ class HandWriting extends React.Component {
 			}
 		}
 		return {
-			average: parseInt(count / data.length) || 20,
 			width: maxWidth + 10,
-			height: maxHeight + 10,
+			height: maxHeight + 10
 		};
 	};
-	_init = async data => {
-		if (Object.prototype.toString.call(data) !== '[object Array]' || data.length <= 0) {
+	_init = async () => {
+		let { scale, originData } = this;
+		let { speed, range } = this.state;
+		// console.log(speed, range)
+		if (Object.prototype.toString.call(originData) !== '[object Array]' || originData.length <= 0) {
 			console.log('无笔迹');
 			return;
 		}
-		let {scale} = this;
+		const data = originData;
 		const size = this._getImageSize(data);
-		const averageLineLength = size.average;
 		this.canvasHeigth = size.height * scale;
 		this.canvasWidth = size.width * scale;
 		// canvas
@@ -60,60 +64,128 @@ class HandWriting extends React.Component {
 		ctx.lineWidth = 2 * scale;
 		ctx.lineJoin = 'round';
 		ctx.lineCap = 'round';
-		for (let i = 0; i < data.length; i++) {
-			const line = data[i].points.split(',');
+		// 数据切割
+		const fg = parseInt(data.length * (range / 100));
+		const _staticData = data.slice(0, fg);
+		const _animateData = data.slice(fg, data.length);
+		// 静态
+		this._disAnimate(ctx, _staticData);
+		// 动画
+		for (let i = 0; i < _animateData.length; i++) {
+			const line = _animateData[i].points.split(',');
 			// 默认
-			let tick = line.length > averageLineLength ? averageLineLength : line.length;
+			let tick = 16;
 			// 第两个
 			if (i > 0) {
-				const duration = parseInt(data[i].timestamp - data[i - 1].timestamp);
-				tick = (duration > 200 ? 200 : duration) / averageLineLength;
+				const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
+				const tt = parseInt(duration / line.length);
+				if (tt > 30) {
+					tick = 16;
+				} else {
+					tick = tt;
+				}
 			}
 			// 清空画布
 			ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
-
 			// 静态的
 			if (this.canvasCache) {
+				// debugger
 				ctx.putImageData(this.canvasCache, 0, 0);
 			}
-
 			await new Promise((resolve, reject) => {
 				// 动态的
-				this._animate(ctx, line, resolve, tick);
+				this._animate(ctx, line, resolve, tick, speed);
 			});
 		}
 	};
-	_animate = (ctx, data, resolve, tick) => {
-		const {scale, canvasWidth, canvasHeigth} = this;
+	_disAnimate = (ctx, json) => {
+		const { scale, canvasWidth, canvasHeigth } = this;
+		json.forEach(item => {
+			const line = item.points.split(',');
+			for (let i = 0; i < line.length; i += 3) {
+				if (line[i] && line[i + 1] && line[i + 2]) {
+					const control1 = line[i].split(' ');
+					const control2 = line[i + 1].split(' ');
+					const stop = line[i + 2].split(' ');
+					// 向前补点
+					ctx.beginPath();
+					const startPoint = line[i == 0 ? 0 : i - 1].split(' ');
+					ctx.moveTo(startPoint[0] * scale, startPoint[1] * scale);
+					ctx.lineTo(control1[0] * scale, control1[1] * scale);
+					ctx.bezierCurveTo(
+						control1[0] * scale,
+						control1[1] * scale,
+						control2[0] * scale,
+						control2[1] * scale,
+						stop[0] * scale,
+						stop[1] * scale
+					);
+					ctx.closePath();
+					ctx.stroke();
+				}
+			}
+		});
+		this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
+	};
+	_animate = (ctx, data, resolve, tick, speed) => {
+		const { scale, canvasWidth, canvasHeigth } = this;
 		// index
 		let startIndex = 1;
-		// 克隆数据
-		let points = [];
-		for (let i = 0; i < data.length; i += 1) {
-			points.push(data[i]);
-		}
 		let oldTime = Date.now();
 		this.rafid = window.requestAnimationFrame(renderLoop.bind(this));
 		function renderLoop() {
 			const newTime = Date.now();
+			let points = data.slice((startIndex - 1) * 3 * speed, startIndex * 3 * speed);
+			// console.log(points, (startIndex - 1) * 3 * speed, startIndex * 3 * speed);
 			if (newTime - oldTime > tick) {
 				oldTime = newTime;
-				if (startIndex >= points.length / 3) {
-					// 这个地方有可能会丢点，懒一会再改
+				if (startIndex > data.length / (3 * speed) && points.length <= 0) {
 					window.cancelAnimationFrame(this.rafid);
 					this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
 					resolve('next');
 				} else {
-					//贝塞尔曲线
-					const animatePoints = points.slice((startIndex - 1) * 3, startIndex * 3);
-					if (animatePoints.length == 3) {
+					// 检测长度
+					if (points.length >= 3) {
+						//贝塞尔曲线
+						for (let i = 0; i < points.length; i += 3) {
+							if (points[i] && points[i + 1] && points[i + 2]) {
+								const control1 = points[i].split(' ');
+								const control2 = points[i + 1].split(' ');
+								const stop = points[i + 2].split(' ');
+								ctx.beginPath();
+								// 向前补点
+								const iii = data.indexOf(points[i]) == 0 ? 1 : data.indexOf(points[i]);
+								const startPoint = data[iii - 1].split(' ');
+								ctx.moveTo(startPoint[0] * scale, startPoint[1] * scale);
+								ctx.lineTo(control1[0] * scale, control1[1] * scale);
+								ctx.bezierCurveTo(
+									control1[0] * scale,
+									control1[1] * scale,
+									control2[0] * scale,
+									control2[1] * scale,
+									stop[0] * scale,
+									stop[1] * scale
+								);
+								ctx.closePath();
+								ctx.stroke();
+							} else {
+								// console.log("fuck 丢了1个点，不管了")
+							}
+						}
+					} else {
+						let control1;
+						let control2;
+						let stop;
+						if (points.length == 2) {
+							control1 = data[(startIndex - 1) * 3 * speed - 1].split(' ');
+							control2 = points[0].split(' ');
+							stop = points[1].split(' ');
+						} else {
+							control1 = data[(startIndex - 1) * 3 * speed - 2].split(' ');
+							control2 = data[(startIndex - 1) * 3 * speed - 1].split(' ');
+							stop = points[0].split(' ');
+						}
 						ctx.beginPath();
-						const startPoint = points[(startIndex - 1) * 3 == 0 ? 0 : (startIndex - 1) * 3 - 1].split(' ');
-						ctx.moveTo(startPoint[0] * scale, startPoint[1] * scale);
-						ctx.lineTo(animatePoints[0] * scale, animatePoints[1] * scale);
-						const control1 = animatePoints[0].split(' ');
-						const control2 = animatePoints[1].split(' ');
-						const stop = animatePoints[2].split(' ');
 						ctx.bezierCurveTo(
 							control1[0] * scale,
 							control1[1] * scale,
@@ -122,11 +194,9 @@ class HandWriting extends React.Component {
 							stop[0] * scale,
 							stop[1] * scale
 						);
-					} else {
-						console.log('长度不够');
+						ctx.closePath();
+						ctx.stroke();
 					}
-					ctx.closePath();
-					ctx.stroke();
 					startIndex++;
 					this.rafid = window.requestAnimationFrame(renderLoop.bind(this));
 				}
@@ -143,27 +213,41 @@ class HandWriting extends React.Component {
 		// 销毁canvas
 		this.myCanvasContainer.innerHTML = '';
 	};
+	_changeAnimate = data => {
+		// console.log("data", data);
+		const { speed, range } = data;
+		this.setState({ speed, range }, () => {
+			this._destory();
+			this._init();
+		});
+	};
 	componentWillUnmount() {
 		this._destory();
 	}
 	componentDidMount() {
 		// 当组件通过key销毁时，重新创建
-		const {data} = this.props;
-		this._init(data);
+		const { data } = this.props;
+		this.originData = data;
+		this._init();
 	}
 	componentWillReceiveProps(nextProps) {
 		// 当组件不使用key，或者key不变时
 		this._destory();
-		const {data} = nextProps;
-		this._init(data);
+		const { data } = nextProps;
+		this.originData = data;
+		this._init();
 	}
 	render() {
+		const { speed, range } = this.state;
 		return (
-			<div
-				ref={el => {
-					this.myCanvasContainer = el;
-				}}
-			/>
+			<div>
+				<div
+					ref={el => {
+						this.myCanvasContainer = el;
+					}}
+				/>
+				<ControlPanel speed={speed} range={range} fn={this._changeAnimate} />
+			</div>
 		);
 	}
 }

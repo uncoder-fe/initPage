@@ -3,7 +3,7 @@ const WARN = 1; //"warn" or 1 - turn the rule on as a warning (doesn’t affect 
 const ERROR = 2; //"error" or 2 - turn the rule on as an error (exit code will be 1)
 
 module.exports = {
-	extends: ['plugin:prettier/recommended'],
+	extends: ['eslint:recommended'],
 	parser: 'babel-eslint',
 	parserOptions: {
 		ecmaVersion: 6,
@@ -17,8 +17,9 @@ module.exports = {
 		node: true,
 		es6: true,
 	},
-	plugins: ['react', 'import'],
+	plugins: ['react', 'import', 'prettier'],
 	rules: {
+		'prettier/prettier': 'error',
 		'react/jsx-uses-react': 'error',
 		'react/jsx-uses-vars': 'error',
 	},
