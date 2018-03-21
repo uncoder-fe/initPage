@@ -1,5 +1,6 @@
 import './index.less';
 import ControlPanel from './control-panel';
+
 class HandWriting extends React.Component {
 	constructor() {
 		super();
@@ -70,7 +71,7 @@ class HandWriting extends React.Component {
 		const _animateData = data.slice(fg, data.length);
 		// 静态
 		this._disAnimate(ctx, _staticData);
-		// 动画
+		// 动态
 		for (let i = 0; i < _animateData.length; i++) {
 			const line = _animateData[i].points.split(',');
 			// 默认
