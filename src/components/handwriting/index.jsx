@@ -12,11 +12,12 @@ class HandWriting extends React.Component {
 		this.rafid = null;
 		this.originData = [];
 		this.state = {
-			step: 1,
+			step: 0,
 			speed: 1,
 			range: 0
 		};
 	}
+	// 计算最大边界
 	_getImageSize = data => {
 		let maxHeight = 0;
 		let maxWidth = 0;
@@ -39,6 +40,7 @@ class HandWriting extends React.Component {
 			height: maxHeight + 10
 		};
 	};
+	// 初始化
 	_init = async () => {
 		let { scale, originData } = this;
 		let { speed, range } = this.state;
@@ -99,17 +101,13 @@ class HandWriting extends React.Component {
 				this._animate(ctx, line, resolve, tick, speed);
 				// 更新进度条
 				const { range, step } = this.state;
-				let nmb = range;
+				let nmb = range + step;
 				if (_staticData.length == 0 && i == 0) {
 					nmb = 0;
+				} else if (i == _animateData.length - 1) {
+					nmb = 100;
 				} else {
 					nmb = range + step;
-					if (nmb >= 100) {
-						// 出现这个，说明误触发了
-						nmb = range;
-					} else {
-						nmb = range + step;
-					}
 				}
 				this.setState({
 					range: nmb
@@ -117,6 +115,7 @@ class HandWriting extends React.Component {
 			});
 		}
 	};
+	// 静态渲染
 	_disAnimate = (ctx, json) => {
 		const { scale, canvasWidth, canvasHeigth } = this;
 		json.forEach(item => {
@@ -146,6 +145,7 @@ class HandWriting extends React.Component {
 		});
 		this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
 	};
+	// 动态渲染
 	_animate = (ctx, data, resolve, tick, speed) => {
 		const { scale, canvasWidth, canvasHeigth } = this;
 		// index
@@ -224,6 +224,7 @@ class HandWriting extends React.Component {
 			}
 		}
 	};
+	// 组件状态销毁
 	_destory = () => {
 		// 销毁当前动画
 		window.cancelAnimationFrame(this.rafid);
@@ -232,36 +233,40 @@ class HandWriting extends React.Component {
 		// 销毁canvas
 		this.myCanvasContainer.innerHTML = '';
 	};
+	// 控制面板状态改变
 	_changeAnimate = data => {
-		this._destory();
 		// console.log("data", data);
+		this._destory();
 		const { speed, range } = data;
 		this.setState({ speed, range }, () => {
 			this._init();
 		});
 	};
+	// 组件卸载，自动卸载不能删除定时器等
 	componentWillUnmount() {
 		this._destory();
 	}
-	componentDidMount() {
-		// 当组件通过key销毁时，重新创建
-		const { data } = this.props;
+	// 当组件不使用key，或者key不变时
+	componentWillReceiveProps(nextProps) {
+		this._destory();
+		const { data } = nextProps;
+		// 缓存原始数据
 		this.originData = data;
 		if (data.length > 0) {
-			// 暂时只考虑100画，进度条有bug看这里
+			// 暂时只考虑100画
 			const step = 100 / data.length;
 			this.setState({ step }, () => {
 				this._init();
 			});
 		}
 	}
-	componentWillReceiveProps(nextProps) {
-		// 当组件不使用key，或者key不变时
-		this._destory();
-		const { data } = nextProps;
+	// 当组件通过key销毁时，重新创建
+	componentDidMount() {
+		const { data } = this.props;
+		// 缓存原始数据
 		this.originData = data;
 		if (data.length > 0) {
-			// 暂时只考虑100画，进度条有bug看这里
+			// 暂时只考虑100画
 			const step = 100 / data.length;
 			this.setState({ step }, () => {
 				this._init();
