@@ -12,6 +12,7 @@ class HandWriting extends React.Component {
 		this.rafid = null;
 		this.originData = [];
 		this.state = {
+			step: 1,
 			speed: 1,
 			range: 0
 		};
@@ -96,8 +97,17 @@ class HandWriting extends React.Component {
 			await new Promise((resolve, reject) => {
 				// 动态的
 				this._animate(ctx, line, resolve, tick, speed);
+				// 更新进度条
+				const { range, step } = this.state;
+				this.setState({
+					range: (_staticData.length == 0 && i == 0) ? 0 : (range + step) >= 100 ? range : range + step
+				});
 			});
 		}
+		// 结束
+		this.setState({
+			range: 100
+		});
 	};
 	_disAnimate = (ctx, json) => {
 		const { scale, canvasWidth, canvasHeigth } = this;
@@ -215,10 +225,10 @@ class HandWriting extends React.Component {
 		this.myCanvasContainer.innerHTML = '';
 	};
 	_changeAnimate = data => {
+		this._destory();
 		// console.log("data", data);
 		const { speed, range } = data;
 		this.setState({ speed, range }, () => {
-			this._destory();
 			this._init();
 		});
 	};
@@ -229,17 +239,29 @@ class HandWriting extends React.Component {
 		// 当组件通过key销毁时，重新创建
 		const { data } = this.props;
 		this.originData = data;
-		this._init();
+		if (data.length > 0) {
+			// 暂时只考虑100画，进度条有bug看这里
+			const step = 100 / data.length;
+			this.setState({ step }, () => {
+				this._init();
+			});
+		}
 	}
 	componentWillReceiveProps(nextProps) {
 		// 当组件不使用key，或者key不变时
 		this._destory();
 		const { data } = nextProps;
 		this.originData = data;
-		this._init();
+		if (data.length > 0) {
+			// 暂时只考虑100画，进度条有bug看这里
+			const step = 100 / data.length;
+			this.setState({ step }, () => {
+				this._init();
+			});
+		}
 	}
 	render() {
-		const { speed, range } = this.state;
+		const { speed, range, step } = this.state;
 		return (
 			<div>
 				<div
@@ -247,7 +269,7 @@ class HandWriting extends React.Component {
 						this.myCanvasContainer = el;
 					}}
 				/>
-				<ControlPanel speed={speed} range={range} fn={this._changeAnimate} />
+				<ControlPanel speed={speed} range={range} step={step} fn={this._changeAnimate} />
 			</div>
 		);
 	}

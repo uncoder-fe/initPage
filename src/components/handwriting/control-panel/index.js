@@ -10,22 +10,25 @@ class ControlPanel extends React.Component {
 	}
 	onChange = e => {
 		const { speed } = this.props;
-		const range = e.target.value;
-		this.setState({ range });
-		this.props.fn({ range, speed });
-		// console.log(range);
+		const range = parseInt(e.target.value);
+		this.setState({ range }, () => {
+			this.props.fn({ range, speed });
+		});
 	};
 	onSetSpeed = speed => {
-		const { range } = this.state;
-		this.props.fn({ range, speed });
+		this.props.fn({ range: 0, speed });
 		// console.log(data);
 	};
+	componentWillReceiveProps(nextProms) {
+		const { range } = nextProms;
+		this.setState({ range });
+	}
 	componentDidMount() {
 		const { range } = this.props;
 		this.setState({ range });
 	}
 	render() {
-		const { speed } = this.props;
+		const { speed, step } = this.props;
 		const { range, list } = this.state;
 		const listNodes = list.map((item, index) => {
 			const className = (speed == index + 1) ? 'active' : '';
@@ -34,7 +37,7 @@ class ControlPanel extends React.Component {
 		return (
 			<div className="control-panel">
 				<div className="control-range">
-					<input type="range" value={range} min="0" max="100" step="10" onChange={this.onChange} />
+					<input type="range" step={step} value={range} min="0" max="100" onChange={this.onChange} />
 				</div>
 				<div className="control-x">{listNodes}</div>
 			</div>
