@@ -255,7 +255,7 @@ class HandWriting extends React.Component {
 		if (data.length > 0) {
 			// 暂时只考虑100画
 			const step = 100 / data.length;
-			this.setState({ step }, () => {
+			this.setState({ step, speed: 1, range: 0 }, () => {
 				this._init();
 			});
 		}
