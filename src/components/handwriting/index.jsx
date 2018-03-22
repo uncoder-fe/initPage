@@ -99,15 +99,23 @@ class HandWriting extends React.Component {
 				this._animate(ctx, line, resolve, tick, speed);
 				// 更新进度条
 				const { range, step } = this.state;
+				let nmb = range;
+				if (_staticData.length == 0 && i == 0) {
+					nmb = 0;
+				} else {
+					nmb = range + step;
+					if (nmb >= 100) {
+						// 出现这个，说明误触发了
+						nmb = range;
+					} else {
+						nmb = range + step;
+					}
+				}
 				this.setState({
-					range: (_staticData.length == 0 && i == 0) ? 0 : (range + step) >= 100 ? range : range + step
+					range: nmb
 				});
 			});
 		}
-		// 结束
-		this.setState({
-			range: 100
-		});
 	};
 	_disAnimate = (ctx, json) => {
 		const { scale, canvasWidth, canvasHeigth } = this;
