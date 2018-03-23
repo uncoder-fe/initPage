@@ -73,7 +73,7 @@ class HandWriting extends React.Component {
 		const _staticData = data.slice(0, fg);
 		const _animateData = data.slice(fg, data.length);
 		// 静态
-		this._disAnimate(ctx, _staticData);
+		this._staticRender(ctx, _staticData);
 		// 动态
 		for (let i = 0; i < _animateData.length; i++) {
 			const line = _animateData[i].points.split(',');
@@ -98,7 +98,7 @@ class HandWriting extends React.Component {
 			}
 			await new Promise((resolve, reject) => {
 				// 动态的
-				this._animate(ctx, line, resolve, tick, speed);
+				this._animateRender(ctx, line, resolve, tick, speed);
 				// 更新进度条
 				const { range, step } = this.state;
 				let nmb = range + step;
@@ -116,7 +116,7 @@ class HandWriting extends React.Component {
 		}
 	};
 	// 静态渲染
-	_disAnimate = (ctx, json) => {
+	_staticRender = (ctx, json) => {
 		const { scale, canvasWidth, canvasHeigth } = this;
 		json.forEach(item => {
 			const line = item.points.split(',');
@@ -146,7 +146,7 @@ class HandWriting extends React.Component {
 		this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
 	};
 	// 动态渲染
-	_animate = (ctx, data, resolve, tick, speed) => {
+	_animateRender = (ctx, data, resolve, tick, speed) => {
 		const { scale, canvasWidth, canvasHeigth } = this;
 		// index
 		let startIndex = 1;
@@ -233,8 +233,8 @@ class HandWriting extends React.Component {
 		// 销毁canvas
 		this.myCanvasContainer.innerHTML = '';
 	};
-	// 控制面板状态改变
-	_changeAnimate = data => {
+	// 控制面板参数
+	_changePanelSetting = data => {
 		// console.log("data", data);
 		this._destory();
 		const { speed, range } = data;
@@ -282,7 +282,7 @@ class HandWriting extends React.Component {
 						this.myCanvasContainer = el;
 					}}
 				/>
-				<ControlPanel speed={speed} range={range} step={step} fn={this._changeAnimate} />
+				<ControlPanel speed={speed} range={range} step={step} fn={this._changePanelSetting} />
 			</div>
 		);
 	}
