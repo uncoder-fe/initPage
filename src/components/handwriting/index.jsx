@@ -80,14 +80,14 @@ class HandWriting extends React.Component {
 			// 默认
 			let tick = 16;
 			// 第两个
-			if (i > 0) {
+			if (i > 0 && _animateData[i].t1 && _animateData[i].t2) {
 				const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
 				const tt = parseInt(duration / line.length);
 				if (tt > 30) {
 					tick = 16;
 				} else {
 					tick = tt;
-				}
+				}·
 			}
 			// 清空画布
 			ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
