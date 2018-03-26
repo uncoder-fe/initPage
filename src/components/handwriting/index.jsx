@@ -1,7 +1,8 @@
+import React, { Component } from 'react';
 import './index.less';
-import ControlPanel from './control-panel';
+import ControlPanel from './control-panel/index.jsx';
 
-class HandWriting extends React.Component {
+class HandWriting extends Component {
 	constructor() {
 		super();
 		this.ratio = window.devicePixelRatio;
@@ -57,6 +58,7 @@ class HandWriting extends React.Component {
 		const myCanvas = document.createElement('canvas');
 		myCanvas.setAttribute('height', this.canvasHeigth);
 		myCanvas.setAttribute('width', this.canvasWidth);
+		myCanvas.setAttribute('class','my-animate-canvas')
 		// 确保高清无码
 		myCanvas.style.width = this.canvasWidth / this.ratio + 'px';
 		this.myCanvasContainer.appendChild(myCanvas);
@@ -80,14 +82,12 @@ class HandWriting extends React.Component {
 			// 默认
 			let tick = 16;
 			// 第两个
-			if (i > 0 && _animateData[i].t1 && _animateData[i].t2) {
+			if (i > 0) {
 				const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
-				const tt = parseInt(duration / line.length);
-				if (tt > 30) {
+				tick = parseInt(duration / line.length);
+				if (tick > 30) {
 					tick = 16;
-				} else {
-					tick = tt;
-				}·
+				}
 			}
 			// 清空画布
 			ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
@@ -186,10 +186,10 @@ class HandWriting extends React.Component {
 									stop[1] * scale
 								);
 								ctx.closePath();
-								ctx.stroke();
 							} else {
 								// console.log("fuck 丢了1个点，不管了")
 							}
+							ctx.stroke();
 						}
 					} else {
 						let control1;

@@ -1,6 +1,7 @@
+import React, { Component } from 'react';
 import './index.less';
 
-class ControlPanel extends React.Component {
+class ControlPanel extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -34,12 +35,14 @@ class ControlPanel extends React.Component {
 			const className = (speed == index + 1) ? 'active' : '';
 			return <div className={className} onClick={() => this.onSetSpeed(index + 1)}>{index + 1}x</div >;
 		});
+		const className = `no-default-style color bar gradient-${range}`;
 		return (
 			<div className="control-panel">
 				<div className="control-range">
-					<input type="range" step={step} value={range} min="0" max="100" onChange={this.onChange} />
+					<div className="range-show"><input type="range" step={step} value={range} min="0" max="100" onChange={this.onChange} className={className} /></div>
+					<div className="range-number">{`${range}%`}</div>
 				</div>
-				<div className="control-x">{listNodes}</div>
+				<div className="control-x">倍数:{listNodes}</div>
 			</div>
 		);
 	}
