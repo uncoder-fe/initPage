@@ -2,10 +2,10 @@
 	"name": "my-page",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"private": true,
 	"scripts": {
 		"start": "webpack-dashboard -- webpack-serve --config ./webpack.config.js",
-		"build": "rm -rf dist && webpack --config webpack.config.js",
+		"build": "rm -rf dist && webpack --config ./webpack.config.js --mode=production",
 		"eslint": "eslint src --ext .js --ext .jsx",
 		"eslint:fix": "eslint --fix src --ext .js --ext .jsx",
 		"stylelint": "stylelint 'src/**/*.{css,less}' --formatter verbose",

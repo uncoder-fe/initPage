@@ -3,7 +3,7 @@ const webpack = require('webpack');
 // 环境
 var ENV = process.env.NODE_ENV || 'development';
 // 压缩
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 // 模版
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 合并
@@ -19,8 +19,9 @@ const BUILD_PATH = path.resolve(ROOT_PATH, 'dist');
 const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules');
 
 const config = {
+	mode: 'development',
 	// 源码调试'source-map'
-	devtool: ENV === 'develop' ? 'source-map' : false,
+	devtool: ENV === 'development' ? 'source-map' : false,
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件
@@ -131,10 +132,15 @@ const config = {
 			template: './src/assets/template/index.html',
 			chunks: ['index']
 		}),
+		new webpack.NamedModulesPlugin(),
+		new webpack.DefinePlugin({ "process.env.NODE_ENV": JSON.stringify("development") }),
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
+		// 压缩
+		new UglifyJsPlugin()
 	]
 };
+
 if (ENV !== 'production') {
 	// 监控
 	config.plugins.push(
@@ -146,8 +152,6 @@ if (ENV !== 'production') {
 } else {
 	// 复制
 	config.plugins.push(new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }]));
-	// 压缩
-	config.plugins.push(new UglifyJSPlugin());
 	config.recordsOutputPath = path.join(__dirname, 'dist', 'records.json');
 }
 module.exports = config;
