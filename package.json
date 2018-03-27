@@ -44,7 +44,7 @@
 		"webpack": "^4.2.0",
 		"webpack-cli": "^2.0.13",
 		"webpack-dashboard": "^1.1.1",
-		"webpack-dev-server": "^3.0.0-alpha6"
+		"webpack-dev-server": "^3.1.1"
 	},
 	"dependencies": {
 		"axios": "^0.18.0",

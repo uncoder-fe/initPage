@@ -13,6 +13,7 @@ class HandWriting extends Component {
 		this.rafid = null;
 		this.originData = [];
 		this.state = {
+			playStatus: true,
 			step: 0,
 			speed: 1,
 			range: 0
@@ -241,14 +242,35 @@ class HandWriting extends Component {
 		// 销毁canvas
 		this.myCanvasContainer.innerHTML = '';
 	};
-	// 控制面板参数
-	_changePanelSetting = data => {
-		console.log("data", data);
+	// 播放
+	_play = () => {
 		this._destory();
-		return;
-		const { speed, range } = data;
-		this.setState({ speed, range }, () => {
+		this.setState({ playStatus: true }, () => {
 			this._init();
+		});
+	};
+	// 暂停
+	_pause = () => {
+		window.cancelAnimationFrame(this.rafid);
+		this.setState({
+			playStatus: false
+		});
+	};
+	// 控制面板参数¸
+	_changePanelSetting = setingData => {
+		// console.log("setingData", setingData);
+		const { speed, range } = setingData;
+		window.cancelAnimationFrame(this.rafid);
+		this.setState({ speed, range, playStatus: false }, () => {
+			const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
+			const data = originData;
+			const ctx = myCanvasContainer.children[0].getContext('2d');
+			ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
+			// 数据切割
+			const fg = parseInt(data.length * (range / 100));
+			const _staticData = data.slice(0, fg);
+			// 静态
+			this._staticRender(ctx, _staticData);
 		});
 	};
 	// 组件卸载，自动卸载不能删除定时器等
@@ -284,7 +306,7 @@ class HandWriting extends Component {
 	}
 	render() {
 		const { maxHeight } = this.props;
-		const { speed, range, step } = this.state;
+		const { playStatus, speed, range, step } = this.state;
 		return (
 			<div className="handwriting">
 				<div
@@ -294,7 +316,17 @@ class HandWriting extends Component {
 						this.myCanvasContainer = el;
 					}}
 				/>
-				<ControlPanel speed={speed} range={range} step={step} fn={this._changePanelSetting} />
+				<ControlPanel
+					config={{
+						status: playStatus,
+						speed,
+						range,
+						step,
+						fn: this._changePanelSetting,
+						playFn: this._play,
+						pauseFn: this._pause
+					}}
+				/>
 			</div>
 		);
 	}

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import playIcon from './img/play.png';
+import pauseIcon from './img/pause.png';
 import './index.less';
 
 class ControlPanel extends Component {
@@ -9,27 +11,36 @@ class ControlPanel extends Component {
 			list: ['1x', '2x', '3x']
 		};
 	}
-	onChange = e => {
-		const { speed } = this.props;
+	onSetRange = e => {
+		const { speed } = this.props.config;
 		const range = parseInt(e.target.value);
 		this.setState({ range }, () => {
-			this.props.fn({ range, speed });
+			this.props.config.fn({ range, speed });
 		});
 	};
 	onSetSpeed = speed => {
-		this.props.fn({ range: 0, speed });
+		const { range } = this.state;
+		this.props.config.fn({ range, speed });
 		// console.log(data);
 	};
+	onSetStatus = status => {
+		const { playFn, pauseFn } = this.props.config;
+		if (!status) {
+			playFn();
+		} else {
+			pauseFn();
+		}
+	};
 	componentWillReceiveProps(nextProms) {
-		const { range } = nextProms;
+		const { range } = nextProms.config;
 		this.setState({ range });
 	}
 	componentDidMount() {
-		const { range } = this.props;
+		const { range } = this.props.config;
 		this.setState({ range });
 	}
 	render() {
-		const { speed, step } = this.props;
+		const { status, speed, step } = this.props.config;
 		const { range, list } = this.state;
 		const listNodes = list.map((item, index) => {
 			const className = (speed == index + 1) ? 'active' : '';
@@ -38,8 +49,11 @@ class ControlPanel extends Component {
 		const className = `no-default-style color bar gradient-${range}`;
 		return (
 			<div className="handwriting-control-panel">
+				<div className="control-button" onClick={() => this.onSetStatus(status)}>
+					<img src={!status ? playIcon : pauseIcon} />
+				</div>
 				<div className="control-range">
-					<div className="range-show"><input type="range" step={step} value={range} min="0" max="100" onChange={this.onChange} className={className} /></div>
+					<div className="range-show"><input type="range" step={step} value={range} min="0" max="100" onChange={this.onSetRange} className={className} /></div>
 					<div className="range-number">{`${range}%`}</div>
 				</div>
 				<div className="control-x">倍数:{listNodes}</div>

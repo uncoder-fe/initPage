@@ -21,7 +21,7 @@ const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules');
 const config = {
 	mode: 'development',
 	// 源码调试'source-map'
-	devtool: ENV === 'development' ? 'source-map' : false,
+	devtool: true ? 'source-map' : false,
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件
@@ -130,23 +130,21 @@ const config = {
 			template: './src/assets/template/index.html',
 			chunks: ['index']
 		}),
-		new webpack.NamedModulesPlugin(),
-		new webpack.DefinePlugin({ "process.env.NODE_ENV": JSON.stringify("development") }),
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		// 压缩
-		new UglifyJsPlugin()
+		// new UglifyJsPlugin()
 	]
 };
 
 if (ENV !== 'production') {
 	// 监控
-	config.plugins.push(
-		new DashboardPlugin({
-			minified: false,
-			gzip: false
-		})
-	);
+	// config.plugins.push(
+	// 	new DashboardPlugin({
+	// 		minified: false,
+	// 		gzip: false
+	// 	})
+	// );
 } else {
 	// 复制
 	config.plugins.push(new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }]));
