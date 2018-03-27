@@ -1,71 +1,70 @@
-.control-panel {
+.handwriting-control-panel {
     display: flex;
     padding: 0 12px;
     height: 24px;
     min-width: 250px;
     font-size: 14px;
     background: rgba(242, 244, 246, 1);
-}
-
-.control-range {
-    display: flex;
-    flex: 2;
-    .range-show {
-        flex: 1;
-    }
-    .range-number {
-        width: 55px;
-        line-height: 24px;
-        text-align: center;
-        color: #3d4ea2;
-    }
-    input {
-        width: 100%;
-        outline: none;
-        background: rgba(212, 220, 228, 1);
-    }
-    .no-default-style {
-        -webkit-appearance: none;
-    }
-    .color {
-        background: none;
-    }
-    .color::-webkit-slider-runnable-track {
-        background: #eee;
-        height: 5px;
-        border-radius: 4px;
-    }
-    .bar::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        border: 3px solid #d4dce4;
-        height: 15px;
-        width: 15px;
-        margin-top: -5px;
-        background: #fff;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .generate-gradient(100);
-    .generate-gradient(@n, @i: 1) when (@i =< @n) {
-        .gradient-@{i}::-webkit-slider-runnable-track {
-            background: linear-gradient(to right, rgba(146, 169, 194, 1) 0%, rgba(146, 169, 194, 1) (@i * 1%), #eee (@i * 1%), #eee);
+    .control-range {
+        display: flex;
+        flex: 2;
+        .range-show {
+            flex: 1;
         }
-        .generate-gradient(@n, (@i + 1));
+        .range-number {
+            width: 55px;
+            line-height: 24px;
+            text-align: center;
+            color: #3d4ea2;
+        }
+        input {
+			display: inline-block;
+            width: 100%;
+            outline: none;
+            background: rgba(212, 220, 228, 1);
+        }
+        .no-default-style {
+            -webkit-appearance: none;
+        }
+        .color {
+            background: none;
+        }
+        .color::-webkit-slider-runnable-track {
+            background: #eee;
+            height: 5px;
+            border-radius: 4px;
+        }
+        .bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            border: 3px solid #d4dce4;
+            height: 15px;
+            width: 15px;
+            margin-top: -5px;
+            background: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .generate-gradient(100);
+        .generate-gradient(@n, @i: 1) when (@i =< @n) {
+            .gradient-@{i}::-webkit-slider-runnable-track {
+                background: linear-gradient(to right, rgba(146, 169, 194, 1) 0%, rgba(146, 169, 194, 1) (@i * 1%), #eee (@i * 1%), #eee);
+            }
+            .generate-gradient(@n, (@i + 1));
+        }
     }
-}
-
-.control-x {
-    width: 130px;
-    min-width: 130px;
-    color: #131625;
-    text-align: center;
-    line-height: 24px;
-    div {
-        display: inline-block;
-        margin: 0 8px;
-        color: #797979;
-        &.active {
-            color: #427bff;
+    .control-x {
+        width: 130px;
+        min-width: 130px;
+        color: #131625;
+        text-align: center;
+        line-height: 24px;
+        >div {
+            display: inline-block;
+            margin: 0 8px;
+            color: #797979;
+            &.active {
+                color: #427bff;
+            }
         }
     }
 }

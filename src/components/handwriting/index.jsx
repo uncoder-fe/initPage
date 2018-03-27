@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import './index.less';
 import ControlPanel from './control-panel/index.jsx';
+import './index.less';
 
 class HandWriting extends Component {
 	constructor() {
@@ -58,7 +58,6 @@ class HandWriting extends Component {
 		const myCanvas = document.createElement('canvas');
 		myCanvas.setAttribute('height', this.canvasHeigth);
 		myCanvas.setAttribute('width', this.canvasWidth);
-		myCanvas.setAttribute('class','my-animate-canvas')
 		// 确保高清无码
 		myCanvas.style.width = this.canvasWidth / this.ratio + 'px';
 		this.myCanvasContainer.appendChild(myCanvas);
@@ -138,7 +137,6 @@ class HandWriting extends Component {
 						stop[0] * scale,
 						stop[1] * scale
 					);
-					ctx.closePath();
 					ctx.stroke();
 				}
 			}
@@ -185,7 +183,6 @@ class HandWriting extends Component {
 									stop[0] * scale,
 									stop[1] * scale
 								);
-								ctx.closePath();
 							} else {
 								// console.log("fuck 丢了1个点，不管了")
 							}
@@ -195,26 +192,37 @@ class HandWriting extends Component {
 						let control1;
 						let control2;
 						let stop;
-						if (points.length == 2) {
+						if (data.length >= 3 && points.length == 2) {
 							control1 = data[(startIndex - 1) * 3 * speed - 1].split(' ');
 							control2 = points[0].split(' ');
 							stop = points[1].split(' ');
+							ctx.beginPath();
+							ctx.bezierCurveTo(
+								control1[0] * scale,
+								control1[1] * scale,
+								control2[0] * scale,
+								control2[1] * scale,
+								stop[0] * scale,
+								stop[1] * scale
+							);
+							ctx.stroke();
 						} else {
-							control1 = data[(startIndex - 1) * 3 * speed - 2].split(' ');
-							control2 = data[(startIndex - 1) * 3 * speed - 1].split(' ');
-							stop = points[0].split(' ');
+							for (let i = 0; i < points.length; i++) {
+								const startPoint = points[i].split(' ');
+								const endPoint = points[i + 1];
+								if (endPoint) {
+									ctx.beginPath();
+									ctx.moveTo(startPoint[0], startPoint[1]);
+									ctx.lineTo(endPoint.split(' ')[0], endPoint.split(' ')[1]);
+									ctx.stroke();
+								} else {
+									ctx.beginPath();
+									ctx.moveTo(startPoint[0], startPoint[1]);
+									ctx.lineTo(startPoint[0], startPoint[1]);
+									ctx.stroke();
+								}
+							}
 						}
-						ctx.beginPath();
-						ctx.bezierCurveTo(
-							control1[0] * scale,
-							control1[1] * scale,
-							control2[0] * scale,
-							control2[1] * scale,
-							stop[0] * scale,
-							stop[1] * scale
-						);
-						ctx.closePath();
-						ctx.stroke();
 					}
 					startIndex++;
 					this.rafid = window.requestAnimationFrame(renderLoop.bind(this));
@@ -254,7 +262,7 @@ class HandWriting extends Component {
 		this.originData = data;
 		if (data.length > 0) {
 			// 暂时只考虑100画
-			const step = 100 / data.length;
+			const step = Math.floor(100 / data.length);
 			this.setState({ step, speed: 1, range: 0 }, () => {
 				this._init();
 			});
@@ -267,17 +275,20 @@ class HandWriting extends Component {
 		this.originData = data;
 		if (data.length > 0) {
 			// 暂时只考虑100画
-			const step = 100 / data.length;
+			const step = Math.floor(100 / data.length);
 			this.setState({ step }, () => {
 				this._init();
 			});
 		}
 	}
 	render() {
+		const { maxHeight } = this.props;
 		const { speed, range, step } = this.state;
 		return (
-			<div>
+			<div className="handwriting">
 				<div
+					className="handwriting-canvas-container"
+					style={{ 'max-height': maxHeight, }}
 					ref={el => {
 						this.myCanvasContainer = el;
 					}}

@@ -37,7 +37,7 @@ class ControlPanel extends Component {
 		});
 		const className = `no-default-style color bar gradient-${range}`;
 		return (
-			<div className="control-panel">
+			<div className="handwriting-control-panel">
 				<div className="control-range">
 					<div className="range-show"><input type="range" step={step} value={range} min="0" max="100" onChange={this.onChange} className={className} /></div>
 					<div className="range-number">{`${range}%`}</div>
