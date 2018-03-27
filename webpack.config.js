@@ -44,7 +44,7 @@ const config = {
 	},
 	// 出口
 	output: {
-		filename: '[name].[chunkHash:5].js',
+		filename: '[name].[hash:5].js',
 		// 指定非入口块文件输出的名字，动态加载的模块
 		chunkFilename: '[name].bundle.js',
 		path: BUILD_PATH,
@@ -131,19 +131,9 @@ const config = {
 			template: './src/assets/template/index.html',
 			chunks: ['index']
 		}),
-		// 设置全局变量,无法从bundle里移除，也会打包进去
-		// new webpack.ProvidePlugin({
-		// 	$: 'jquery',
-		// 	jQuery: 'jquery'
-		// }),
-		// 定义全局变量,打包时替换
-		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': '"production"',
-			PRODUCTION: JSON.stringify(true)
-		}),
 		// 减少闭包函数数量从而加快js执行速度
 		new webpack.optimize.ModuleConcatenationPlugin(),
-	],
+	]
 };
 if (ENV !== 'production') {
 	// 监控
