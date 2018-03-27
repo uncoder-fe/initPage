@@ -97,12 +97,10 @@ const config = {
 		]
 	},
 	// server
-	serve: {
+	devServer: {
 		port: 9000,
-		// 防止用ip找不到
-		host: '0.0.0.0',
-		dev: { publicPath: '/' },
-		content: BUILD_PATH,
+		contentBase: BUILD_PATH,
+		publicPath: '/',
 		proxy: {
 			'/api/*': {
 				changeOrigin: true,
@@ -110,10 +108,10 @@ const config = {
 				secure: false
 			}
 		},
-		logTime: true,
-		logLevel: 'error',
-		on: {
-			'listening': () => { console.log('listening'); }
+		overlay: {
+			warnings: true,
+			errors: true,
+			secure: false
 		}
 	},
 	// 插件

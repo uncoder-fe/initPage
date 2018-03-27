@@ -243,8 +243,9 @@ class HandWriting extends Component {
 	};
 	// 控制面板参数
 	_changePanelSetting = data => {
-		// console.log("data", data);
+		console.log("data", data);
 		this._destory();
+		return;
 		const { speed, range } = data;
 		this.setState({ speed, range }, () => {
 			this._init();
