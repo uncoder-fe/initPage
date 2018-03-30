@@ -5,8 +5,10 @@ import MathPage from './mathjax-test';
 import Tree from '../../components/tree';
 import HandWriting from '../../components/handwriting';
 import * as Api from 'common/api';
+import SO from 'common/util/so.js';
 import './index.less';
 import MyPromise from './promise';
+
 require('core-js/fn/array/find');
 
 class Index extends React.Component {
