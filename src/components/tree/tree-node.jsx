@@ -4,7 +4,7 @@ class TreeNode extends React.Component {
 		event.stopPropagation();
 	}
 	render() {
-		const {title, nodes, visibility, level, highlight} = this.props;
+		const { title, nodes, visibility, level, highlight } = this.props;
 		// 设置样式
 		let classNames = `level-${level}`;
 		if (nodes && nodes.length > 0) {

@@ -15,9 +15,6 @@ class Alert {
 }
 
 class Modal extends React.Component {
-	constructor(props) {
-		super();
-	}
 	handleConfirm = e => {
 		const ok = this.props.config.onOk;
 		if (ok) {

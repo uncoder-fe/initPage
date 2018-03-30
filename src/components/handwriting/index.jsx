@@ -274,11 +274,11 @@ class HandWriting extends Component {
 		});
 	};
 	// 组件卸载，自动卸载不能删除定时器等
-	componentWillUnmount() {
+	UNSAFE_componentWillUnmount() {
 		this._destory();
 	}
 	// 当组件不使用key，或者key不变时
-	componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps(nextProps) {
 		this._destory();
 		const { data } = nextProps;
 		// 缓存原始数据

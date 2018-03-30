@@ -19,6 +19,7 @@ module.exports = {
 	},
 	plugins: ['react', 'import', 'prettier'],
 	rules: {
+		'no-console': 'warn',
 		'prettier/prettier': 'error',
 		'react/jsx-uses-react': 'error',
 		'react/jsx-uses-vars': 'error',
