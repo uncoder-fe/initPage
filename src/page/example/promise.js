@@ -39,7 +39,7 @@ class MyPromise {
 				onFulfilled: onFulfilled || null,
 				onRejected: onRejected || null,
 				resolve: resolve,
-				reject: reject,
+				reject: reject
 			});
 		});
 	};
