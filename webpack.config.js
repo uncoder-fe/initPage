@@ -21,7 +21,7 @@ const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules');
 const config = {
 	mode: 'development',
 	// 源码调试'source-map'
-	devtool: true ? 'source-map' : false,
+	devtool: ENV === 'development' ? 'source-map' : false,
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件
