@@ -1,0 +1,40 @@
+.range-container-sss {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    align-items: center;
+    z-index: 0;
+}
+
+.range-sss {
+    position: relative;
+    height: 8px;
+    color: transparent;
+    background: rgba(146, 169, 194, 1);
+    border-radius: 10px;
+    user-select: none;
+    z-index: 5;
+}
+
+.range-sss::after {
+    content: '';
+    position: absolute;
+    top: -25%;
+    right: -4px;
+    width: 8px;
+    height: 150%;
+    background: #fff;
+    border: 2px solid rgba(212, 220, 228, 1);
+    border-radius: 10px;
+}
+
+.range-touch-cover-sss {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}

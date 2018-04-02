@@ -244,8 +244,9 @@ class HandWriting extends Component {
 	};
 	// 播放
 	_play = () => {
+		const { range } = this.state;
 		this._destory();
-		this.setState({ playStatus: true }, () => {
+		this.setState({ playStatus: true, range: range >= 100 ? 0 : range }, () => {
 			this._init();
 		});
 	};
@@ -274,18 +275,23 @@ class HandWriting extends Component {
 		});
 	};
 	// 组件卸载，自动卸载不能删除定时器等
-	UNSAFE_componentWillUnmount() {
+	componentWillUnmount() {
 		this._destory();
 	}
 	// 当组件不使用key，或者key不变时
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps) {
 		this._destory();
 		const { data } = nextProps;
 		// 缓存原始数据
 		this.originData = data;
 		if (data.length > 0) {
-			// 暂时只考虑100画
-			const step = Math.floor(100 / data.length);
+			let step = 1;
+			const len = data.length;
+			if (len < 5) {
+				step = Math.floor(100 / len);
+			} else {
+				step = parseFloat(Math.fround(100 / len).toFixed(1));
+			}
 			this.setState({ step, speed: 1, range: 0 }, () => {
 				this._init();
 			});
@@ -297,8 +303,13 @@ class HandWriting extends Component {
 		// 缓存原始数据
 		this.originData = data;
 		if (data.length > 0) {
-			// 暂时只考虑100画
-			const step = Math.floor(100 / data.length);
+			let step = 1;
+			const len = data.length;
+			if (len < 5) {
+				step = Math.floor(100 / len);
+			} else {
+				step = parseFloat(Math.fround(100 / len).toFixed(1));
+			}
 			this.setState({ step }, () => {
 				this._init();
 			});
@@ -311,7 +322,7 @@ class HandWriting extends Component {
 			<div className="handwriting">
 				<div
 					className="handwriting-canvas-container"
-					style={{ 'max-height': maxHeight, }}
+					style={{ 'max-height': maxHeight }}
 					ref={el => {
 						this.myCanvasContainer = el;
 					}}
