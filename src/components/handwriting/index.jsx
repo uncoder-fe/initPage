@@ -102,7 +102,7 @@ class HandWriting extends Component {
 				// 更新进度条
 				const { range, step } = this.state;
 				let nmb = range + step;
-				if (_staticData.length == 0 && i == 0) {
+				if (_staticData.length == 0 && i == 0 && data.length > 1) {
 					nmb = 0;
 				} else if (i == _animateData.length - 1) {
 					nmb = 100;
