@@ -1,16 +1,17 @@
-// 发布-订阅，多一个调度中心
+// 发布-订阅
 
 import _ from 'lodash';
 
+// 相当于 EventEmitter，并且是将值或事件多路推送给多个 Observer 的唯一方式
 class Subject {
 	notify = (message, cb) => {
 		cb(message);
 	};
 }
-
-class SubjectControl {
+// 表示一个概念，这个概念是一个可调用的未来值或事件的集合。
+class Observable {
 	constructor() {
-		this.listeners = [];
+		this.listeners = new Set([]);
 	}
 	scanListeners = ob => {
 		const { listeners } = this;
@@ -34,7 +35,7 @@ class SubjectControl {
 		});
 	};
 }
-
+// 一个回调函数的集合，它知道如何去监听由 Observable 提供的值。
 class Observer {
 	constructor(message, fn) {
 		this.message = message;
@@ -49,8 +50,9 @@ class Observer {
 		}
 	};
 }
+
 var sb = new Subject();
-var sbc = new SubjectControl();
+var sbc = new Observable();
 var oba = new Observer('hi', () => { console.log("fuck,oba") });
 var obb = new Observer('hi', () => { console.log("fuck,obb") });
 
