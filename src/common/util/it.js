@@ -20,6 +20,9 @@ class Iterator {
 		const { index, arryList } = this;
 		return index >= arryList.length ? true : false;
 	};
+	CurrentItem = () => {
+		return this.arryList[this.index];
+	};
 }
 
 const arry = [1, 2, 3, 4, 5];
@@ -29,3 +32,4 @@ const f = new Iterator(arry);
 console.log(f.first());
 console.log(f.next());
 console.log(f.isDone());
+console.log(f.CurrentItem());
