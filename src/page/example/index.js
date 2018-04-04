@@ -6,6 +6,7 @@ import Tree from '../../components/tree';
 import HandWriting from '../../components/handwriting';
 import * as Api from 'common/api';
 // import SO from 'common/util/ps.js';
+// import SO from 'common/util/it.js';
 import './index.less';
 import MyPromise from './promise';
 

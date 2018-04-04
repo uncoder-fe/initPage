@@ -1,4 +1,5 @@
-// 发布-订阅
+// 发布-订阅，架构模式
+
 // 相当于 EventEmitter，并且是将值或事件多路推送给多个 Observer 的唯一方式
 class Subject {
 	notify = (message, cb) => {
