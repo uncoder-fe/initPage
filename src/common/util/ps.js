@@ -1,7 +1,4 @@
 // 发布-订阅
-
-import _ from 'lodash';
-
 // 相当于 EventEmitter，并且是将值或事件多路推送给多个 Observer 的唯一方式
 class Subject {
 	notify = (message, cb) => {
@@ -13,19 +10,14 @@ class Observable {
 	constructor() {
 		this.listeners = new Set([]);
 	}
-	scanListeners = ob => {
-		const { listeners } = this;
-		const had = _.find(listeners, listener => _.isEqual(listener, ob));
-		return had ? true : false;
-	};
 	register = ob => {
-		if (!this.scanListeners(ob)) {
-			this.listeners.push(ob);
+		if (!this.scanListeners.has(ob)) {
+			this.listeners.add(ob);
 		}
 	};
 	deregister = ob => {
 		if (this.scanListeners(ob)) {
-			_.remove(this.listeners, ob);
+			this.scanListeners.delete(ob);
 		}
 	};
 	publish = message => {
