@@ -2,8 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 // 环境
 var ENV = process.env.NODE_ENV || 'development';
-// 压缩
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 // 模版
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 合并
@@ -22,6 +20,14 @@ const config = {
 	mode: 'development',
 	// 源码调试'source-map'
 	devtool: ENV === 'development' ? 'source-map' : false,
+	optimization: {
+		sideEffects: false,
+		minimize: false,
+		splitChunks: {
+			minSize: 30000
+		},
+		runtimeChunk: true
+	},
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
 	// 直接在html模版里使用库的CDN文件
@@ -131,9 +137,7 @@ const config = {
 			chunks: ['index']
 		}),
 		// 减少闭包函数数量从而加快js执行速度
-		new webpack.optimize.ModuleConcatenationPlugin(),
-		// 压缩
-		// new UglifyJsPlugin()
+		new webpack.optimize.ModuleConcatenationPlugin()
 	]
 };
 
