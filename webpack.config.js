@@ -21,12 +21,12 @@ const config = {
 	// 源码调试'source-map'
 	devtool: ENV === 'development' ? 'source-map' : false,
 	optimization: {
-		sideEffects: false,
-		minimize: false,
-		splitChunks: {
-			minSize: 30000
-		},
-		runtimeChunk: true
+		// sideEffects: false,
+		// minimize: false,
+		// splitChunks: {
+		// 	minSize: 30000
+		// },
+		// runtimeChunk: true
 	},
 	// 将库的对象挂靠在全局对象中，
 	// 通过另外一个对象存储对象名以及映射到对应模块名的变量，
