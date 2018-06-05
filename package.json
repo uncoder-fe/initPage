@@ -4,8 +4,8 @@
 	"description": "",
 	"private": true,
 	"scripts": {
-		"start": "webpack-serve",
-		"build": "rm -rf dist && webpack --config ./webpack.config.js --env.mode=production",
+		"start": "webpack-serve --config ./webpack.config.js",
+		"build": "webpack --config ./webpack.config.js --env.mode=production",
 		"eslint": "eslint src --ext .js --ext .jsx",
 		"eslint:fix": "eslint --fix src --ext .js --ext .jsx",
 		"stylelint": "stylelint 'src/**/*.{css,less}' --formatter verbose",
@@ -23,6 +23,7 @@
 		"babel-preset-env": "^1.6.0",
 		"babel-preset-react": "^6.24.1",
 		"babel-preset-stage-0": "^6.24.1",
+		"clean-webpack-plugin": "^0.1.19",
 		"copy-webpack-plugin": "^4.5.1",
 		"css-loader": "^0.28.5",
 		"cssnano": "^3.10.0",

@@ -1,6 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 
+// 清理
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 // 合并
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 模版
@@ -97,8 +99,15 @@ module.exports = env => {
 				}
 			]
 		},
+		// serve
+		serve: {
+			port: 9000,
+			content: '/',
+			logLevel: 'error'
+		},
 		// 插件
 		plugins: [
+			new CleanWebpackPlugin(['dist']),
 			new MiniCssExtractPlugin({
 				// Options similar to the same options in webpackOptions.output
 				// both options are optional
@@ -108,13 +117,13 @@ module.exports = env => {
 			new HtmlWebpackPlugin({
 				title: '举个栗子',
 				filename: './example.html',
-				template: './src/assets/template/example.html',
+				template: './src/assets/html/example.html',
 				chunks: ['example']
 			}),
 			new HtmlWebpackPlugin({
 				title: '首页',
 				filename: './index.html',
-				template: './src/assets/template/index.html',
+				template: './src/assets/html/index.html',
 				chunks: ['index']
 			}),
 			// 减少闭包函数数量从而加快js执行速度
