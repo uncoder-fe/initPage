@@ -46,8 +46,12 @@ class Observer {
 
 var sb = new Subject();
 var sbc = new Observable();
-var oba = new Observer('hi', () => { console.log("fuck,oba") });
-var obb = new Observer('hi', () => { console.log("fuck,obb") });
+var oba = new Observer('hi', () => {
+	console.log('fuck,oba');
+});
+var obb = new Observer('hi', () => {
+	console.log('fuck,obb');
+});
 
 sbc.register(oba);
 sbc.register(oba);

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Platform, StyleSheet, Text, ScrollView, View} from 'react-native';
+import { Platform, StyleSheet, Text, ScrollView, View } from 'react-native';
 import AppBar from '../common/component/app-bar';
 import BottomBar from '../common/component/bottom-bar';
 
@@ -9,9 +9,9 @@ import Preview from '../page/preview';
 
 // 注册菜单以及页面
 const routers = [
-	{title: '记账', component: <Home />, nav: true},
-	{title: '秘语', component: <Secret />, nav: true, active: true},
-	{title: '预览', component: <Preview />},
+	{ title: '记账', component: <Home />, nav: true },
+	{ title: '秘语', component: <Secret />, nav: true, active: true },
+	{ title: '预览', component: <Preview /> }
 ];
 
 class Router extends React.Component {
@@ -20,11 +20,11 @@ class Router extends React.Component {
 		this.state = {
 			routers,
 			pageStack: [],
-			currentPage: null,
+			currentPage: null
 		};
 	}
 	push = (title, params) => {
-		const {routers, pageStack} = this.state;
+		const { routers, pageStack } = this.state;
 
 		// 选中的页面
 		const page = routers.find(item => item.title == title);
@@ -35,13 +35,13 @@ class Router extends React.Component {
 			pageStack,
 			currentPage: React.cloneElement(page.component, {
 				...params,
-				router: this,
-			}),
+				router: this
+			})
 		});
 	};
 
 	pop = () => {
-		let {pageStack} = this.state;
+		let { pageStack } = this.state;
 		let page = null;
 		if (pageStack.length == 1) {
 			page = pageStack[0];
@@ -52,12 +52,12 @@ class Router extends React.Component {
 		// 更新
 		this.setState({
 			pageStack,
-			currentPage: React.cloneElement(page.component, {router: this}),
+			currentPage: React.cloneElement(page.component, { router: this })
 		});
 	};
 
 	changeNav = title => {
-		const {routers, pageStack} = this.state;
+		const { routers, pageStack } = this.state;
 
 		// 激活
 		routers.forEach(item => {
@@ -67,7 +67,7 @@ class Router extends React.Component {
 		this.setState(
 			{
 				routers,
-				pageStack,
+				pageStack
 			},
 			() => {
 				this.push(title);
@@ -75,7 +75,7 @@ class Router extends React.Component {
 		);
 	};
 	componentWillMount() {
-		const {routers} = this.state;
+		const { routers } = this.state;
 		let initPage = routers.find(item => item.active == true) || routers[0];
 		routers.forEach(item => {
 			if (initPage.title == item.page) {
@@ -83,12 +83,12 @@ class Router extends React.Component {
 			}
 		});
 
-		this.setState({routers}, () => {
+		this.setState({ routers }, () => {
 			this.push(initPage.title);
 		});
 	}
 	render() {
-		const {routers, currentPage} = this.state;
+		const { routers, currentPage } = this.state;
 		return (
 			<View style={styles.contextCanvas}>
 				<View style={styles.topView}>
@@ -107,16 +107,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		height: '100%',
 		width: '100%',
-		backgroundColor: '#fff',
+		backgroundColor: '#fff'
 	},
 	topView: {
-		height: 50,
+		height: 50
 	},
 	mainView: {
-		flex: 1,
+		flex: 1
 	},
 	bottomView: {
-		height: 50,
-	},
+		height: 50
+	}
 });
 export default Router;

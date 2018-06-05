@@ -14,10 +14,10 @@ const xhr = axios.create({
 	baseURL: `/`,
 	timeout: 30000,
 	headers: {
-		'Content-Type': 'application/json',
+		'Content-Type': 'application/json'
 	},
 	responseType: 'json',
-	withCredentials: false,
+	withCredentials: false
 });
 // request拦截
 xhr.interceptors.request.use(
@@ -60,10 +60,10 @@ export function get(url, params, headers) {
 	const h = headers || {};
 	const config = {
 		url,
-		params: {...p},
+		params: { ...p },
 		headers: {
-			...h,
-		},
+			...h
+		}
 	};
 	request(config);
 }
@@ -72,12 +72,12 @@ export function post(url, data, headers) {
 	const h = headers || {};
 	const config = {
 		url,
-		data: {...p},
+		data: { ...p },
 		headers: {
-			...h,
-		},
+			...h
+		}
 	};
 	request(config);
 }
 
-export default {get, post};
+export default { get, post };

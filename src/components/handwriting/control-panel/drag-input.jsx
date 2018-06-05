@@ -30,10 +30,20 @@ class DragInput extends Component {
 	};
 	render() {
 		const { range } = this.props;
-		return <div className="range-container-sss">
-			<div className="range-touch-cover-sss" onMouseDown={this.mousedown} onMouseUp={this.mouseup} onMouseMove={this.mousemove} onMouseOut={this.mouseout}></div>
-			<div className="range-sss" style={{ width: `${range}%` }}>{range}</div>
-		</div>
+		return (
+			<div className="range-container-sss">
+				<div
+					className="range-touch-cover-sss"
+					onMouseDown={this.mousedown}
+					onMouseUp={this.mouseup}
+					onMouseMove={this.mousemove}
+					onMouseOut={this.mouseout}
+				/>
+				<div className="range-sss" style={{ width: `${range}%` }}>
+					{range}
+				</div>
+			</div>
+		);
 	}
 }
 
