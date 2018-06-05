@@ -1,3 +1,11 @@
+# 版本
+
+```js
+"webpack": "^4.10.2",
+"webpack-cli": "^3.0.2",
+"webpack-serve": "^1.0.2"
+```
+
 # 项目运行
 
 ```bash
@@ -28,6 +36,6 @@ http://localhost:9000/example.html#/
 
 # 代码风格相关
 
-* eslint、stylelint
+* eslint
+* stylelint
 * prettier
-* EditorConfig
