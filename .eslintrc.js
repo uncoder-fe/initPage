@@ -19,10 +19,11 @@ module.exports = {
 	},
 	plugins: ['react', 'import', 'prettier'],
 	rules: {
-		'no-console': 'warn',
-		'prettier/prettier': 'error',
-		'react/jsx-uses-react': 'error',
-		'react/jsx-uses-vars': 'error',
+		'no-console': 1,
+		'no-unused-vars': 0,
+		'prettier/prettier': 2,
+		'react/jsx-uses-react': 2,
+		'react/jsx-uses-vars': 2,
 	},
 	globals: {
 		$: false,
