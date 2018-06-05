@@ -15,14 +15,9 @@ http://localhost:9000/example.html#/
 * externals 消除库的打包依赖，使用 cdn 来缩小体积
 * proxy 本地请求代理转发
 * 插件
-    1. UglifyJSPlugin(压缩)
+    1. MiniCssExtractPlugin(css抽取)
     2. HtmlWebpackPlugin(模版)
-    3. ExtractTextPlugin(css 合并)
-    4. DashboardPlugin(bundle 文件分析监控)
-    5. CommonsChunkPlugin（抽取公共模块，根据内容生成 hash）
-    6. ModuleConcatenationPlugin 减少闭包数量，提升 js 运行效率
-    7. DefinePlugin(全局替换)
-    8. AggressiveSplittingPlugin(chunk 拆包)
+    3. CopyWebpackPlugin(拷贝)
 
 # postCss 相关
 
