@@ -17,10 +17,10 @@ const NODE_MODULES_PATH = path.resolve(ROOT_PATH, 'node_modules');
 
 module.exports = env => {
 	// 开发模式
-	const devMode = env.mode !== 'production';
-	console.log('运行环境::::::=>', env.mode);
+	const devMode = process.env.WEBPACK_SERVE || env.mode !== 'production';
+	console.log('开发模式::::::=>', devMode);
 	const config = {
-		mode: 'production',
+		mode: devMode ? 'development' : 'production',
 		// 源码调试'source-map'
 		devtool: devMode ? 'source-map' : false,
 		// 将库的对象挂靠在全局对象中，

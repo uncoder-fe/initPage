@@ -4,7 +4,7 @@
 	"description": "",
 	"private": true,
 	"scripts": {
-		"start": "webpack-serve --config ./webpack.config.js",
+		"start": "WEBPACK_SERVE=development webpack-serve --config ./webpack.config.js",
 		"build": "webpack --config ./webpack.config.js --env.mode=production",
 		"eslint": "eslint src --ext .js --ext .jsx",
 		"eslint:fix": "eslint --fix src --ext .js --ext .jsx",
