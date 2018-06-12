@@ -46,3 +46,15 @@ const App2 = class extends React.Component {
 };
 
 ReactDOM.render(<App2 />, document.querySelector('#app2'));
+
+function App3() {
+	return <div>我是第三个app{Date.now()}</div>;
+}
+
+setInterval(() => {
+	ReactDOM.render(<App3 />, document.querySelector('#app3'));
+}, 5000);
+
+const App4 = <div>我是第四个app</div>;
+
+ReactDOM.render(App4, document.querySelector('#app4'));
