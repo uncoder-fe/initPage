@@ -22,3 +22,7 @@ const App = () => (
 
 // 渲染
 ReactDOM.render(<App />, document.querySelector('#app'));
+
+const App2 = () => <div>我是另一个app</div>;
+
+ReactDOM.render(<App2 />, document.querySelector('#app2'));
