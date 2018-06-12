@@ -30,7 +30,7 @@ const App2 = class extends React.Component {
 		};
 	}
 	componentDidMount() {
-		setInterval(() => {
+		setTimeout(() => {
 			const { list } = this.state;
 			list.push(Date.now());
 			this.setState({ list });
