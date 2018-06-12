@@ -23,11 +23,13 @@ const App = () => (
 ReactDOM.render(<App />, document.querySelector('#app'));
 
 const App2 = class extends React.Component {
+	time = Date.now();
 	constructor() {
 		super();
 		this.state = {
 			list: []
 		};
+		console.log(this.time);
 	}
 	componentDidMount() {
 		setTimeout(() => {
@@ -41,7 +43,12 @@ const App2 = class extends React.Component {
 		const listNodes = list.map((item, index) => {
 			return <h1 key={index}>{item}</h1>;
 		});
-		return <div>我是第二个app{listNodes}</div>;
+		return (
+			<div>
+				我是第二个app{this.time}
+				{listNodes}
+			</div>
+		);
 	}
 };
 
