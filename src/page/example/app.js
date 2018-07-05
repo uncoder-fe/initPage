@@ -24,11 +24,17 @@ ReactDOM.render(<App />, document.querySelector('#app'));
 
 const App2 = class extends React.Component {
 	time = Date.now();
+	static Test = class {
+		constructor() {
+			console.log('Test class');
+		}
+	};
 	constructor() {
 		super();
 		this.state = {
 			list: []
 		};
+		this.test = new this.constructor.Test();
 		console.log(this.time);
 	}
 	componentDidMount() {
