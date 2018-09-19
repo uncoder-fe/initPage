@@ -51,7 +51,8 @@ const App2 = class extends React.Component {
 		});
 		return (
 			<div>
-				我是第二个app{this.time}
+				我是第二个app
+				{this.time}
 				{listNodes}
 			</div>
 		);
