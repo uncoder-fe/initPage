@@ -25,6 +25,7 @@ http://localhost:9000/example.html#/
     1. MiniCssExtractPlugin(css抽取)
     2. HtmlWebpackPlugin(模版)
     3. CopyWebpackPlugin(拷贝)
+    4. WorkboxPlugin(pwa)
 
 # postCss 相关
 

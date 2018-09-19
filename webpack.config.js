@@ -9,6 +9,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 // 拷贝
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+// pwa
+const WorkboxPlugin = require('workbox-webpack-plugin');
+
 // 文件路径
 const ROOT_PATH = path.resolve(__dirname);
 const APP_PATH = path.resolve(ROOT_PATH, 'src');
@@ -146,7 +149,12 @@ module.exports = env => {
 			// 减少闭包函数数量从而加快js执行速度
 			new webpack.optimize.ModuleConcatenationPlugin(),
 			// 拷贝
-			new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }])
+			new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }]),
+			new WorkboxPlugin.GenerateSW({
+				swDest: 'sw.js',
+				skipWaiting: true,
+				clientsClaim: true
+			})
 		]
 	};
 	return config;
