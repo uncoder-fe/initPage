@@ -1,9 +1,8 @@
 # 版本
 
 ```js
-"webpack": "^4.10.2",
-"webpack-cli": "^3.0.2",
-"webpack-serve": "^1.0.2"
+webpack升级4.X
+babel升级7.X
 ```
 
 # 项目运行
