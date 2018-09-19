@@ -19,6 +19,13 @@ module.exports = env => {
 	// 开发模式
 	const devMode = process.env.WEBPACK_SERVE || env.mode !== 'production';
 	console.log('开发模式::::::=>', devMode);
+	// CDN配置
+	let CDN_URL = '/';
+	if (devMode) {
+		CDN_URL = '/';
+	} else {
+		CDN_URL = '//xxxxxxxxxxxx.ooo';
+	}
 	const config = {
 		mode: devMode ? 'development' : 'production',
 		// 源码调试'source-map'
@@ -50,7 +57,7 @@ module.exports = env => {
 			// 指定非入口块文件输出的名字，动态加载的模块
 			chunkFilename: '[name].bundle.js',
 			path: BUILD_PATH,
-			publicPath: ''
+			publicPath: CDN_URL
 		},
 		resolve: {
 			// 解析模块时应该搜索的目录
@@ -116,14 +123,16 @@ module.exports = env => {
 			new HtmlWebpackPlugin({
 				title: '举个栗子',
 				filename: './example.html',
-				template: './src/assets/html/example.html',
-				chunks: ['example']
+				template: './src/assets/html/example.ejs',
+				chunks: ['example'],
+				CDN_URL: CDN_URL
 			}),
 			new HtmlWebpackPlugin({
 				title: '首页',
 				filename: './index.html',
-				template: './src/assets/html/index.html',
-				chunks: ['index']
+				template: './src/assets/html/index.ejs',
+				chunks: ['index'],
+				CDN_URL: CDN_URL
 			}),
 			// 减少闭包函数数量从而加快js执行速度
 			new webpack.optimize.ModuleConcatenationPlugin(),
