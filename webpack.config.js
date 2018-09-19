@@ -24,7 +24,7 @@ module.exports = env => {
 	if (devMode) {
 		CDN_URL = '/';
 	} else {
-		CDN_URL = '//xxxxxxxxxxxx.ooo';
+		CDN_URL = '//xxxxxxxxxxxx.ooo/';
 	}
 	const config = {
 		mode: devMode ? 'development' : 'production',
