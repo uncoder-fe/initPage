@@ -31,5 +31,6 @@ module.exports = {
 		React: false,
 		ReactDOM: false,
 		MathJax: false,
+		arguments: false
 	},
 };
