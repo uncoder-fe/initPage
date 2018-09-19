@@ -123,14 +123,14 @@ module.exports = env => {
 			new HtmlWebpackPlugin({
 				title: '举个栗子',
 				filename: './example.html',
-				template: './src/assets/html/example.ejs',
+				template: './src/assets/template/example.ejs',
 				chunks: ['example'],
 				CDN_URL: CDN_URL
 			}),
 			new HtmlWebpackPlugin({
 				title: '首页',
 				filename: './index.html',
-				template: './src/assets/html/index.ejs',
+				template: './src/assets/template/index.ejs',
 				chunks: ['index'],
 				CDN_URL: CDN_URL
 			}),
