@@ -53,9 +53,9 @@ module.exports = env => {
 		},
 		// 出口
 		output: {
-			filename: '[name].[hash:5].js',
+			filename: 'static/js/[name].[hash:5].js',
 			// 指定非入口块文件输出的名字，动态加载的模块
-			chunkFilename: '[name].bundle.js',
+			chunkFilename: 'static/js/[name].bundle.js',
 			path: BUILD_PATH,
 			publicPath: CDN_URL
 		},
@@ -96,11 +96,22 @@ module.exports = env => {
 					]
 				},
 				{
-					test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+					test: /\.(png|jpg|jpeg|gif)(\?.+)?$/,
 					use: {
 						loader: 'url-loader',
 						options: {
-							limit: 10000
+							limit: 10000,
+							name: 'static/img/[name].[hash:7].[ext]'
+						}
+					}
+				},
+				{
+					test: /\.(eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+					use: {
+						loader: 'url-loader',
+						options: {
+							limit: 10000,
+							name: 'static/font/[name].[hash:7].[ext]'
 						}
 					}
 				}
@@ -115,10 +126,8 @@ module.exports = env => {
 		plugins: [
 			new CleanWebpackPlugin(['dist']),
 			new MiniCssExtractPlugin({
-				// Options similar to the same options in webpackOptions.output
-				// both options are optional
-				filename: devMode ? '[name].css' : '[name].[hash].css',
-				chunkFilename: devMode ? '[id].css' : '[id].[hash].css'
+				filename: devMode ? 'static/css/[name].css' : 'static/css/[name].[hash].css',
+				chunkFilename: devMode ? 'static/css/[id].css' : 'static/css/[id].[hash].css'
 			}),
 			new HtmlWebpackPlugin({
 				title: '举个栗子',
