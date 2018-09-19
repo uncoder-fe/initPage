@@ -45,7 +45,7 @@
 		"url-loader": "^1.0.1",
 		"webpack": "^4.10.2",
 		"webpack-cli": "^3.0.2",
-		"webpack-serve": "^1.0.2"
+		"webpack-dev-server": "^3.1.8"
 	},
 	"dependencies": {
 		"axios": "^0.18.0",

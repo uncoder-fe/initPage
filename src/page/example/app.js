@@ -63,7 +63,10 @@ ReactDOM.render(<App2 />, document.querySelector('#app2'));
 function App3(props) {
 	return (
 		<div>
-			我是第{props.name}个app{Date.now()}
+			我是第
+			{props.name}
+			个app
+			{Date.now()}
 		</div>
 	);
 }

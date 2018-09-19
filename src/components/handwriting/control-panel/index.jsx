@@ -59,7 +59,10 @@ class ControlPanel extends Component {
 					</div>
 					<div className="range-number">{`${showNumber}%`}</div>
 				</div>
-				<div className="control-speed">倍数:{listNodes}</div>
+				<div className="control-speed">
+					倍数:
+					{listNodes}
+				</div>
 			</div>
 		);
 	}

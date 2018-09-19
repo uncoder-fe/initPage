@@ -1,6 +1,12 @@
 class Detail extends React.Component {
 	render() {
-		return <div>我是{this.props.match.params.id}</div>;
+		const { match } = this.props;
+		return (
+			<div>
+				我是
+				{match.params.id}
+			</div>
+		);
 	}
 }
 

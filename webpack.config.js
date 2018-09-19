@@ -99,11 +99,10 @@ module.exports = env => {
 				}
 			]
 		},
-		// serve
-		serve: {
-			port: 9000,
-			content: '/',
-			logLevel: 'error'
+		// 开发服务器
+		devServer: {
+			contentBase: '/',
+			port: 9000
 		},
 		// 插件
 		plugins: [
