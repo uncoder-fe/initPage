@@ -4,7 +4,9 @@
 
 # 修改脚本可执行权限 chmod u+x test.sh
 # 查看安装路径 rpm -ql nginx
-# $basearch是我们的系统硬件架构(CPU指令集), 使用命令arch得到
+# $basearch是我们的系统硬件架构(CPU指令集)
+# 使用方法：sh -c "$(curl -fsSL https://github.com/uncoder-fe/initPage/blob/master/env_install.sh)"
+main() {
 
 # 全局变量
 basearch=$(arch)
@@ -31,7 +33,6 @@ else
 fi
 
 # 检测yarn是否安装
-
 if type yarn >/dev/null 2>&1; then
     echo 'exists yarn'
 else
@@ -41,10 +42,12 @@ else
 fi
 
 # 检测pm2是否安装
-
 if type pm2 >/dev/null 2>&1; then
     echo 'exists pm2'
 else
     echo 'no exists pm2'
     yarn add pm2 -g
 fi
+}
+
+main
