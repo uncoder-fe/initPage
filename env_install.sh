@@ -1,5 +1,5 @@
 #! /bin/bash
-# environment centos 7
+# 系统 centos 7
 # 快速安装 nginx, nodejs, yarn, pm2
 
 # 修改脚本可执行权限 chmod u+x test.sh
@@ -20,7 +20,7 @@ if type nginx >/dev/null 2>&1; then
 else
     echo 'no exists nginx'
     echo -e "[nginx]\n\name=nginx repo\nbaseurl=${NGINX_VERSION}\ngpgcheck=0\nenabled=1" > /etc/yum.repos.d/nginx.repo
-    yum install nginx
+    yum -y install nginx
 fi
 
 # 检测nodejs是否安装
@@ -29,7 +29,7 @@ if type node >/dev/null 2>&1; then
 else
     echo 'no exists nodejs'
     curl --silent --location ${NODEJS_VERSION} | sudo bash -
-    yum install nodejs
+    yum -y install nodejs
 fi
 
 # 检测yarn是否安装
@@ -38,7 +38,7 @@ if type yarn >/dev/null 2>&1; then
 else
     echo 'no exists yarn'
     curl --silent --location ${YARN_VERSION} | sudo tee /etc/yum.repos.d/yarn.repo
-    yum install yarn
+    yum -y install yarn
 fi
 
 # 检测pm2是否安装
@@ -48,6 +48,9 @@ else
     echo 'no exists pm2'
     yarn add pm2 -g
 fi
+
+echo '安装结束了....'
+
 }
 
 main
