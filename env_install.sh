@@ -30,7 +30,7 @@ if type ss-server >/dev/null 2>&1; then
     echo 'ss已经存在...'
 else
     echo 'ss不存在，开始下载.....'
-    curl -o/etc/yum.repos.d/shadowsocks-libev.repo ${SS_VERSION}
+    curl -o /etc/yum.repos.d/shadowsocks-libev.repo ${SS_VERSION}
     yum -y install shadowsocks-libev
     echo '配置文件路径：/etc/shadowsocks-libev/config.json'
     echo '服务路径：/usr/lib/systemd/system/shadowsocks-libev.service'
