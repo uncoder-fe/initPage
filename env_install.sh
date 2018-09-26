@@ -5,7 +5,7 @@
 # 修改脚本可执行权限 chmod u+x test.sh
 # 查看安装路径 rpm -ql nginx
 # $basearch是我们的系统硬件架构(CPU指令集)
-# 使用方法：sh -c "$(curl -fsSL https://github.com/uncoder-fe/initPage/blob/master/env_install.sh)"
+# 使用方法：sh -c "$(curl -fsSL https://raw.githubusercontent.com/uncoder-fe/initPage/master/env_install.sh)"
 main() {
 
 # 全局变量
