@@ -11,6 +11,7 @@ main() {
 # 全局变量
 basearch=$(arch)
 NGINX_VERSION=http://nginx.org/packages/centos/7/${basearch}/
+SS_VERSION=https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
 NODEJS_VERSION=https://rpm.nodesource.com/setup_10.x
 YARN_VERSION=https://dl.yarnpkg.com/rpm/yarn.repo
 
@@ -29,7 +30,7 @@ if type ss-server >/dev/null 2>&1; then
     echo 'ss已经存在...'
 else
     echo 'ss不存在，开始下载.....'
-    curl -o/etc/yum.repos.d/shadowsocks-libev.repo https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
+    curl -o/etc/yum.repos.d/shadowsocks-libev.repo ${SS_VERSION}
     yum -y install shadowsocks-libev
     echo '配置文件路径：/etc/shadowsocks-libev/config.json'
     echo '服务路径：/usr/lib/systemd/system/shadowsocks-libev.service'
