@@ -13,7 +13,7 @@ main() {
 
 # 全局变量
 basearch=$(arch)
-NGINX_VERSION=http://nginx.org/packages/centos/7/${basearch}/
+NGINX_VERSION=http://nginx.org/packages/centos/7/${basearch}
 SS_VERSION=https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
 NODEJS_VERSION=https://rpm.nodesource.com/setup_10.x
 YARN_VERSION=https://dl.yarnpkg.com/rpm/yarn.repo
