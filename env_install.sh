@@ -23,7 +23,7 @@ if type nginx >/dev/null 2>&1; then
     echo 'nginx已经存在...'
 else
     echo 'nginx不存在，开始下载.....'
-    echo -e "[nginx]\n\name=nginx repo\nbaseurl=${NGINX_VERSION}\ngpgcheck=0\nenabled=1" > /etc/yum.repos.d/nginx.repo
+    echo -e "[nginx]\nname=nginx repo\nbaseurl=${NGINX_VERSION}\ngpgcheck=0\nenabled=1" > /etc/yum.repos.d/nginx.repo
     yum -y install nginx
     echo 'nginx安装完毕.....'
 fi
