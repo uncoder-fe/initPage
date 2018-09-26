@@ -24,7 +24,7 @@ if type nginx >/dev/null 2>&1; then
 else
     echo 'nginx不存在，开始下载.....'
     echo -e "[nginx]\nname=nginx repo\nbaseurl=${NGINX_VERSION}\ngpgcheck=0\nenabled=1" > /etc/yum.repos.d/nginx.repo
-    yum install nginx
+    sudo yum install nginx
     echo 'nginx安装完毕.....'
 fi
 
@@ -33,8 +33,8 @@ if type ss-server >/dev/null 2>&1; then
     echo 'ss已经存在...'
 else
     echo 'ss不存在，开始下载.....'
-    curl --location -o /etc/yum.repos.d/shadowsocks-libev.repo ${SS_VERSION}
-    yum install shadowsocks-libev
+    sudo curl -o /etc/yum.repos.d/shadowsocks-libev.repo ${SS_VERSION}
+    sudo yum install shadowsocks-libev
     echo '配置文件路径：/etc/shadowsocks-libev/config.json'
     echo '服务路径：/usr/lib/systemd/system/shadowsocks-libev.service'
     echo '追加：ExecStart=/usr/bin/ss-server -c /etc/shadowsocks-libev/config.json'
@@ -50,8 +50,8 @@ if type node >/dev/null 2>&1; then
     echo 'nodejs已经存在...'
 else
     echo 'nodejs不存在，开始下载.....'
-    curl --silent --location ${NODEJS_VERSION} | sudo bash -
-    yum install nodejs
+    sudo curl --silent --location https://rpm.nodesource.com/setup_10.x | sudo bash -
+    sudo yum -y install nodejs
     echo 'nodejs安装完毕.....'
 fi
 
@@ -60,8 +60,8 @@ if type yarn >/dev/null 2>&1; then
     echo 'yarn已经存在...'
 else
     echo 'yarn不存在，开始下载.....'
-    curl --silent --location ${YARN_VERSION} | sudo tee /etc/yum.repos.d/yarn.repo
-    yum install yarn
+    sudo curl --silent --location ${YARN_VERSION} | sudo tee /etc/yum.repos.d/yarn.repo
+    sudo yum install yarn
     echo 'yarn安装完毕.....'
 fi
 
