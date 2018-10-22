@@ -1,0 +1,61 @@
+.picker {
+    position: relative;
+    display: inline-block;
+    position: relative;
+    margin-right: 30px;
+    color: #000 !important;
+}
+
+.picker a {
+    cursor: pointer;
+}
+
+.picker span {
+    display: inline-block;
+    padding: 0 30px;
+    color: #131625;
+}
+
+.picker span:after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 20px;
+    width: 20px;
+    background: url(./asset/arrow.png);
+    background-size: 40%;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: rotateZ(90deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.picker span.active:after {
+    transform: rotateZ(-90deg);
+}
+
+.picker ul {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    width: 100%;
+    background: white;
+    z-index: 9;
+    border: 1px solid #9ca3b7;
+}
+
+.picker li {
+    text-align: center;
+    border-bottom: 1px solid #e1e3ed;
+    line-height: 45px;
+}
+
+.picker li:last-child {
+    border-bottom: 0;
+}
+
+.picker li.active {
+    color: #3259ff;
+    background: #dee4ff;
+}
