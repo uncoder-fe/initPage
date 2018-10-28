@@ -1,12 +1,4 @@
-const presets = [
-	[
-		'@babel/preset-env',
-		{
-			targets: 'last 5 versions'
-		}
-	],
-	'@babel/preset-react'
-];
+const presets = ['@babel/preset-env', '@babel/preset-react'];
 const plugins = [
 	[
 		'@babel/plugin-transform-runtime',
