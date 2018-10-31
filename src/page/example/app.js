@@ -59,7 +59,7 @@ const App2 = class extends React.Component {
 	}
 };
 
-ReactDOM.render(<App2 />, document.querySelector('#app2'));
+// ReactDOM.render(<App2 />, document.querySelector('#app2'));
 
 function App3(props) {
 	return (
@@ -72,10 +72,10 @@ function App3(props) {
 	);
 }
 
-setInterval(() => {
-	ReactDOM.render(<App3 name="三" />, document.querySelector('#app3'));
-}, 3000);
+// setInterval(() => {
+// 	ReactDOM.render(<App3 name="三" />, document.querySelector('#app3'));
+// }, 3000);
 
 const App4 = <div>我是第四个app</div>;
 
-ReactDOM.render(App4, document.querySelector('#app4'));
+// ReactDOM.render(App4, document.querySelector('#app4'));

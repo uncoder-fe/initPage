@@ -1,5 +1,13 @@
 import React from 'react';
-import { AtomicBlockUtils, Editor, EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+import {
+	CompositeDecorator,
+	AtomicBlockUtils,
+	Editor,
+	EditorState,
+	ContentState,
+	convertFromRaw,
+	convertToRaw
+} from 'draft-js';
 
 import MyImg from './my-img';
 
@@ -13,65 +21,91 @@ const styles = {
 export default class MyEditor extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			editorState: EditorState.createEmpty()
+		};
 	}
 	componentWillMount() {
 		const init = {
 			blocks: [
 				{
-					text: '这里是文本内容，下面是一张图片',
-					type: 'unstyled'
+					key: '4d5od',
+					text: '',
+					type: 'unstyled',
+					depth: 0,
+					inlineStyleRanges: [],
+					entityRanges: [],
+					data: {}
 				},
 				{
-					text: '![图片](https://avatars2.githubusercontent.com/u/9550456?v=4&s=460)',
-					type: 'atomic'
+					key: 'an8bv',
+					text: ' ',
+					type: 'atomic',
+					depth: 0,
+					inlineStyleRanges: [],
+					entityRanges: [{ offset: 0, length: 1, key: 0 }],
+					data: {}
+				},
+				{
+					key: '2u2of',
+					text: '',
+					type: 'unstyled',
+					depth: 0,
+					inlineStyleRanges: [],
+					entityRanges: [],
+					data: {}
 				}
 			],
-			entityMap: {}
+			entityMap: {
+				'0': {
+					type: 'image',
+					mutability: 'IMMUTABLE',
+					data: { text: '![图片]()', src: 'https://www.baidu.com/img/bd_logo1.png' }
+				}
+			}
 		};
 		const blockArry = convertFromRaw(init);
-		this.setState({
-			editorState: EditorState.createWithContent(blockArry)
-		});
+		const editorState = EditorState.createWithContent(blockArry);
+		this.setState(
+			{
+				editorState
+			},
+			() => {
+				console.log('convertFromRaw', convertToRaw(this.state.editorState.getCurrentContent()));
+			}
+		);
 	}
 	insertImage = img => {
 		const { editorState } = this.state;
 		const contentState = editorState.getCurrentContent();
 		const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', {
-			text: '![图片](https://avatars2.githubusercontent.com/u/9550456?v=4&s=460)',
-			type: 'atomic'
+			text: '![图片]()',
+			src: 'https://www.baidu.com/img/bd_logo1.png'
 		});
 		const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 		const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
-		const ned = AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey);
-		console.log('editorState', convertToRaw(newEditorState.getCurrentContent()).blocks[0]);
-		this.setState({
-			editorState: ned
-		});
-	};
-	setEditor = editor => {
-		this.editor = editor;
+		this.setState(
+			{
+				editorState: AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ')
+			},
+			() => {
+				const { editorState } = this.state;
+				console.log('convertFromRaw', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+				setTimeout(() => this.myEditor.focus(), 0);
+			}
+		);
 	};
 	onChange = editorState => {
 		console.log(editorState, 'onchange');
 		this.setState({ editorState });
 	};
 	myBlockRenderer = contentBlock => {
-		// 获取到contentBlock的文本信息，可以用contentBlock提供的其它方法获取到想要使用的信息
 		const type = contentBlock.getType();
 		if (type == 'atomic') {
-			const text = contentBlock.getText();
-			// 获取图片的URL
-			const matches = text.match(/!\[(.*)\]\((http.*)\)/);
 			return {
 				// 指定组件
 				component: MyImg,
-				// 这里设置自定义的组件可不可以编辑，因为是图片，这里选择不可编辑
-				editable: true,
-				// 这里的props在自定义的组件中需要用this.props.blockProps来访问
-				props: {
-					src: matches[2]
-				}
+				editable: false
 			};
 		}
 		return null;
@@ -81,12 +115,10 @@ export default class MyEditor extends React.Component {
 		return (
 			<div style={styles.editor}>
 				<div>
-					<div className="RichEditor-controls">
-						<div onClick={this.insertImage}>图片</div>
-					</div>
+					<div onClick={this.insertImage}>图片</div>
 				</div>
 				<Editor
-					ref={this.setEditor}
+					ref={editor => (this.myEditor = editor)}
 					editorState={editorState}
 					onChange={this.onChange}
 					blockRendererFn={this.myBlockRenderer}

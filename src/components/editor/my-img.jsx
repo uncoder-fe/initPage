@@ -5,11 +5,16 @@ export default class MyImg extends React.Component {
 		// alert('hello world')
 	};
 	render() {
-		// console.log('this.props', this.props);
-		const { blockProps } = this.props;
-		const { src } = blockProps;
+		const entity = this.props.contentState.getEntity(this.props.block.getEntityAt(0));
+		const { src } = entity.getData();
+		const type = entity.getType();
+		console.log(src, type);
 		return (
 			<div className="my-img" onClick={this.handleClick}>
+				<p>
+					类型:
+					{type}
+				</p>
 				<img src={src} alt="test" />
 			</div>
 		);
