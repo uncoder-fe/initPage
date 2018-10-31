@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-	CompositeDecorator,
-	AtomicBlockUtils,
-	Editor,
-	EditorState,
-	ContentState,
-	convertFromRaw,
-	convertToRaw
-} from 'draft-js';
+import { AtomicBlockUtils, Editor, EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 
 import MyImg from './my-img';
 
