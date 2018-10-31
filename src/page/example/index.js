@@ -4,6 +4,7 @@ import Test from './hello-world';
 import MathPage from './mathjax-test';
 import Tree from '../../components/tree';
 import HandWriting from '../../components/handwriting';
+import MyEditor from '../../components/editor';
 import * as Api from 'common/api';
 // import SO from 'common/util/ps.js';
 import './index.less';
@@ -89,8 +90,11 @@ class Index extends React.Component {
 				<button onClick={this.handleToast}>click me to toast</button>
 				{/* <div><MathPage /></div> */}
 				{/* <div><Tree /></div> */}
-				<div>
+				{/* <div>
 					<HandWriting data={handWrtingData} hkey={hkey} />
+				</div> */}
+				<div>
+					<MyEditor />
 				</div>
 			</div>
 		);
