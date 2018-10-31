@@ -66,20 +66,13 @@ export default class MyEditor extends React.Component {
 		};
 		const blockArry = convertFromRaw(init);
 		const editorState = EditorState.createWithContent(blockArry);
-		this.setState(
-			{
-				editorState
-			},
-			() => {
-				console.log('convertFromRaw', convertToRaw(this.state.editorState.getCurrentContent()));
-			}
-		);
+		this.setState({ editorState });
 	}
 	insertImage = img => {
 		const { editorState } = this.state;
 		const contentState = editorState.getCurrentContent();
 		const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', {
-			text: '![图片]()',
+			text: '裁剪图片',
 			src: 'https://www.baidu.com/img/bd_logo1.png'
 		});
 		const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
@@ -89,15 +82,14 @@ export default class MyEditor extends React.Component {
 				editorState: AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ')
 			},
 			() => {
-				const { editorState } = this.state;
-				console.log('convertFromRaw', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
 				setTimeout(() => this.myEditor.focus(), 0);
 			}
 		);
 	};
 	onChange = editorState => {
-		console.log(editorState, 'onchange');
-		this.setState({ editorState });
+		this.setState({ editorState }, () => {
+			console.log('convertFromRaw', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+		});
 	};
 	myBlockRenderer = contentBlock => {
 		const type = contentBlock.getType();
