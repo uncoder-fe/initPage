@@ -1,4 +1,5 @@
 import React from 'react';
+import { convertToRaw } from 'draft-js';
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
 
@@ -12,6 +13,9 @@ export default class MyImg extends React.Component {
 			isCrop: false
 		};
 		this.cropper = null;
+		this.ff = o => {
+			console.log(convertToRaw(o));
+		};
 	}
 	handleDel = block => () => {
 		const { blockProps } = this.props;
@@ -30,24 +34,20 @@ export default class MyImg extends React.Component {
 			isCrop: !this.state.isCrop
 		});
 	};
-	handleCrop = is => () => {
-		this.setState(
-			{
-				isCrop: false
-			},
-			() => {
-				if (is) {
-					const { blockProps, block } = this.props;
-					this.cropper.getCroppedCanvas().toBlob(
-						blob => {
-							blockProps.crop(block, blob);
-						},
-						'image/jpeg',
-						1
-					);
-				}
-			}
-		);
+	handleCrop = is => {
+		if (is) {
+			const { blockProps, block } = this.props;
+			this.cropper.getCroppedCanvas().toBlob(
+				blob => {
+					blockProps.crop(block, blob);
+				},
+				'image/jpeg',
+				1
+			);
+		}
+		this.setState({
+			isCrop: false
+		});
 	};
 	componentDidMount = () => {
 		const image = this.img;
@@ -80,10 +80,10 @@ export default class MyImg extends React.Component {
 							</div>
 							<div className="buttons">
 								<div className="button">
-									<span onClick={this.handleCrop(false)}>取消</span>
+									<span onClick={() => this.handleCrop(false)}>取消</span>
 								</div>
 								<div className="button">
-									<span onClick={this.handleCrop(true)}>裁切</span>
+									<span onClick={() => this.handleCrop(true)}>裁切</span>
 								</div>
 							</div>
 						</div>

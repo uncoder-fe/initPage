@@ -5,14 +5,13 @@ import {
 	Modifier,
 	Editor,
 	EditorState,
+	ContentState,
 	convertFromRaw,
 	convertToRaw
 } from 'draft-js';
 import qnConfig from './config';
 import MyImg from './my-img';
 import './index.less';
-import { resolve } from 'url';
-import { rejects } from 'assert';
 
 export default class MyEditor extends React.Component {
 	constructor(props) {
@@ -20,18 +19,20 @@ export default class MyEditor extends React.Component {
 		this.state = {
 			editorState: EditorState.createEmpty()
 		};
+		this.ff = o => {
+			console.log(convertToRaw(o));
+		};
 	}
 	onChange = editorState => {
 		this.setState({ editorState }, () => {
-			console.log('convertFromRaw', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+			console.log('onChange', convertToRaw(editorState.getCurrentContent()));
 		});
 	};
 	qiniuUp = imgSource => {
-		debugger;
 		const file = imgSource;
-		const key = null;
+		const key = imgSource.name;
 		const observable = window.qiniu.upload(file, key, qnConfig.uptoken, qnConfig.putExtra, qnConfig.config);
-		return new Promise((resolve, rejects) => {
+		return new Promise(resolve => {
 			observable.subscribe({
 				next(res) {
 					// console.log(res);
@@ -51,14 +52,18 @@ export default class MyEditor extends React.Component {
 	uploadImg = async e => {
 		const file = e.target.files[0];
 		const fileMaxSize = 500000;
+		if (!file) {
+			return;
+		}
 		if (!/image\/\w+/.test(file.type)) {
 			console.log('选择的文件不是图片');
+			return;
 		}
 		if (file.size >= fileMaxSize) {
 			console.log('文件过大');
+			return;
 		}
 		const url = await this.qiniuUp(file).then(data => data);
-		console.log('url', url);
 		this.insertImage(url);
 	};
 	componentWillMount() {
@@ -119,13 +124,18 @@ export default class MyEditor extends React.Component {
 			src: imageUrl
 		});
 		const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+		console.log('lastentityKey', entityKey);
+		console.log(this.ff(contentStateWithEntity));
 		const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
 		this.setState(
 			{
-				editorState: AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ')
+				editorState: AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, '我是插入的图片')
 			},
 			() => {
-				// setTimeout(() => this.myEditor.focus(), 0);
+				setTimeout(() => {
+					console.log('插入成功，获取焦点');
+					this.myEditor.focus();
+				}, 0);
 			}
 		);
 	};
@@ -165,15 +175,23 @@ export default class MyEditor extends React.Component {
 		);
 	};
 	cropImg = async (block, imgFile) => {
-		// console.log(block, imgFile);
 		imgFile.name = `image-${Date.now()}.jpeg`;
 		const url = await this.qiniuUp(imgFile).then(data => data);
 		const { editorState } = this.state;
 		const contentState = editorState.getCurrentContent();
-		const newContentState = contentState.replaceEntityData(block.getKey(), { src: url });
-		this.setState({
-			editorState: newContentState
-		});
+		const rawObj = convertToRaw(contentState);
+		const newContentState = contentState.mergeEntityData(block.getEntityAt(0), { src: url });
+		const newEditorState = EditorState.set(editorState, { currentContent: newContentState });
+		this.setState(
+			{
+				editorState: newEditorState
+			},
+			() => {
+				setTimeout(() => {
+					this.myEditor.focus();
+				}, 0);
+			}
+		);
 	};
 	myBlockRenderer = contentBlock => {
 		const type = contentBlock.getType();
