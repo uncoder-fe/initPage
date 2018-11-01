@@ -1,7 +1,5 @@
 import React from 'react';
 import { convertToRaw } from 'draft-js';
-import Cropper from 'cropperjs';
-import 'cropperjs/dist/cropper.css';
 
 import './my-img.less';
 
@@ -9,58 +7,27 @@ export default class MyImg extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			isEitor: false,
-			isCrop: false
+			isEditor: false
 		};
-		this.cropper = null;
-		this.ff = o => {
-			console.log(convertToRaw(o));
+		this.ff = cs => {
+			console.log(convertToRaw(cs));
 		};
 	}
 	handleDel = block => () => {
 		const { blockProps } = this.props;
-		blockProps.del(block);
+		blockProps.handleDelteImg(block);
 	};
-	handleDoubleClick = event => {
-		event.stopPropagation();
+	handleShowCrop = block => () => {
+		const { blockProps } = this.props;
+		blockProps.handleShowCrop(block);
+	};
+	handleDoubleClick = () => {
 		this.setState({
-			isEitor: !this.state.isEitor
-		});
-	};
-	handleShowCrop = event => {
-		event.stopPropagation();
-		this.setState({
-			isEitor: false,
-			isCrop: !this.state.isCrop
-		});
-	};
-	handleCrop = is => {
-		if (is) {
-			const { blockProps, block } = this.props;
-			this.cropper.getCroppedCanvas().toBlob(
-				blob => {
-					blockProps.crop(block, blob);
-				},
-				'image/jpeg',
-				1
-			);
-		}
-		this.setState({
-			isCrop: false
-		});
-	};
-	componentDidMount = () => {
-		const image = this.img;
-		// debugger
-		this.cropper = new Cropper(image, {
-			aspectRatio: 16 / 9,
-			viewMode: 2,
-			minContainerWidth: 500,
-			minContainerHeight: 350
+			isEditor: !this.state.isEditor
 		});
 	};
 	render() {
-		const { isEitor, isCrop } = this.state;
+		const { isEitor } = this.state;
 		const { contentState, block } = this.props;
 		if (block.getEntityAt(0) != null) {
 			const entity = contentState.getEntity(block.getEntityAt(0));
@@ -71,22 +38,6 @@ export default class MyImg extends React.Component {
 					<div className={isEitor ? 'show-flex' : 'hide-none'}>
 						<button onClick={this.handleDel(block)}>删除</button>
 						<button onClick={this.handleShowCrop}>裁剪</button>
-					</div>
-					<div className={`${isCrop ? 'show-flex' : 'hide-none'} my-crop-container`}>
-						<div className="crop-container">
-							<h3>图片裁切</h3>
-							<div className="crop-img">
-								<img src={src} crossOrigin="Anonymous" alt="裁切图" ref={img => (this.img = img)} />
-							</div>
-							<div className="buttons">
-								<div className="button">
-									<span onClick={() => this.handleCrop(false)}>取消</span>
-								</div>
-								<div className="button">
-									<span onClick={() => this.handleCrop(true)}>裁切</span>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			);

@@ -11,13 +11,16 @@ import {
 } from 'draft-js';
 import qnConfig from './config';
 import MyImg from './my-img';
+import Crop from './crop';
 import './index.less';
 
 export default class MyEditor extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			editorState: EditorState.createEmpty()
+			isCrop: false,
+			editorState: EditorState.createEmpty(),
+			url: ''
 		};
 		this.ff = o => {
 			console.log(convertToRaw(o));
@@ -26,6 +29,16 @@ export default class MyEditor extends React.Component {
 	onChange = editorState => {
 		this.setState({ editorState }, () => {
 			console.log('onChange', convertToRaw(editorState.getCurrentContent()));
+		});
+	};
+	// 显示裁剪工具
+	handleShowCrop = block => {
+		const { contentState } = this.state;
+		const entity = contentState.getEntity(block.getEntityAt(0));
+		const { src } = entity.getData();
+		this.setState({
+			isCrop: true,
+			url: src
 		});
 	};
 	qiniuUp = imgSource => {
@@ -116,6 +129,7 @@ export default class MyEditor extends React.Component {
 			this.setState({ editorState: EditorState.createEmpty() });
 		}
 	}
+	// 插入图片
 	insertImage = imageUrl => {
 		const { editorState } = this.state;
 		const contentState = editorState.getCurrentContent();
@@ -139,7 +153,8 @@ export default class MyEditor extends React.Component {
 			}
 		);
 	};
-	delImg = block => {
+	// 删除图片
+	handleDelteImg = block => {
 		const blockKey = block.getKey();
 		const blockLength = block.getLength();
 		const { editorState } = this.state;
@@ -174,7 +189,8 @@ export default class MyEditor extends React.Component {
 			}
 		);
 	};
-	cropImg = async (block, imgFile) => {
+	// 裁剪图片
+	handleCropImg = async (block, imgFile) => {
 		imgFile.name = `image-${Date.now()}.jpeg`;
 		const url = await this.qiniuUp(imgFile).then(data => data);
 		const { editorState } = this.state;
@@ -201,15 +217,15 @@ export default class MyEditor extends React.Component {
 				component: MyImg,
 				editable: false,
 				props: {
-					del: this.delImg,
-					crop: this.cropImg
+					handleDelteImg: this.handleDelteImg,
+					handleShowCrop: this.handleShowCrop
 				}
 			};
 		}
 		return null;
 	};
 	render() {
-		const { editorState } = this.state;
+		const { editorState, isCrop, url } = this.state;
 		return (
 			<div className="my-editor">
 				<div className="editor-control">
@@ -231,6 +247,9 @@ export default class MyEditor extends React.Component {
 					onChange={this.onChange}
 					blockRendererFn={this.myBlockRenderer}
 				/>
+				<div className={isCrop ? 'show-block' : 'hide-none'}>
+					<Crop src={url} handleCropImg={this.handleCropImg} />
+				</div>
 			</div>
 		);
 	}
