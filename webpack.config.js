@@ -150,11 +150,11 @@ module.exports = env => {
 			new webpack.optimize.ModuleConcatenationPlugin(),
 			// 拷贝
 			new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }]),
-			new WorkboxPlugin.GenerateSW({
-				swDest: 'sw.js',
-				skipWaiting: true,
-				clientsClaim: true
-			})
+			// new WorkboxPlugin.GenerateSW({
+			// 	swDest: 'sw.js',
+			// 	skipWaiting: true,
+			// 	clientsClaim: true
+			// })
 		]
 	};
 	return config;
