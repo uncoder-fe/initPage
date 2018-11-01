@@ -37,7 +37,7 @@ export default class MyEditor extends React.Component {
 			},
 			complete: res => {
 				const { key } = res;
-				const imageUrl = domain + key;
+				const imageUrl = qnConfig.domain + key;
 				console.log('imageurl', imageUrl);
 				this.insertImage(imageUrl);
 			}

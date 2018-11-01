@@ -19,6 +19,8 @@ module.exports = {
 	},
 	plugins: ['react', 'import', 'prettier'],
 	rules: {
+		'no-constant-condition': 1,
+		'no-debugger': 1,
 		'no-console': 1,
 		'no-unused-vars': 0,
 		'prettier/prettier': 2,
