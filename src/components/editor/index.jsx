@@ -11,7 +11,9 @@ import {
 import qnConfig from './config';
 import MyImg from './my-img';
 import './index.less';
-debugger;
+import { resolve } from 'url';
+import { rejects } from 'assert';
+
 export default class MyEditor extends React.Component {
 	constructor(props) {
 		super(props);
@@ -24,26 +26,28 @@ export default class MyEditor extends React.Component {
 			console.log('convertFromRaw', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
 		});
 	};
-	qiniuUp = (imgSource, cb) => {
+	qiniuUp = imgSource => {
 		const file = imgSource;
 		const key = null;
 		const observable = window.qiniu.upload(file, key, qnConfig.uptoken, qnConfig.putExtra, qnConfig.config);
-		observable.subscribe({
-			next(res) {
-				// console.log(res);
-			},
-			error(err) {
-				console.log(err);
-			},
-			complete: res => {
-				const { key } = res;
-				const imageUrl = qnConfig.domain + key;
-				console.log('imageurl', imageUrl);
-				this.insertImage(imageUrl);
-			}
+		return new Promise((resolve, rejects) => {
+			observable.subscribe({
+				next(res) {
+					// console.log(res);
+				},
+				error(err) {
+					console.log(err);
+				},
+				complete: res => {
+					const { key } = res;
+					const imageUrl = qnConfig.domain + key;
+					console.log('imageurl', imageUrl);
+					resolve(imageUrl);
+				}
+			});
 		});
 	};
-	uploadImg = e => {
+	uploadImg = async e => {
 		const file = e.target.files[0];
 		const fileMaxSize = 500000;
 		if (!/image\/\w+/.test(file.type)) {
@@ -52,7 +56,9 @@ export default class MyEditor extends React.Component {
 		if (file.size >= fileMaxSize) {
 			console.log('文件过大');
 		}
-		this.qiniuUp(file);
+		const url = await this.qiniuUp(file).then(data => data);
+		console.log('url', url);
+		this.insertImage(url);
 	};
 	componentWillMount() {
 		if (false) {
@@ -157,14 +163,15 @@ export default class MyEditor extends React.Component {
 			}
 		);
 	};
-	cropImg = (block, imgFile) => {
+	cropImg = async (block, imgFile) => {
 		// console.log(block, imgFile);
 		imgFile.name = `image-${Date.now()}.jpeg`;
-		this.qiniuUp(imgFile, src => {
-			debugger;
-			const { editorState } = this.state;
-			const contentState = editorState.getCurrentContent();
-			const entry = contentState.replaceEntityData(block.getKey(), { src });
+		const url = await this.qiniuUp(imgFile).then(data => data);
+		const { editorState } = this.state;
+		const contentState = editorState.getCurrentContent();
+		const newContentState = contentState.replaceEntityData(block.getKey(), { src: url });
+		this.setState({
+			editorState: newContentState
 		});
 	};
 	myBlockRenderer = contentBlock => {
