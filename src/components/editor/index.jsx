@@ -27,6 +27,7 @@ export default class MyEditor extends React.Component {
 		});
 	};
 	qiniuUp = imgSource => {
+		debugger;
 		const file = imgSource;
 		const key = null;
 		const observable = window.qiniu.upload(file, key, qnConfig.uptoken, qnConfig.putExtra, qnConfig.config);
