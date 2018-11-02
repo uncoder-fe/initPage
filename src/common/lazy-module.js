@@ -1,5 +1,5 @@
 let saySomething = () => {
-	console.log('say thing...');
+    console.log('say thing...');
 };
 
 export default saySomething;

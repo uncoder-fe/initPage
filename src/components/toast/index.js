@@ -5,34 +5,34 @@ let toastTimer = null;
 const toastContainer = document.createElement('div');
 
 class Com extends React.Component {
-	render() {
-		const content = this.props.content;
-		return (
-			<div className="toast-sss">
-				<div>
-					<p>{content}</p>
-				</div>
-			</div>
-		);
-	}
+    render() {
+        const content = this.props.content;
+        return (
+            <div className="toast-sss">
+                <div>
+                    <p>{content}</p>
+                </div>
+            </div>
+        );
+    }
 }
 
 class Toast {
-	static info(string) {
-		if (toastTimer) {
-			return;
-		}
-		document.body.appendChild(toastContainer);
-		ReactDOM.render(<Com content={string} />, toastContainer);
-		toastTimer = setTimeout(() => {
-			this.hidden();
-		}, 1500);
-	}
-	static hidden() {
-		toastTimer = null;
-		ReactDOM.unmountComponentAtNode(toastContainer);
-		document.body.removeChild(toastContainer);
-	}
+    static info(string) {
+        if (toastTimer) {
+            return;
+        }
+        document.body.appendChild(toastContainer);
+        ReactDOM.render(<Com content={string} />, toastContainer);
+        toastTimer = setTimeout(() => {
+            this.hidden();
+        }, 1500);
+    }
+    static hidden() {
+        toastTimer = null;
+        ReactDOM.unmountComponentAtNode(toastContainer);
+        document.body.removeChild(toastContainer);
+    }
 }
 
 export default Toast;
