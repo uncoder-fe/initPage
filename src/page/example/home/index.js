@@ -1,10 +1,10 @@
-import Toast from '../../components/toast';
-import Alert from '../../components/alert';
+import Toast from 'components/toast';
+import Alert from 'components/alert';
 import Test from './hello-world';
 import MathPage from './mathjax-test';
-import Tree from '../../components/tree';
-import HandWriting from '../../components/handwriting';
-import MyEditor from '../../components/editor';
+import Tree from 'components/tree';
+import HandWriting from 'components/handwriting';
+import MyEditor from 'components/editor';
 import * as Api from 'common/api';
 // import SO from 'common/util/ps.js';
 import './index.less';
@@ -21,7 +21,7 @@ class Index extends React.Component {
         };
     }
     handleLazyLoad() {
-        import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js').then(module => {
+        import(/* webpackChunkName: "lazyModule" */ '../../../common/lazy-module.js').then(module => {
             const sayFn = module.default;
             sayFn();
         });

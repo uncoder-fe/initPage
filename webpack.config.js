@@ -72,7 +72,8 @@ module.exports = env => {
 			// 模块别名列表
 			alias: {
 				assets: path.join(APP_PATH, 'assets'),
-				common: path.join(APP_PATH, 'common')
+				common: path.join(APP_PATH, 'common'),
+				components: path.join(APP_PATH, 'components')
 			}
 		},
 		// 模块

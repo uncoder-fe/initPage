@@ -1,21 +1,30 @@
-import { HashRouter, Route, Switch, Link } from 'react-router-dom';
-import IndexPage from './index';
-import detailPage from './detail';
+import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+import HomePage from './home';
+import LoginPage from './login';
+
+import './app.less';
+
+const checkLogin = () => {
+    try {
+        const user = window.localStorage.getItem('user');
+        const { token } = JSON.parse(user) || '';
+        const loggedIn = token;
+        if (true) {
+            return <Redirect to="/home" />;
+        }
+        return <Redirect to="/login" />;
+    } finally {
+        //
+    }
+};
 
 const App = () => (
     <HashRouter>
-        <div className="viewport">
-            <div>我是header不会变</div>
-            <nav>
-                <Link to="/detail/1">去详情</Link>
-            </nav>
-            <section>
-                <Switch>
-                    <Route path="/" exact component={IndexPage} />
-                    <Route path="/detail/:id" component={detailPage} />
-                </Switch>
-            </section>
-        </div>
+        <Switch>
+            <Route path="/" exact render={checkLogin} />
+            <Route path="/home" exact component={HomePage} />
+            <Route path="/login" component={LoginPage} />
+        </Switch>
     </HashRouter>
 );
 
