@@ -1,16 +1,10 @@
 import React from 'react';
-import { convertToRaw } from 'draft-js';
-
-import './my-img.less';
 
 export default class MyImg extends React.Component {
     constructor() {
         super();
         this.state = {
             isEditor: false
-        };
-        this.ff = cs => {
-            console.log(convertToRaw(cs));
         };
     }
     handleDel = block => () => {

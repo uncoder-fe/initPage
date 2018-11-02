@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import './crop.less';
 
 export default class Crop extends Component {
     constructor() {

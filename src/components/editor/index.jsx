@@ -131,8 +131,6 @@ export default class MyEditor extends React.Component {
             src: imageUrl
         });
         const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-        console.log('lastentityKey', entityKey);
-        console.log(this.ff(contentStateWithEntity));
         const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
         this.setState(
             {
@@ -140,7 +138,6 @@ export default class MyEditor extends React.Component {
             },
             () => {
                 setTimeout(() => {
-                    console.log('插入成功，获取焦点');
                     this.myEditor.focus();
                 }, 0);
             }
@@ -152,7 +149,7 @@ export default class MyEditor extends React.Component {
         const blockLength = block.getLength();
         const { editorState } = this.state;
         const contentState = editorState.getCurrentContent();
-        // You need to create a selection for entire length of text in the block
+        // 为这个block创建一个选中
         const selection = SelectionState.createEmpty(blockKey);
         const updatedSelection = selection.merge({
             anchorKey: blockKey,
@@ -162,25 +159,18 @@ export default class MyEditor extends React.Component {
             // focustOffset is the end
             focusOffset: blockLength
         });
-        // 删除entry
+        // 为选中的block应用这个entry（key），若entry为null，则删除这个选中块的所有的entry
         const newContentState = Modifier.applyEntity(contentState, updatedSelection, null);
-        // const newEditorState = EditorState.push(editorState, newContentState, 'apply-entity');
+        // 更新editorState的contentState
         const newEditorState = EditorState.set(editorState, { currentContent: newContentState });
-        // 删除block
+        // 移除所有在这个选中区间的文本，方向向后
         const contentStateWithoutBlock = Modifier.removeRange(newContentState, updatedSelection, 'backward');
+        // 返回一个新的contentState，必须使用此方法将所有内容更改应用于EditorState
         const newEditorState2 = EditorState.push(newEditorState, contentStateWithoutBlock, 'remove-range');
         // 以上操作想法是对的，结果不太尽人意
-        this.setState(
-            {
-                editorState: newEditorState2
-            },
-            () => {
-                console.log(
-                    'delete/convertFromRaw',
-                    JSON.stringify(convertToRaw(newEditorState2.getCurrentContent()).blocks.length)
-                );
-            }
-        );
+        this.setState({
+            editorState: newEditorState2
+        });
     };
     // 显示裁剪工具
     handleCropShow = block => {
@@ -199,7 +189,7 @@ export default class MyEditor extends React.Component {
         imgFile.name = `image-${Date.now()}.jpeg`;
         const url = await this.qiniuUp(imgFile).then(data => data);
         const { editorState, cropBlock } = this.state;
-        // 获取contentState
+        // 获取当前的contentState
         const contentState = editorState.getCurrentContent();
         // 通过entryKey来修改数据
         const newContentState = contentState.mergeEntityData(cropBlock.getEntityAt(0), { src: url });
