@@ -1,4 +1,7 @@
 import React from 'react';
+import { Icon, Modal, message } from 'antd';
+import { stateToHTML } from 'draft-js-export-html';
+
 import {
     AtomicBlockUtils,
     SelectionState,
@@ -18,6 +21,7 @@ export default class MyEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            textCount: 0,
             isCrop: false,
             cropUrl: '',
             cropBlock: {},
@@ -28,8 +32,19 @@ export default class MyEditor extends React.Component {
         };
     }
     onChange = editorState => {
-        this.setState({ editorState }, () => {
-            console.log('onChange', convertToRaw(editorState.getCurrentContent()));
+        const { getEditor } = this.props;
+        const arryTextBlooks = editorState.getCurrentContent().getBlocksAsArray();
+        let textCount = 0;
+        arryTextBlooks.forEach(block => {
+            if (block.getType() == 'unstyled') {
+                textCount += block.getText().length;
+            }
+        });
+        this.setState({ editorState, textCount }, () => {
+            // console.log('onChange', convertToRaw(editorState.getCurrentContent()));
+            const contentState = editorState.getCurrentContent();
+            const htmlStr = stateToHTML(contentState);
+            getEditor(htmlStr);
         });
     };
     // 图片文件上传服务器
@@ -55,18 +70,18 @@ export default class MyEditor extends React.Component {
         });
     };
     // 选择图片文件
-    uploadImg = async e => {
+    onChangefile = async e => {
         const file = e.target.files[0];
         const fileMaxSize = 2 * 1024 * 1024;
         if (!file) {
             return;
         }
         if (!/image\/\w+/.test(file.type)) {
-            alert('选择的文件不是图片');
+            message.error('选择的文件不是图片');
             return;
         }
         if (file.size >= fileMaxSize) {
-            alert('文件过大');
+            message.error('图片过大');
             return;
         }
         const url = await this.qiniuUp(file).then(data => data);
@@ -139,6 +154,8 @@ export default class MyEditor extends React.Component {
             () => {
                 setTimeout(() => {
                     this.myEditor.focus();
+                    // 重置文件选中上传路径
+                    this.uploadImg.value = '';
                 }, 0);
             }
         );
@@ -185,24 +202,26 @@ export default class MyEditor extends React.Component {
         });
     };
     // 裁剪图片
-    handleCropImg = async imgFile => {
-        imgFile.name = `image-${Date.now()}.jpeg`;
-        const url = await this.qiniuUp(imgFile).then(data => data);
-        const { editorState, cropBlock } = this.state;
-        // 获取当前的contentState
-        const contentState = editorState.getCurrentContent();
-        // 通过entryKey来修改数据
-        const newContentState = contentState.mergeEntityData(cropBlock.getEntityAt(0), { src: url });
-        const newEditorState = EditorState.set(editorState, { currentContent: newContentState });
-        this.setState(
-            {
-                isCrop: false,
-                editorState: newEditorState
-            },
-            () => {
-                setTimeout(() => this.myEditor.focus(), 0);
-            }
-        );
+    handleCropImg = () => {
+        this.cropper.getCorpperImage(async imgFile => {
+            imgFile.name = `image-${Date.now()}.jpeg`;
+            const url = await this.qiniuUp(imgFile).then(data => data);
+            const { editorState, cropBlock } = this.state;
+            // 获取当前的contentState
+            const contentState = editorState.getCurrentContent();
+            // 通过entryKey来修改数据
+            const newContentState = contentState.mergeEntityData(cropBlock.getEntityAt(0), { src: url });
+            const newEditorState = EditorState.set(editorState, { currentContent: newContentState });
+            this.setState(
+                {
+                    isCrop: false,
+                    editorState: newEditorState
+                },
+                () => {
+                    setTimeout(() => this.myEditor.focus(), 0);
+                }
+            );
+        });
     };
     // 取消裁剪
     handleCropCancel = () => {
@@ -226,20 +245,25 @@ export default class MyEditor extends React.Component {
         return null;
     };
     render() {
-        const { editorState, isCrop, cropUrl } = this.state;
+        const { editorState, isCrop, cropUrl, textCount } = this.state;
         return (
             <div className="my-editor">
                 <div className="editor-control">
-                    <div>
-                        <label htmlFor="avatar">
-                            选择图片:
-                            <input
-                                id="avatar"
-                                type="file"
-                                accept="image/png, image/jpeg, image/jpg"
-                                onChange={this.uploadImg}
-                            />
-                        </label>
+                    <div className="img-select">
+                        <div>
+                            <Icon type="picture" theme="outlined" />
+                            选择图片
+                        </div>
+                        <input
+                            ref={file => (this.uploadImg = file)}
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg"
+                            onChange={this.onChangefile}
+                        />
+                    </div>
+                    <div className="word-number">
+                        {textCount}
+                        /1500字
                     </div>
                 </div>
                 <Editor
@@ -248,9 +272,17 @@ export default class MyEditor extends React.Component {
                     onChange={this.onChange}
                     blockRendererFn={this.myBlockRenderer}
                 />
-                {isCrop ? (
-                    <Crop src={cropUrl} handleCropImg={this.handleCropImg} handleCropCancel={this.handleCropCancel} />
-                ) : null}
+                <Modal
+                    title="图片裁切"
+                    width={500}
+                    closable={false}
+                    // mask={false}
+                    destroyOnClose
+                    visible={isCrop}
+                    onOk={this.handleCropImg}
+                    onCancel={this.handleCropCancel}>
+                    <Crop ref={crop => (this.cropper = crop)} src={cropUrl} />
+                </Modal>
             </div>
         );
     }

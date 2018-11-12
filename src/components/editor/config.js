@@ -1,6 +1,6 @@
 const domain = 'http://phhwytweo.bkt.clouddn.com/';
 const uptoken =
-    'TX-sku9Zgpw1oXXErzq1mRCIM1f_x3a-rtBkyhSN:yeNeNsB9OHKqHeVPeJHNuMmFA2w=:eyJzY29wZSI6ImltYWdlIiwiZGVhZGxpbmUiOjE1NDExNjgwMjl9';
+    'TX-sku9Zgpw1oXXErzq1mRCIM1f_x3a-rtBkyhSN:oOK2MJg7XsalwWbrsIoQn9BGYX0=:eyJzY29wZSI6ImltYWdlIiwiZGVhZGxpbmUiOjE1NDE5NjU5MDB9';
 
 const config = {
     useCdnDomain: false,

@@ -27,11 +27,11 @@ export default class MyImg extends React.Component {
             const entity = contentState.getEntity(block.getEntityAt(0));
             const { src } = entity.getData();
             return (
-                <div className="my-img">
-                    <img src={src} alt="渲染图" onDoubleClick={this.handleDoubleClick} />
-                    <div className={isEditor ? 'show-flex' : 'hide-none'}>
-                        <button onClick={this.handleDel(block)}>删除</button>
-                        <button onClick={this.handleCropShow(block)}>裁剪</button>
+                <div className="my-cropper-img">
+                    <img className={isEditor ? 'active' : ''} src={src} alt="渲染图" onClick={this.handleDoubleClick} />
+                    <div className={isEditor ? 'my-cropper-img-buttons' : 'hide-none'}>
+                        <div onClick={this.handleDel(block)}>删除</div>
+                        <div onClick={this.handleCropShow(block)}>裁剪</div>
                     </div>
                 </div>
             );
