@@ -30,8 +30,8 @@ export default class MyImg extends React.Component {
                 <div className="my-cropper-img">
                     <img className={isEditor ? 'active' : ''} src={src} alt="渲染图" onClick={this.handleDoubleClick} />
                     <div className={isEditor ? 'my-cropper-img-buttons' : 'hide-none'}>
-                        <div onClick={this.handleDel(block)}>删除</div>
                         <div onClick={this.handleCropShow(block)}>裁剪</div>
+                        <div onClick={this.handleDel(block)}>移除</div>
                     </div>
                 </div>
             );

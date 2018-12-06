@@ -1,10 +1,9 @@
 .my-editor {
-    display: flex;
-    flex-direction: column;
+    position: relative;
     height: 300px;
-    border: 1px solid #d9d9d9;
+    border: 1px solid @border-color;
     border-radius: 6px;
-    overflow: scroll;
+    overflow: hidden;
     .editor-control {
         display: flex;
         flex-direction: row;
@@ -17,6 +16,7 @@
         .img-select {
             width: 100px;
             position: relative;
+            cursor: pointer;
             div {
                 position: absolute;
                 top: 0;
@@ -25,13 +25,16 @@
                 height: 100%;
                 text-align: center;
                 color: @primary-color;
+                &.disable {
+                    color: #9b9b9b;
+                }
                 i {
                     margin-right: 4px;
                 }
             }
             input {
-                width: 100px;
-                height: 100%;
+                width: 0;
+                height: 0;
                 opacity: 0;
                 cursor: pointer;
             }
@@ -41,13 +44,24 @@
             text-align: center;
         }
     }
-    .DraftEditor-root {
-        flex: 1;
-        overflow: scroll;
+    .RichEditor-editor {
+        padding: 0 10px;
+        height: 260px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    .RichEditor-hidePlaceholder .public-DraftEditorPlaceholder-root {
+        display: none;
+    }
+    .public-DraftEditorPlaceholder-root {
+        position: absolute;
+        top: 40px;
+        color: #bfbfbf;
     }
     .my-cropper-img {
         display: inline-block;
         position: relative;
+        cursor: pointer;
         img {
             max-width: 500px;
             height: auto;
@@ -59,6 +73,7 @@
             position: absolute;
             top: 0;
             right: -80px;
+            padding: 0 4px;
             box-shadow: 0 2px 20px 0 rgba(100, 116, 221, 0.51);
             border-radius: 10px;
             cursor: pointer;
