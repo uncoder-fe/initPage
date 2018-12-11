@@ -1,7 +1,6 @@
 import React from 'react';
 import { Icon, Modal, message } from 'antd';
 import { stateToHTML } from 'draft-js-export-html';
-import Api from 'service/upload';
 
 import { AtomicBlockUtils, Editor, EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 import MyImg from './my-img';
@@ -144,7 +143,7 @@ export default class MyEditor extends React.Component {
             return;
         }
         const hide = message.loading('图片上传中', 0);
-        const resData = await Api.uploadImg(file);
+        const resData = await file;
         hide();
         if (resData.success) {
             this.insertImage(resData.data.path);
@@ -236,7 +235,7 @@ export default class MyEditor extends React.Component {
         this.cropper.getCorpperImage(async imgFile => {
             imgFile.name = `image-${Date.now()}.jpeg`;
             const hide = message.loading('图片上传中', 0);
-            const resData = await Api.uploadImg(imgFile);
+            const resData = await imgFile;
             hide();
             if (resData.status == 0) {
                 const url = resData.data.path;

@@ -90,12 +90,12 @@ class Index extends React.Component {
                 <button onClick={this.handleToast}>click me to toast</button>
                 {/* <div><MathPage /></div> */}
                 {/* <div><Tree /></div> */}
-                {/* <div>
-					<HandWriting data={handWrtingData} hkey={hkey} />
-				</div> */}
                 <div>
-                    <MyEditor />
+                    <HandWriting data={handWrtingData} hkey={hkey} />
                 </div>
+                {/* <div>
+                    <MyEditor />
+                </div> */}
             </div>
         );
     }

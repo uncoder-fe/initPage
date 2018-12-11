@@ -42,6 +42,23 @@ class HandWriting extends Component {
             height: maxHeight + 10
         };
     };
+    // 笔划停顿时间
+    _thinkDelayTime = delayInms => {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                console.log('finish');
+                resolve('finish');
+            }, delayInms);
+        });
+    };
+    _thinkDelayTime2 = delayInms => {
+        const start = Date.now;
+        for (let i = 0; i < 1e7; i++) {
+            if (new Date().getTime() - start > delayInms) {
+                break;
+            }
+        }
+    };
     // 初始化
     _init = async () => {
         let { scale, originData } = this;
@@ -59,7 +76,8 @@ class HandWriting extends Component {
         const myCanvas = document.createElement('canvas');
         myCanvas.setAttribute('height', this.canvasHeigth);
         myCanvas.setAttribute('width', this.canvasWidth);
-        // 确保高清无码
+        // 确保高清无码，其实这里不缩放也是可以的，本身我就是按照后台给的坐标（逻辑像素来进行绘制的），所以我下面那个其实是多此一举的。
+        // 如果数据源是图像（栅格化的），塞到canvas里肯定会模糊。
         myCanvas.style.width = this.canvasWidth / this.ratio + 'px';
         this.myCanvasContainer.appendChild(myCanvas);
 
@@ -78,6 +96,10 @@ class HandWriting extends Component {
         this._staticRender(ctx, _staticData);
         // 动态
         for (let i = 0; i < _animateData.length; i++) {
+            if (_animateData[i + 1]) {
+                const delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
+                await this._thinkDelayTime(delayTime);
+            }
             const line = _animateData[i].points.split(',');
             // 默认
             let tick = 16;
@@ -290,7 +312,7 @@ class HandWriting extends Component {
             if (len < 5) {
                 step = Math.floor(100 / len);
             } else {
-                step = parseFloat(Math.fround(100 / len).toFixed(1));
+                step = 100 / len;
             }
             this.setState({ step, speed: 1, range: 0 }, () => {
                 this._init();
@@ -308,7 +330,7 @@ class HandWriting extends Component {
             if (len < 5) {
                 step = Math.floor(100 / len);
             } else {
-                step = parseFloat(Math.fround(100 / len).toFixed(1));
+                step = 100 / len;
             }
             this.setState({ step }, () => {
                 this._init();
@@ -322,7 +344,7 @@ class HandWriting extends Component {
             <div className="handwriting">
                 <div
                     className="handwriting-canvas-container"
-                    style={{ 'max-height': maxHeight }}
+                    style={{ maxHeight }}
                     ref={el => {
                         this.myCanvasContainer = el;
                     }}
