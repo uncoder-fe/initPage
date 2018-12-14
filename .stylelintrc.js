@@ -13,4 +13,8 @@ module.exports = {
 		'declaration-empty-line-before': null,
 		'declaration-block-no-duplicate-properties': null,
 	},
+	"ignoreFiles": [
+		"**/*.js",
+		"**/*.jsx"
+	]
 };

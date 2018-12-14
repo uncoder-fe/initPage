@@ -95,6 +95,7 @@ class ControlPanel extends Component {
                 <div className="control-range">
                     <div className="range-show">
                         <DragInput
+                            playStatus={playStatus}
                             comKey={comKey}
                             currentTime={currentTime}
                             timeline={timeline}

@@ -42,6 +42,7 @@ class DragInput extends Component {
     }
     render() {
         const { range } = this.state;
+        const { playStatus } = this.props;
         return (
             <div className="range-container-sss">
                 <div
@@ -51,7 +52,9 @@ class DragInput extends Component {
                     onMouseMove={this.mousemove}
                     onMouseOut={this.mouseout}
                 />
-                <div className="range-sss" style={{ width: `${range}%` }}>
+                <div
+                    className="range-sss"
+                    style={{ width: `${range}%`, transition: playStatus ? 'width 1s ease' : 'unset' }}>
                     {range}
                 </div>
             </div>
