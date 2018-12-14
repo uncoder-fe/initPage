@@ -16,29 +16,69 @@ const replayIcon =
 class ControlPanel extends Component {
     constructor() {
         super();
-        this.speedList = ['1x', '2x', '3x'];
+        this.state = {
+            currentTime: 0,
+            timeline: 0,
+            speed: 1
+        };
+        this.speedList = ['1x', '2x'];
+        this.timer = null;
     }
-    onSetRange = range => {
-        const { speed } = this.props.config;
-        this.props.config.fn({ range, speed });
+    onSetCurrentTime = currentTime => {
+        const { speed } = this.state;
+        this.props.onChangePlay({ currentTime, speed });
     };
     onSetSpeed = speed => {
-        const { range } = this.props.config;
-        this.props.config.fn({ range, speed });
-        // console.log(data);
+        const { currentTime } = this.state;
+        this.props.onChangePlay({ currentTime, speed });
     };
-    onSetStatus = status => {
-        const { playFn, pauseFn, range } = this.props.config;
-        if (!status || range >= 100) {
-            playFn();
+    onChangePlayStatus = playStatus => {
+        const { timeline } = this.state;
+        let { currentTime } = this.state;
+        if (!playStatus || currentTime >= timeline) {
+            if (currentTime >= timeline) {
+                currentTime = 0;
+            }
+            this.props.onPlayFn(currentTime);
         } else {
-            pauseFn();
+            this.props.onPauseFn(currentTime);
         }
     };
+    genTime = time => {
+        const minute = parseInt(time / 60);
+        const second = time - minute * 60;
+        return `${minute > 10 ? minute : `0${minute}`}:${second > 10 ? second : `0${second}`}`;
+    };
+    componentWillReceiveProps(nextProps) {
+        const { timeline, currentTime, playStatus, comKey, speed } = nextProps;
+        if (
+            this.state.comKey != comKey ||
+            this.state.playStatus != playStatus ||
+            this.state.currentTime != currentTime ||
+            this.state.speed != speed
+        ) {
+            this.setState({ timeline, currentTime, playStatus, comKey, speed });
+            if (playStatus) {
+                if (this.timer) {
+                    window.clearInterval(this.timer);
+                }
+                const interval = parseInt(1000 / speed);
+                this.timer = window.setInterval(() => {
+                    let { currentTime } = this.state;
+                    const { timeline } = this.state;
+                    if (currentTime < timeline) {
+                        currentTime += 1;
+                        this.setState({ currentTime });
+                    }
+                }, interval);
+            } else {
+                window.clearInterval(this.timer);
+            }
+        }
+    }
     render() {
-        const { range, status, speed } = this.props.config;
-        const { speedList } = this;
-        const listNodes = speedList.map((item, index) => {
+        const { currentTime, timeline, playStatus, speed, comKey } = this.state;
+        const listNodes = this.speedList.map((item, index) => {
             const className = speed == index + 1 ? 'active' : '';
             return (
                 <div className={className} onClick={() => this.onSetSpeed(index + 1)}>
@@ -46,21 +86,27 @@ class ControlPanel extends Component {
                 </div>
             );
         });
-        const icon = range >= 100 ? replayIcon : !status ? playIcon : pauseIcon;
-        const showNumber = range.toFixed(0);
+        const showIcon = currentTime >= timeline ? replayIcon : !playStatus ? playIcon : pauseIcon;
         return (
             <div className="handwriting-control-panel">
-                <div className="control-button" onClick={() => this.onSetStatus(status)}>
-                    <img src={icon} />
+                <div className="control-button" onClick={() => this.onChangePlayStatus(playStatus)}>
+                    <img src={showIcon} />
                 </div>
                 <div className="control-range">
                     <div className="range-show">
-                        <DragInput range={range} onChange={this.onSetRange} />
+                        <DragInput
+                            comKey={comKey}
+                            currentTime={currentTime}
+                            timeline={timeline}
+                            handleChangeCurrentTime={this.onSetCurrentTime}
+                        />
                     </div>
-                    <div className="range-number">{`${showNumber}%`}</div>
+                    <div className="range-number">
+                        {this.genTime(currentTime)}/{this.genTime(timeline)}
+                    </div>
                 </div>
                 <div className="control-speed">
-                    倍数:
+                    倍速:
                     {listNodes}
                 </div>
             </div>

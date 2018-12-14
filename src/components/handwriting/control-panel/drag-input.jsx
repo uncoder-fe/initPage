@@ -4,22 +4,27 @@ import './drag-input.less';
 class DragInput extends Component {
     constructor() {
         super();
+        this.state = {
+            currentTime: 0
+        };
         this.status = false;
+        this.timer = null;
     }
-    wow = e => {
-        const { onChange } = this.props;
+    handleChangeCurrentTime = e => {
+        const { timeline } = this.props;
         const { offsetX } = e.nativeEvent;
         const { offsetWidth } = e.target;
-        const range = parseInt(100 * (offsetX / offsetWidth));
-        onChange(range);
+        const currentTime = parseInt((offsetX / offsetWidth) * timeline);
+        // console.log("currentTime", currentTime)
+        this.props.handleChangeCurrentTime(currentTime);
     };
     mousedown = e => {
         this.status = true;
-        this.wow(e);
+        this.handleChangeCurrentTime(e);
     };
     mousemove = e => {
         if (this.status) {
-            this.wow(e);
+            this.handleChangeCurrentTime(e);
         }
     };
     mouseup = () => {
@@ -28,8 +33,15 @@ class DragInput extends Component {
     mouseout = () => {
         this.status = false;
     };
+    componentWillReceiveProps(nextProps) {
+        const { currentTime, timeline, comKey } = nextProps;
+        if (this.state.comKey != comKey) {
+            const range = parseFloat(((currentTime / timeline) * 100).toFixed(3));
+            this.setState({ range });
+        }
+    }
     render() {
-        const { range } = this.props;
+        const { range } = this.state;
         return (
             <div className="range-container-sss">
                 <div

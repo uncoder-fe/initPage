@@ -13,10 +13,16 @@ class HandWriting extends Component {
         this.rafid = null;
         this.originData = [];
         this.state = {
+            // 播放状态
             playStatus: true,
-            step: 0,
+            // 速度
             speed: 1,
-            range: 0
+            // 单位秒
+            currentTime: 0,
+            //单位秒
+            timeline: 0,
+            //单位毫秒
+            timeArry: []
         };
     }
     // 计算最大边界
@@ -42,28 +48,30 @@ class HandWriting extends Component {
             height: maxHeight + 10
         };
     };
+    // 时间映射到数据
+    _dataAdapter = time => {
+        const { timeArry } = this.state;
+        let index = 0;
+        for (let i = 0; i < timeArry.length; i++) {
+            if (time * 1000 < timeArry[i]) {
+                index = i - 1;
+                break;
+            }
+        }
+        return index < 0 ? 0 : index;
+    };
     // 笔划停顿时间
     _thinkDelayTime = delayInms => {
         return new Promise(resolve => {
             setTimeout(() => {
-                console.log('finish');
                 resolve('finish');
             }, delayInms);
         });
     };
-    _thinkDelayTime2 = delayInms => {
-        const start = Date.now;
-        for (let i = 0; i < 1e7; i++) {
-            if (new Date().getTime() - start > delayInms) {
-                break;
-            }
-        }
-    };
     // 初始化
     _init = async () => {
-        let { scale, originData } = this;
-        let { speed, range } = this.state;
-        // console.log(speed, range)
+        const { scale, originData } = this;
+        const { speed, currentTime, timeline, playStatus } = this.state;
         if (Object.prototype.toString.call(originData) !== '[object Array]' || originData.length <= 0) {
             console.log('无笔迹');
             return;
@@ -89,22 +97,23 @@ class HandWriting extends Component {
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         // 数据切割
-        const fg = parseInt(data.length * (range / 100));
-        const _staticData = data.slice(0, fg);
-        const _animateData = data.slice(fg, data.length);
+        const dataIndex = this._dataAdapter(currentTime);
+        const _staticData = data.slice(0, dataIndex);
+        const _animateData = data.slice(dataIndex, data.length);
         // 静态
         this._staticRender(ctx, _staticData);
         // 动态
         for (let i = 0; i < _animateData.length; i++) {
+            // 笔划间隔，书写思考时间
             if (_animateData[i + 1]) {
                 const delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
-                await this._thinkDelayTime(delayTime);
+                await this._thinkDelayTime(delayTime / speed);
             }
             const line = _animateData[i].points.split(',');
-            // 默认
+            // 笔划中点阵间隔
             let tick = 16;
-            // 第两个
-            if (i > 0) {
+            // 剔除笔划中点阵间隔异常点
+            if (_animateData[i].t2 && _animateData[i].t1) {
                 const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
                 tick = parseInt(duration / line.length);
                 if (tick > 30) {
@@ -113,28 +122,19 @@ class HandWriting extends Component {
             }
             // 清空画布
             ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
-            // 静态的
+            // 如果有canvas缓存，使用缓存
             if (this.canvasCache) {
                 // debugger
                 ctx.putImageData(this.canvasCache, 0, 0);
             }
             await new Promise((resolve, reject) => {
-                // 动态的
+                // 动态渲染笔划
                 this._animateRender(ctx, line, resolve, tick, speed);
-                // 更新进度条
-                const { range, step } = this.state;
-                let nmb = range + step;
-                if (_staticData.length == 0 && i == 0 && data.length > 1) {
-                    nmb = 0;
-                } else if (i == _animateData.length - 1) {
-                    nmb = 100;
-                } else {
-                    nmb = range + step;
-                }
-                this.setState({
-                    range: nmb
-                });
             });
+            // 判断播放状态
+            if (!playStatus) {
+                break;
+            }
         }
     };
     // 静态渲染
@@ -265,33 +265,33 @@ class HandWriting extends Component {
         this.myCanvasContainer.innerHTML = '';
     };
     // 播放
-    _play = () => {
-        const { range } = this.state;
+    _play = currentTime => {
         this._destory();
-        this.setState({ playStatus: true, range: range >= 100 ? 0 : range }, () => {
+        this.setState({ currentTime, playStatus: true }, () => {
             this._init();
         });
     };
     // 暂停
-    _pause = () => {
+    _pause = currentTime => {
         window.cancelAnimationFrame(this.rafid);
         this.setState({
+            currentTime,
             playStatus: false
         });
     };
-    // 控制面板参数¸
+    // 控制面板参数
     _changePanelSetting = setingData => {
-        // console.log("setingData", setingData);
-        const { speed, range } = setingData;
+        const { timeline } = this.state;
+        const { speed, currentTime } = setingData;
         window.cancelAnimationFrame(this.rafid);
-        this.setState({ speed, range, playStatus: false }, () => {
+        this.setState({ speed, currentTime, playStatus: false }, () => {
             const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
             const data = originData;
             const ctx = myCanvasContainer.children[0].getContext('2d');
             ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
             // 数据切割
-            const fg = parseInt(data.length * (range / 100));
-            const _staticData = data.slice(0, fg);
+            const dataIndex = this._dataAdapter(currentTime);
+            const _staticData = data.slice(0, dataIndex);
             // 静态
             this._staticRender(ctx, _staticData);
         });
@@ -306,15 +306,20 @@ class HandWriting extends Component {
         const { data } = nextProps;
         // 缓存原始数据
         this.originData = data;
+        // 生成唯一Key
+        const comKey = Math.random()
+            .toString(36)
+            .slice(2);
         if (data.length > 0) {
-            let step = 1;
-            const len = data.length;
-            if (len < 5) {
-                step = Math.floor(100 / len);
-            } else {
-                step = 100 / len;
-            }
-            this.setState({ step, speed: 1, range: 0 }, () => {
+            const timeline = parseInt((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
+            const timeArry = data.map((item, index) => {
+                const { t1, t2 } = item;
+                if (index == 0) {
+                    return t2 - t1;
+                }
+                return t1 - data[0].t1;
+            });
+            this.setState({ timeline, speed: 1, range: 0, comKey, timeArry }, () => {
                 this._init();
             });
         }
@@ -324,22 +329,27 @@ class HandWriting extends Component {
         const { data } = this.props;
         // 缓存原始数据
         this.originData = data;
+        // 生成唯一Key
+        const comKey = Math.random()
+            .toString(36)
+            .slice(2);
         if (data.length > 0) {
-            let step = 1;
-            const len = data.length;
-            if (len < 5) {
-                step = Math.floor(100 / len);
-            } else {
-                step = 100 / len;
-            }
-            this.setState({ step }, () => {
+            const timeline = parseInt((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
+            const timeArry = data.map((item, index) => {
+                const { t1, t2 } = item;
+                if (index == 0) {
+                    return t2 - t1;
+                }
+                return t1 - data[index - 1].t2;
+            });
+            this.setState({ timeline, speed: 1, range: 0, timeArry, comKey }, () => {
                 this._init();
             });
         }
     }
     render() {
         const { maxHeight } = this.props;
-        const { playStatus, speed, range, step } = this.state;
+        const { playStatus, speed, currentTime, timeline, comKey } = this.state;
         return (
             <div className="handwriting">
                 <div
@@ -350,15 +360,14 @@ class HandWriting extends Component {
                     }}
                 />
                 <ControlPanel
-                    config={{
-                        status: playStatus,
-                        speed,
-                        range,
-                        step,
-                        fn: this._changePanelSetting,
-                        playFn: this._play,
-                        pauseFn: this._pause
-                    }}
+                    comKey={comKey}
+                    playStatus={playStatus}
+                    speed={speed}
+                    currentTime={currentTime}
+                    timeline={timeline}
+                    onChangePlay={this._changePanelSetting}
+                    onPlayFn={this._play}
+                    onPauseFn={this._pause}
                 />
             </div>
         );

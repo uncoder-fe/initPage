@@ -150,7 +150,7 @@ module.exports = env => {
 			// 减少闭包函数数量从而加快js执行速度
 			new webpack.optimize.ModuleConcatenationPlugin(),
 			// 拷贝
-			new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }]),
+			new CopyWebpackPlugin([{ from: './data.json', to: 'data.json' }, { from: './data2.json', to: 'data2.json' }]),
 			// new WorkboxPlugin.GenerateSW({
 			// 	swDest: 'sw.js',
 			// 	skipWaiting: true,
