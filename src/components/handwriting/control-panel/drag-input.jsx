@@ -54,7 +54,7 @@ class DragInput extends Component {
                 />
                 <div
                     className="range-sss"
-                    style={{ width: `${range}%`, transition: playStatus ? 'width 1s ease' : 'unset' }}>
+                    style={{ width: `${range}%`, transition: playStatus && range != 0 ? 'width 1s ease' : 'unset' }}>
                     {range}
                 </div>
             </div>

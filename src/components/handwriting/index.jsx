@@ -123,7 +123,7 @@ class HandWriting extends Component {
             // 清空画布
             ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
             // 如果有canvas缓存，使用缓存
-            if (this.canvasCache) {
+            if (this.canvasCache && playStatus) {
                 // debugger
                 ctx.putImageData(this.canvasCache, 0, 0);
             }
