@@ -35,7 +35,7 @@ class ControlPanel extends Component {
     onChangePlayStatus = playStatus => {
         const { timeline } = this.state;
         let { currentTime } = this.state;
-        if (!playStatus || currentTime >= timeline) {
+        if (playStatus !== 0 || currentTime >= timeline) {
             if (currentTime >= timeline) {
                 currentTime = 0;
             }
@@ -58,7 +58,8 @@ class ControlPanel extends Component {
             this.state.speed != speed
         ) {
             this.setState({ timeline, currentTime, playStatus, comKey, speed });
-            if (playStatus) {
+            if (playStatus === 0) {
+                // 播放状态
                 if (this.timer) {
                     window.clearInterval(this.timer);
                 }
@@ -66,12 +67,22 @@ class ControlPanel extends Component {
                 this.timer = window.setInterval(() => {
                     let { currentTime } = this.state;
                     const { timeline } = this.state;
+                    // 如果播完了，改变状态
+                    if (currentTime == timeline) {
+                        this.setState({
+                            currentTime: timeline,
+                            playStatus: 2
+                        });
+                        window.clearInterval(this.timer);
+                    }
+                    // 下一秒
                     if (currentTime < timeline) {
                         currentTime += 1;
                         this.setState({ currentTime });
                     }
                 }, interval);
             } else {
+                // 暂停状态
                 window.clearInterval(this.timer);
             }
         }
@@ -86,7 +97,7 @@ class ControlPanel extends Component {
                 </div>
             );
         });
-        const showIcon = currentTime >= timeline ? replayIcon : !playStatus ? playIcon : pauseIcon;
+        const showIcon = playStatus === 2 ? replayIcon : playStatus !== 0 ? playIcon : pauseIcon;
         return (
             <div className="handwriting-control-panel">
                 <div className="control-button" onClick={() => this.onChangePlayStatus(playStatus)}>

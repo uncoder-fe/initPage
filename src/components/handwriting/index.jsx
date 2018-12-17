@@ -13,8 +13,8 @@ class HandWriting extends Component {
         this.rafid = null;
         this.originData = [];
         this.state = {
-            // 播放状态
-            playStatus: true,
+            // 状态，播放 0，暂停 1，完成 2
+            playStatus: 0,
             // 速度
             speed: 1,
             // 单位秒
@@ -103,38 +103,45 @@ class HandWriting extends Component {
         // 静态
         this._staticRender(ctx, _staticData);
         // 动态
-        for (let i = 0; i < _animateData.length; i++) {
-            // 笔划间隔，书写思考时间
-            if (_animateData[i + 1]) {
-                const delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
-                await this._thinkDelayTime(delayTime / speed);
+        this._loop(ctx, 0, _animateData);
+    };
+    // 渲染数据
+    _loop = async (ctx, i, _animateData) => {
+        const { speed, currentTime, timeline, playStatus } = this.state;
+        // 判断播放状态
+        if (playStatus != 0) {
+            ctx.putImageData(this.canvasCache, 0, 0);
+            return;
+        }
+        // 笔划间隔，书写思考时间
+        if (_animateData[i + 1]) {
+            const delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
+            await this._thinkDelayTime(delayTime / speed);
+        }
+        const line = _animateData[i].points.split(',');
+        // 笔划中点阵间隔
+        let tick = 16;
+        // 剔除笔划中点阵间隔异常点
+        if (_animateData[i].t2 && _animateData[i].t1) {
+            const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
+            tick = parseInt(duration / line.length);
+            if (tick > 30) {
+                tick = 16;
             }
-            const line = _animateData[i].points.split(',');
-            // 笔划中点阵间隔
-            let tick = 16;
-            // 剔除笔划中点阵间隔异常点
-            if (_animateData[i].t2 && _animateData[i].t1) {
-                const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
-                tick = parseInt(duration / line.length);
-                if (tick > 30) {
-                    tick = 16;
-                }
-            }
-            // 清空画布
-            ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
-            // 如果有canvas缓存，使用缓存
-            if (this.canvasCache && playStatus) {
-                // debugger
-                ctx.putImageData(this.canvasCache, 0, 0);
-            }
-            await new Promise((resolve, reject) => {
-                // 动态渲染笔划
-                this._animateRender(ctx, line, resolve, tick, speed);
-            });
-            // 判断播放状态
-            if (!playStatus) {
-                break;
-            }
+        }
+        // 清空画布
+        ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
+        // 如果有canvas缓存，使用缓存
+        if (this.canvasCache && playStatus === 0) {
+            ctx.putImageData(this.canvasCache, 0, 0);
+        }
+        // 动态渲染笔划
+        await new Promise((resolve, reject) => {
+            this._animateRender(ctx, line, tick, speed, resolve);
+        });
+        // 下一划
+        if (_animateData[i + 1]) {
+            await this._loop(ctx, i + 1, _animateData);
         }
     };
     // 静态渲染
@@ -167,7 +174,7 @@ class HandWriting extends Component {
         this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
     };
     // 动态渲染
-    _animateRender = (ctx, data, resolve, tick, speed) => {
+    _animateRender = (ctx, data, tick, speed, resolve) => {
         const { scale, canvasWidth, canvasHeigth } = this;
         // index
         let startIndex = 1;
@@ -267,16 +274,14 @@ class HandWriting extends Component {
     // 播放
     _play = currentTime => {
         this._destory();
-        this.setState({ currentTime, playStatus: true }, () => {
+        this.setState({ currentTime, playStatus: 0 }, () => {
             this._init();
         });
     };
     // 暂停
     _pause = currentTime => {
-        window.cancelAnimationFrame(this.rafid);
-        this.setState({
-            currentTime,
-            playStatus: false
+        this.setState({ currentTime, playStatus: 1 }, () => {
+            window.cancelAnimationFrame(this.rafid);
         });
     };
     // 控制面板参数
@@ -284,7 +289,7 @@ class HandWriting extends Component {
         const { timeline } = this.state;
         const { speed, currentTime } = setingData;
         window.cancelAnimationFrame(this.rafid);
-        this.setState({ speed, currentTime, playStatus: false }, () => {
+        this.setState({ speed, currentTime, playStatus: 1 }, () => {
             const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
             const data = originData;
             const ctx = myCanvasContainer.children[0].getContext('2d');
