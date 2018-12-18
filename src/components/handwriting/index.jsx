@@ -99,15 +99,15 @@ class HandWriting extends Component {
         // 数据切割
         const dataIndex = this._dataAdapter(currentTime);
         const _staticData = data.slice(0, dataIndex);
-        const _animateData = data.slice(dataIndex, data.length);
+        // const _animateData = data.slice(dataIndex, data.length);
         // 静态
         this._staticRender(ctx, _staticData);
         // 动态
-        this._loop(ctx, 0, _animateData);
+        this._loop(ctx, dataIndex, data);
     };
     // 渲染数据
     _loop = async (ctx, i, _animateData) => {
-        const { speed, currentTime, timeline, playStatus } = this.state;
+        const { speed, currentTime, timeline, playStatus, timeArry } = this.state;
         // 判断播放状态
         if (playStatus != 0) {
             ctx.putImageData(this.canvasCache, 0, 0);
@@ -115,7 +115,10 @@ class HandWriting extends Component {
         }
         // 笔划间隔，书写思考时间
         if (_animateData[i + 1]) {
-            const delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
+            let delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
+            if (currentTime * 1000 - timeArry[i] > 1000) {
+                delayTime = delayTime - (currentTime * 1000 - timeArry[i]);
+            }
             await this._thinkDelayTime(delayTime / speed);
         }
         const line = _animateData[i].points.split(',');
