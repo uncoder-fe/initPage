@@ -56,11 +56,16 @@ class HandWriting extends Component {
             if (time * 1000 <= timeArry[i]) {
                 index = i - 1;
                 break;
+            } else if (time * 1000 > timeArry[i] && i >= timeArry.length - 1) {
+                // 最后一个笔画
+                index = timeArry.length - 1;
+                break;
             }
         }
+        // debugger
         return index < 0 ? 0 : index;
     };
-    // 笔划停顿时间
+    // 笔画停顿时间
     _thinkDelayTime = delayInms => {
         return new Promise(resolve => {
             setTimeout(() => {
@@ -113,7 +118,7 @@ class HandWriting extends Component {
             ctx.putImageData(this.canvasCache, 0, 0);
             return;
         }
-        // 笔划间隔，书写思考时间
+        // 笔画间隔，书写思考时间
         if (_animateData[i + 1]) {
             let delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
             if (currentTime * 1000 - timeArry[i] > 1000) {
@@ -122,9 +127,9 @@ class HandWriting extends Component {
             await this._thinkDelayTime(delayTime / speed);
         }
         const line = _animateData[i].points.split(',');
-        // 笔划中点阵间隔
+        // 笔画中点阵间隔
         let tick = 16;
-        // 剔除笔划中点阵间隔异常点
+        // 剔除笔画中点阵间隔异常点
         if (_animateData[i].t2 && _animateData[i].t1) {
             const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
             tick = parseInt(duration / line.length);
@@ -138,7 +143,7 @@ class HandWriting extends Component {
         if (this.canvasCache && playStatus === 0) {
             ctx.putImageData(this.canvasCache, 0, 0);
         }
-        // 动态渲染笔划
+        // 动态渲染笔画
         await new Promise((resolve, reject) => {
             this._animateRender(ctx, line, tick, speed, resolve);
         });
