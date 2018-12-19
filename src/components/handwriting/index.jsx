@@ -53,7 +53,7 @@ class HandWriting extends Component {
         const { timeArry } = this.state;
         let index = 0;
         for (let i = 0; i < timeArry.length; i++) {
-            if (time * 1000 < timeArry[i]) {
+            if (time * 1000 <= timeArry[i]) {
                 index = i - 1;
                 break;
             }
