@@ -298,15 +298,18 @@ class HandWriting extends Component {
         const { speed, currentTime } = setingData;
         window.cancelAnimationFrame(this.rafid);
         this.setState({ speed, currentTime, playStatus: 1 }, () => {
-            const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
-            const data = originData;
-            const ctx = myCanvasContainer.children[0].getContext('2d');
-            ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
-            // 数据切割
-            const dataIndex = this._dataAdapter(currentTime);
-            const _staticData = data.slice(0, dataIndex);
-            // 静态
-            this._staticRender(ctx, _staticData);
+            // 动态切换速度时候，会造成_loop递归执行顺序混乱，加个定时
+            setTimeout(() => {
+                const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
+                const data = originData;
+                const ctx = myCanvasContainer.children[0].getContext('2d');
+                ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
+                // 数据切割
+                const dataIndex = this._dataAdapter(currentTime);
+                const _staticData = data.slice(0, dataIndex);
+                // 静态
+                this._staticRender(ctx, _staticData);
+            }, 0);
         });
     };
     // 组件卸载，自动卸载不能删除定时器等
