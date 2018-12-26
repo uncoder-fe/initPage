@@ -36,7 +36,10 @@ class DragInput extends Component {
     componentWillReceiveProps(nextProps) {
         const { currentTime, timeline, comKey } = nextProps;
         if (this.state.comKey != comKey) {
-            const range = parseFloat(((currentTime / timeline) * 100).toFixed(3));
+            let range = 100;
+            if (timeline != 0) {
+                range = parseFloat(((currentTime / timeline) * 100).toFixed(3));
+            }
             this.setState({ range });
         }
     }
