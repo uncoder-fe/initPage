@@ -7,11 +7,16 @@ class HandWriting extends Component {
         super();
         this.ratio = window.devicePixelRatio;
         this.scale = 0.5 * this.ratio;
-        this.canvasCache = null;
         this.canvasHeigth = null;
         this.canvasWidth = null;
         this.rafid = null;
         this.originData = [];
+        // 定时器
+        this.timer = null;
+        // 是否在进行动画
+        this.animate = true;
+        // canvas缓存
+        this.canvasCache = null;
         this.state = {
             // 状态，播放 0，暂停 1，完成 2
             playStatus: 0,
@@ -49,21 +54,38 @@ class HandWriting extends Component {
         };
     };
     // 时间映射到数据
-    _dataAdapter = time => {
+    _dataAdapter = currentTime => {
+        const { timeArry } = this.state;
+        // 只有一画
+        if (timeArry.length === 1) {
+            return [0];
+        }
+        let index = [];
+        for (let i = 0; i < timeArry.length; i++) {
+            if (currentTime == timeArry[i]) {
+                index.push(i - 1);
+            }
+        }
+        // 最后一个笔画
+        if (currentTime >= timeArry[timeArry.length - 1]) {
+            index = [timeArry.length - 1];
+        }
+        return index;
+    };
+    // 当前时间靠近最近的上一个点
+    _dataAdapterClose = currentTime => {
         const { timeArry } = this.state;
         let index = 0;
         for (let i = 0; i < timeArry.length; i++) {
-            if (time * 1000 <= timeArry[i]) {
+            if (currentTime < timeArry[i]) {
                 index = i - 1;
                 break;
-            } else if (time * 1000 > timeArry[i] && i >= timeArry.length - 1) {
+            } else if (currentTime >= timeArry[i] && i >= timeArry.length - 1) {
                 // 最后一个笔画
                 index = timeArry.length - 1;
-                break;
             }
         }
-        // debugger
-        return index < 0 ? 0 : index;
+        return index;
     };
     // 笔画停顿时间
     _thinkDelayTime = delayInms => {
@@ -76,13 +98,12 @@ class HandWriting extends Component {
     // 初始化
     _init = async () => {
         const { scale, originData } = this;
-        const { speed, currentTime, timeline, playStatus } = this.state;
+        const { currentTime, speed } = this.state;
         if (Object.prototype.toString.call(originData) !== '[object Array]' || originData.length <= 0) {
             console.log('无笔迹');
             return;
         }
-        const data = originData;
-        const size = this._getImageSize(data);
+        const size = this._getImageSize(originData);
         this.canvasHeigth = size.height * scale;
         this.canvasWidth = size.width * scale;
         // canvas
@@ -102,55 +123,78 @@ class HandWriting extends Component {
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         // 数据切割
-        const dataIndex = this._dataAdapter(currentTime);
-        const _staticData = data.slice(0, dataIndex);
-        // const _animateData = data.slice(dataIndex, data.length);
+        const dataIndex = this._dataAdapterClose(currentTime);
+        const _staticData = originData.slice(0, dataIndex);
         // 静态
         this._staticRender(ctx, _staticData);
-        // 动态
-        this._loop(ctx, dataIndex, data);
+        this.timer = window.setInterval(() => {
+            let { currentTime } = this.state;
+            const { timeline } = this.state;
+            // 播放结束
+            if (currentTime > timeline) {
+                window.clearInterval(this.timer);
+                this.setState({ currentTime: timeline, playStatus: 2 });
+            }
+            // 下一秒
+            if (currentTime < timeline) {
+                currentTime += 1;
+                this.setState({ currentTime }, () => {
+                    // 动态
+                    this._loop(ctx);
+                });
+            }
+        }, 1000 / speed);
     };
     // 渲染数据
-    _loop = async (ctx, i, _animateData) => {
-        const { speed, currentTime, timeline, playStatus, timeArry } = this.state;
-        // 判断播放状态
-        if (playStatus != 0) {
-            ctx.putImageData(this.canvasCache, 0, 0);
+    _loop = async ctx => {
+        const { originData } = this;
+        const { speed, currentTime, playStatus, timeArry, timeline } = this.state;
+        const waitAnimateArry = this._dataAdapter(currentTime);
+        // 如果当前时间点，没有waitAnimateArry
+        if (waitAnimateArry.length <= 0) {
             return;
         }
-        // 笔画间隔，书写思考时间
-        if (_animateData[i + 1]) {
-            let delayTime = _animateData[i + 1]['t1'] - _animateData[i]['t2'] || 0;
-            if (currentTime * 1000 - timeArry[i] > 1000) {
-                delayTime = delayTime - (currentTime * 1000 - timeArry[i]);
+        // 如果动画正在进行中，则直接忽略当前时间点
+        if (!this.animate) {
+            return;
+        }
+        this.animate = false;
+        // 还原上一秒的画面
+        if (playStatus === 0) {
+            // 清空画布
+            ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
+            this._staticRender(ctx, originData.slice(0, waitAnimateArry[0]));
+        }
+        // console.log( "currentTime=>",currentTime,"waitArry=>", waitAnimateArry);
+        for (let i = 0; i < waitAnimateArry.length; i++) {
+            const { t1, t2, points } = originData[waitAnimateArry[i]];
+            const line = points.split(',');
+            // 笔画中点阵间隔
+            let tick = 16;
+            // 剔除笔画中点阵间隔异常点
+            if (t2 && t1) {
+                const duration = Math.ceil(t2 - t1);
+                tick = Math.ceil(duration / line.length);
+                if (tick > 30) {
+                    tick = 16;
+                }
             }
-            await this._thinkDelayTime(delayTime / speed);
-        }
-        const line = _animateData[i].points.split(',');
-        // 笔画中点阵间隔
-        let tick = 16;
-        // 剔除笔画中点阵间隔异常点
-        if (_animateData[i].t2 && _animateData[i].t1) {
-            const duration = parseInt(_animateData[i].t2 - _animateData[i].t1);
-            tick = parseInt(duration / line.length);
-            if (tick > 30) {
-                tick = 16;
+            // 动态渲染笔画
+            await new Promise((resolve, reject) => {
+                this._animateRender(ctx, line, tick, speed, resolve);
+            });
+            // 笔画间隔，书写思考时间
+            if (waitAnimateArry[i + 1]) {
+                let delayTime =
+                    originData[waitAnimateArry[i + 1]]['t1'] - originData[waitAnimateArry[i + 1]]['t2'] || 0;
+                if (currentTime - timeArry[waitAnimateArry[i]] > 1000) {
+                    delayTime = delayTime - (currentTime - timeArry[waitAnimateArry[i]]);
+                }
+                await this._thinkDelayTime(delayTime);
             }
         }
-        // 清空画布
-        ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
-        // 如果有canvas缓存，使用缓存
-        if (this.canvasCache && playStatus === 0) {
-            ctx.putImageData(this.canvasCache, 0, 0);
-        }
-        // 动态渲染笔画
-        await new Promise((resolve, reject) => {
-            this._animateRender(ctx, line, tick, speed, resolve);
-        });
-        // 下一划
-        if (_animateData[i + 1]) {
-            await this._loop(ctx, i + 1, _animateData);
-        }
+        // 动画结束，重置
+        this.animate = true;
     };
     // 静态渲染
     _staticRender = (ctx, json) => {
@@ -183,7 +227,7 @@ class HandWriting extends Component {
     };
     // 动态渲染
     _animateRender = (ctx, data, tick, speed, resolve) => {
-        const { scale, canvasWidth, canvasHeigth } = this;
+        const { scale } = this;
         // index
         let startIndex = 1;
         let oldTime = Date.now();
@@ -196,7 +240,6 @@ class HandWriting extends Component {
                 oldTime = newTime;
                 if (startIndex > data.length / (3 * speed) && points.length <= 0) {
                     window.cancelAnimationFrame(this.rafid);
-                    this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
                     resolve('next');
                 } else {
                     // 检测长度
@@ -272,6 +315,8 @@ class HandWriting extends Component {
     };
     // 组件状态销毁
     _destory = () => {
+        // 销毁定时器
+        window.clearInterval(this.timer);
         // 销毁当前动画
         window.cancelAnimationFrame(this.rafid);
         // 销毁缓存
@@ -280,36 +325,34 @@ class HandWriting extends Component {
         this.myCanvasContainer.innerHTML = '';
     };
     // 播放
-    _play = currentTime => {
+    _play = () => {
+        const { currentTime } = this.state;
         this._destory();
         this.setState({ currentTime, playStatus: 0 }, () => {
             this._init();
         });
     };
     // 暂停
-    _pause = currentTime => {
-        this.setState({ currentTime, playStatus: 1 }, () => {
+    _pause = () => {
+        window.clearInterval(this.timer);
+        this.setState({ playStatus: 1 }, () => {
             window.cancelAnimationFrame(this.rafid);
         });
     };
     // 控制面板参数
     _changePanelSetting = setingData => {
-        const { timeline } = this.state;
         const { speed, currentTime } = setingData;
         window.cancelAnimationFrame(this.rafid);
+        window.clearInterval(this.timer);
         this.setState({ speed, currentTime, playStatus: 1 }, () => {
-            // 动态切换速度时候，会造成_loop递归执行顺序混乱，加个定时
-            setTimeout(() => {
-                const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
-                const data = originData;
-                const ctx = myCanvasContainer.children[0].getContext('2d');
-                ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
-                // 数据切割
-                const dataIndex = this._dataAdapter(currentTime);
-                const _staticData = data.slice(0, dataIndex);
-                // 静态
-                this._staticRender(ctx, _staticData);
-            }, 0);
+            const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
+            const ctx = myCanvasContainer.children[0].getContext('2d');
+            ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
+            // 数据切割
+            const dataIndex = this._dataAdapterClose(currentTime);
+            const _staticData = originData.slice(0, dataIndex);
+            // 静态
+            this._staticRender(ctx, _staticData);
         });
     };
     // 组件卸载，自动卸载不能删除定时器等
@@ -319,46 +362,27 @@ class HandWriting extends Component {
     // 当组件不使用key，或者key不变时
     componentWillReceiveProps(nextProps) {
         this._destory();
-        const { data } = nextProps;
+        let { data } = nextProps;
+        // data = data.slice(0, 4);
         // 缓存原始数据
         this.originData = data;
-        // 生成唯一Key
+        // 生成唯一Key，定义组件唯一
         const comKey = Math.random()
             .toString(36)
             .slice(2);
         if (data.length > 0) {
-            const timeline = parseInt((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
+            // 最后一笔画距离起点的位置
+            const timeline = Math.ceil((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
+            // 计算每一笔画开始时间，距离起点的长度
             const timeArry = data.map((item, index) => {
-                const { t1, t2 } = item;
+                const { t1 } = item;
+                // 第一笔画
                 if (index == 0) {
-                    return t2 - t1;
+                    return 0;
                 }
-                return t1 - data[0].t1;
+                return Math.ceil((t1 - data[0].t1) / 1000);
             });
             this.setState({ timeline, speed: 1, range: 0, comKey, timeArry }, () => {
-                this._init();
-            });
-        }
-    }
-    // 当组件通过key销毁时，重新创建
-    componentDidMount() {
-        const { data } = this.props;
-        // 缓存原始数据
-        this.originData = data;
-        // 生成唯一Key
-        const comKey = Math.random()
-            .toString(36)
-            .slice(2);
-        if (data.length > 0) {
-            const timeline = parseInt((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
-            const timeArry = data.map((item, index) => {
-                const { t1, t2 } = item;
-                if (index == 0) {
-                    return t2 - t1;
-                }
-                return t1 - data[index - 1].t2;
-            });
-            this.setState({ timeline, speed: 1, range: 0, timeArry, comKey }, () => {
                 this._init();
             });
         }

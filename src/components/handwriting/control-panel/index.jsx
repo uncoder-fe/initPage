@@ -17,78 +17,33 @@ class ControlPanel extends Component {
     constructor() {
         super();
         this.state = {
-            currentTime: 0,
             timeline: 0,
             speed: 1
         };
         this.speedList = ['1x', '2x'];
-        this.timer = null;
     }
     onSetCurrentTime = currentTime => {
         const { speed } = this.state;
         this.props.onChangePlay({ currentTime, speed });
     };
     onSetSpeed = speed => {
-        const { currentTime } = this.state;
-        this.props.onChangePlay({ currentTime, speed });
+        this.props.onChangePlay({ speed });
     };
     onChangePlayStatus = playStatus => {
-        const { timeline } = this.state;
-        let { currentTime } = this.state;
+        const { currentTime, timeline } = this.props;
         if (playStatus !== 0 || currentTime >= timeline) {
-            if (currentTime >= timeline) {
-                currentTime = 0;
-            }
-            this.props.onPlayFn(currentTime);
+            this.props.onPlayFn();
         } else {
-            this.props.onPauseFn(currentTime);
+            this.props.onPauseFn();
         }
     };
-    genTime = time => {
+    genTimeStr = time => {
         const minute = parseInt(time / 60);
         const second = time - minute * 60;
         return `${minute > 10 ? minute : `0${minute}`}:${second > 10 ? second : `0${second}`}`;
     };
-    componentWillReceiveProps(nextProps) {
-        const { timeline, currentTime, playStatus, comKey, speed } = nextProps;
-        if (
-            this.state.comKey != comKey ||
-            this.state.playStatus != playStatus ||
-            this.state.currentTime != currentTime ||
-            this.state.speed != speed
-        ) {
-            this.setState({ timeline, currentTime, playStatus, comKey, speed });
-            if (playStatus === 0) {
-                // 播放状态
-                if (this.timer) {
-                    window.clearInterval(this.timer);
-                }
-                const interval = parseInt(1000 / speed);
-                this.timer = window.setInterval(() => {
-                    let { currentTime } = this.state;
-                    const { timeline } = this.state;
-                    // 如果播完了，改变状态
-                    if (currentTime == timeline) {
-                        this.setState({
-                            currentTime: timeline,
-                            playStatus: 2
-                        });
-                        window.clearInterval(this.timer);
-                    }
-                    // 下一秒
-                    if (currentTime < timeline) {
-                        currentTime += 1;
-                        this.setState({ currentTime });
-                    }
-                }, interval);
-            } else {
-                // 暂停状态
-                window.clearInterval(this.timer);
-            }
-        }
-    }
     render() {
-        const { currentTime, timeline, playStatus, speed, comKey } = this.state;
+        const { currentTime, timeline, playStatus, speed, comKey } = this.props;
         const listNodes = this.speedList.map((item, index) => {
             const className = speed == index + 1 ? 'active' : '';
             return (
@@ -114,7 +69,7 @@ class ControlPanel extends Component {
                         />
                     </div>
                     <div className="range-number">
-                        {this.genTime(currentTime)}/{this.genTime(timeline)}
+                        {this.genTimeStr(currentTime)}/{this.genTimeStr(timeline)}
                     </div>
                 </div>
                 <div className="control-speed">

@@ -54,7 +54,7 @@ class Index extends React.Component {
     async componentWillMount() {
         const res = await Api.test({ id: 1 });
         console.log('res', res);
-        $.getJSON('./data.json', json => {
+        $.getJSON('./data3.json', json => {
             const data = json.beautificated_pages[0].strokes;
             this.setState({
                 hkey: 1,
