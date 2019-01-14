@@ -164,6 +164,8 @@ class HandWriting extends Component {
             // 清空画布
             ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeigth);
             this._staticRender(ctx, originData.slice(0, waitAnimateArry[0]));
+            // (逻辑上应该使用缓存来做，不过这个数据适配时是大概的进度，缓存的内容和数据不能对应上)
+            // ctx.putImageData(this.canvasCache, 0, 0);
         }
         // console.log( "currentTime=>",currentTime,"waitArry=>", waitAnimateArry);
         for (let i = 0; i < waitAnimateArry.length; i++) {
@@ -195,6 +197,8 @@ class HandWriting extends Component {
         }
         // 动画结束，重置
         this.animate = true;
+        // 存储这一秒的缓存
+        this.canvasCache = ctx.getImageData(0, 0, this.canvasWidth, this.canvasHeigth);
     };
     // 静态渲染
     _staticRender = (ctx, json) => {
@@ -223,7 +227,7 @@ class HandWriting extends Component {
                 }
             }
         });
-        this.canvasCache = ctx.getImageData(0, 0, canvasWidth, canvasHeigth);
+        this.canvasCache = ctx.getImageData(0, 0, this.canvasWidth, this.canvasHeigth);
     };
     // 动态渲染
     _animateRender = (ctx, data, tick, speed, resolve) => {
@@ -315,10 +319,10 @@ class HandWriting extends Component {
     };
     // 组件状态销毁
     _destory = () => {
-        // 销毁定时器
-        window.clearInterval(this.timer);
         // 销毁当前动画
         window.cancelAnimationFrame(this.rafid);
+        // 销毁定时器
+        window.clearInterval(this.timer);
         // 销毁缓存
         this.canvasCache = null;
         // 销毁canvas
@@ -334,14 +338,15 @@ class HandWriting extends Component {
     };
     // 暂停
     _pause = () => {
+        window.cancelAnimationFrame(this.rafid);
         window.clearInterval(this.timer);
-        this.setState({ playStatus: 1 }, () => {
-            window.cancelAnimationFrame(this.rafid);
-        });
+        this.setState({ playStatus: 1 });
     };
     // 控制面板参数
     _changePanelSetting = setingData => {
-        const { speed, currentTime } = setingData;
+        let { speed, currentTime } = setingData;
+        speed = speed ? speed : this.state.speed;
+        currentTime = currentTime ? currentTime : this.state.currentTime;
         window.cancelAnimationFrame(this.rafid);
         window.clearInterval(this.timer);
         this.setState({ speed, currentTime, playStatus: 1 }, () => {
@@ -355,7 +360,7 @@ class HandWriting extends Component {
             this._staticRender(ctx, _staticData);
         });
     };
-    // 组件卸载，自动卸载不能删除定时器等
+    // 组件卸载
     componentWillUnmount() {
         this._destory();
     }
