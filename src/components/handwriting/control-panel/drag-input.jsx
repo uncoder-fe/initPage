@@ -8,7 +8,6 @@ class DragInput extends Component {
             currentTime: 0
         };
         this.status = false;
-        this.timer = null;
     }
     handleChangeCurrentTime = e => {
         const { timeline } = this.props;

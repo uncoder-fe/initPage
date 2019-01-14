@@ -148,7 +148,7 @@ class HandWriting extends Component {
     // 渲染数据
     _loop = async ctx => {
         const { originData } = this;
-        const { speed, currentTime, playStatus, timeArry, timeline } = this.state;
+        const { speed, currentTime, playStatus } = this.state;
         const waitAnimateArry = this._dataAdapter(currentTime);
         // 如果当前时间点，没有waitAnimateArry
         if (waitAnimateArry.length <= 0) {
@@ -158,6 +158,7 @@ class HandWriting extends Component {
         if (!this.animate) {
             return;
         }
+        // 动画进行中
         this.animate = false;
         // 还原上一秒的画面
         if (playStatus === 0) {
@@ -167,7 +168,7 @@ class HandWriting extends Component {
             // (逻辑上应该使用缓存来做，不过这个数据适配时是大概的进度，缓存的内容和数据不能对应上)
             // ctx.putImageData(this.canvasCache, 0, 0);
         }
-        // console.log( "currentTime=>",currentTime,"waitArry=>", waitAnimateArry);
+        // console.log('currentTime=>', currentTime, 'waitArry=>', waitAnimateArry);
         for (let i = 0; i < waitAnimateArry.length; i++) {
             const { t1, t2, points } = originData[waitAnimateArry[i]];
             const line = points.split(',');
@@ -185,15 +186,6 @@ class HandWriting extends Component {
             await new Promise((resolve, reject) => {
                 this._animateRender(ctx, line, tick, speed, resolve);
             });
-            // 笔画间隔，书写思考时间
-            if (waitAnimateArry[i + 1]) {
-                let delayTime =
-                    originData[waitAnimateArry[i + 1]]['t1'] - originData[waitAnimateArry[i + 1]]['t2'] || 0;
-                if (currentTime - timeArry[waitAnimateArry[i]] > 1000) {
-                    delayTime = delayTime - (currentTime - timeArry[waitAnimateArry[i]]);
-                }
-                await this._thinkDelayTime(delayTime);
-            }
         }
         // 动画结束，重置
         this.animate = true;
@@ -327,6 +319,8 @@ class HandWriting extends Component {
         this.canvasCache = null;
         // 销毁canvas
         this.myCanvasContainer.innerHTML = '';
+        // 动画
+        this.animate = true;
     };
     // 播放
     _play = () => {
@@ -347,9 +341,11 @@ class HandWriting extends Component {
         let { speed, currentTime } = setingData;
         speed = speed ? speed : this.state.speed;
         currentTime = currentTime ? currentTime : this.state.currentTime;
+        currentTime = currentTime >= this.state.timeline ? 0 : currentTime;
+        const playStatus = currentTime >= 0 ? 1 : 2;
         window.cancelAnimationFrame(this.rafid);
         window.clearInterval(this.timer);
-        this.setState({ speed, currentTime, playStatus: 1 }, () => {
+        this.setState({ speed, currentTime, playStatus }, () => {
             const { myCanvasContainer, originData, canvasWidth, canvasHeigth } = this;
             const ctx = myCanvasContainer.children[0].getContext('2d');
             ctx.clearRect(0, 0, canvasWidth, canvasHeigth);
@@ -367,8 +363,34 @@ class HandWriting extends Component {
     // 当组件不使用key，或者key不变时
     componentWillReceiveProps(nextProps) {
         this._destory();
-        let { data } = nextProps;
-        // data = data.slice(0, 4);
+        const { data } = nextProps;
+        // 缓存原始数据
+        this.originData = data;
+        // 生成唯一Key，定义组件唯一
+        const comKey = Math.random()
+            .toString(36)
+            .slice(2);
+        if (data.length > 0) {
+            // 最后一笔画距离起点的位置
+            const timeline = Math.ceil((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
+            // 计算每一笔画开始时间，距离起点的长度
+            const timeArry = data.map((item, index) => {
+                const { t1 } = item;
+                // 第一笔画
+                if (index == 0) {
+                    return 0;
+                }
+                return Math.ceil((t1 - data[0].t1) / 1000);
+            });
+            this.setState({ timeline, speed: 1, range: 0, comKey, timeArry }, () => {
+                this._init();
+            });
+        }
+    }
+    // 当组件通过key销毁时，重新创建
+    componentDidMount() {
+        this._destory();
+        const { data } = this.props;
         // 缓存原始数据
         this.originData = data;
         // 生成唯一Key，定义组件唯一

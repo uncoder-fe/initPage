@@ -16,15 +16,10 @@ const replayIcon =
 class ControlPanel extends Component {
     constructor() {
         super();
-        this.state = {
-            timeline: 0,
-            speed: 1
-        };
         this.speedList = ['1x', '2x'];
     }
     onSetCurrentTime = currentTime => {
-        const { speed } = this.state;
-        this.props.onChangePlay({ currentTime, speed });
+        this.props.onChangePlay({ currentTime });
     };
     onSetSpeed = speed => {
         this.props.onChangePlay({ speed });
@@ -47,7 +42,7 @@ class ControlPanel extends Component {
         const listNodes = this.speedList.map((item, index) => {
             const className = speed == index + 1 ? 'active' : '';
             return (
-                <div className={className} onClick={() => this.onSetSpeed(index + 1)}>
+                <div key={index} className={className} onClick={() => this.onSetSpeed(index + 1)}>
                     {index + 1}x
                 </div>
             );
