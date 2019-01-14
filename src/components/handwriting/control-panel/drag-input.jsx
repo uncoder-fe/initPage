@@ -32,19 +32,12 @@ class DragInput extends Component {
     mouseout = () => {
         this.status = false;
     };
-    componentWillReceiveProps(nextProps) {
-        const { currentTime, timeline, comKey } = nextProps;
-        if (this.state.comKey != comKey) {
-            let range = 100;
-            if (timeline != 0) {
-                range = parseFloat(((currentTime / timeline) * 100).toFixed(3));
-            }
-            this.setState({ range });
-        }
-    }
     render() {
-        const { range } = this.state;
-        const { playStatus } = this.props;
+        const { playStatus, timeline, currentTime } = this.props;
+        let range = 100;
+        if (timeline != 0) {
+            range = parseFloat(((currentTime / timeline) * 100).toFixed(3));
+        }
         return (
             <div className="range-container-sss">
                 <div

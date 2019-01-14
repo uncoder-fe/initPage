@@ -24,9 +24,9 @@ class HandWriting extends Component {
             speed: 1,
             // 单位秒
             currentTime: 0,
-            //单位秒
+            // 单位秒
             timeline: 0,
-            //单位毫秒
+            // 单位秒
             timeArry: []
         };
     }
@@ -131,7 +131,8 @@ class HandWriting extends Component {
             let { currentTime } = this.state;
             const { timeline } = this.state;
             // 播放结束
-            if (currentTime > timeline) {
+            if (currentTime >= timeline) {
+                // console.log("play finish")
                 window.clearInterval(this.timer);
                 this.setState({ currentTime: timeline, playStatus: 2 });
             }
@@ -194,7 +195,7 @@ class HandWriting extends Component {
     };
     // 静态渲染
     _staticRender = (ctx, json) => {
-        const { scale, canvasWidth, canvasHeigth } = this;
+        const { scale } = this;
         json.forEach(item => {
             const line = item.points.split(',');
             for (let i = 0; i < line.length; i += 3) {
@@ -311,7 +312,9 @@ class HandWriting extends Component {
     };
     // 组件状态销毁
     _destory = () => {
-        // 销毁当前动画
+        // 销毁动画
+        this.animate = true;
+        // 销毁当前动画进程
         window.cancelAnimationFrame(this.rafid);
         // 销毁定时器
         window.clearInterval(this.timer);
@@ -319,12 +322,11 @@ class HandWriting extends Component {
         this.canvasCache = null;
         // 销毁canvas
         this.myCanvasContainer.innerHTML = '';
-        // 动画
-        this.animate = true;
     };
     // 播放
     _play = () => {
-        const { currentTime } = this.state;
+        let { currentTime, timeline } = this.state;
+        currentTime = currentTime >= timeline ? 0 : currentTime;
         this._destory();
         this.setState({ currentTime, playStatus: 0 }, () => {
             this._init();
@@ -356,44 +358,17 @@ class HandWriting extends Component {
             this._staticRender(ctx, _staticData);
         });
     };
-    // 组件卸载
+    // 组件卸载时各种销毁
     componentWillUnmount() {
         this._destory();
     }
-    // 当组件不使用key，或者key不变时
-    componentWillReceiveProps(nextProps) {
-        this._destory();
-        const { data } = nextProps;
-        // 缓存原始数据
-        this.originData = data;
-        // 生成唯一Key，定义组件唯一
-        const comKey = Math.random()
-            .toString(36)
-            .slice(2);
-        if (data.length > 0) {
-            // 最后一笔画距离起点的位置
-            const timeline = Math.ceil((data[data.length - 1]['t2'] - data[0]['t1']) / 1000);
-            // 计算每一笔画开始时间，距离起点的长度
-            const timeArry = data.map((item, index) => {
-                const { t1 } = item;
-                // 第一笔画
-                if (index == 0) {
-                    return 0;
-                }
-                return Math.ceil((t1 - data[0].t1) / 1000);
-            });
-            this.setState({ timeline, speed: 1, range: 0, comKey, timeArry }, () => {
-                this._init();
-            });
-        }
-    }
     // 当组件通过key销毁时，重新创建
     componentDidMount() {
-        this._destory();
         const { data } = this.props;
         // 缓存原始数据
         this.originData = data;
         // 生成唯一Key，定义组件唯一
+        // https://github.com/facebook/react/blob/b87aabdfe1b7461e7331abb3601d9e6bb27544bc/packages/react-dom/src/client/ReactDOMComponentTree.js#L11
         const comKey = Math.random()
             .toString(36)
             .slice(2);
@@ -409,7 +384,7 @@ class HandWriting extends Component {
                 }
                 return Math.ceil((t1 - data[0].t1) / 1000);
             });
-            this.setState({ timeline, speed: 1, range: 0, comKey, timeArry }, () => {
+            this.setState({ timeline, speed: 1, comKey, timeArry }, () => {
                 this._init();
             });
         }
@@ -418,7 +393,7 @@ class HandWriting extends Component {
         const { maxHeight } = this.props;
         const { playStatus, speed, currentTime, timeline, comKey } = this.state;
         return (
-            <div className="handwriting">
+            <div className="handwriting" data-comKey={comKey}>
                 <div
                     className="handwriting-canvas-container"
                     style={{ maxHeight }}
@@ -427,7 +402,6 @@ class HandWriting extends Component {
                     }}
                 />
                 <ControlPanel
-                    comKey={comKey}
                     playStatus={playStatus}
                     speed={speed}
                     currentTime={currentTime}

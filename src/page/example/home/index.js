@@ -81,7 +81,7 @@ class Index extends React.Component {
             });
     }
     render() {
-        const { hkey, handWrtingData } = this.state;
+        const { handWrtingData } = this.state;
         return (
             <div>
                 <Test text="hello world" />
@@ -90,9 +90,7 @@ class Index extends React.Component {
                 <button onClick={this.handleToast}>click me to toast</button>
                 {/* <div><MathPage /></div> */}
                 {/* <div><Tree /></div> */}
-                <div>
-                    <HandWriting data={handWrtingData} hkey={hkey} />
-                </div>
+                <div>{handWrtingData.length > 0 ? <HandWriting data={handWrtingData} /> : null}</div>
                 {/* <div>
                     <MyEditor />
                 </div> */}

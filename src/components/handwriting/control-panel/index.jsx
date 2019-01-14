@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import DragInput from './drag-input';
-// import playIcon from './img/play.png';
-// import pauseIcon from './img/pause.png';
-// import replayIcon from './img/replay.png';
 
 import './index.less';
 
@@ -38,7 +35,7 @@ class ControlPanel extends Component {
         return `${minute > 10 ? minute : `0${minute}`}:${second > 10 ? second : `0${second}`}`;
     };
     render() {
-        const { currentTime, timeline, playStatus, speed, comKey } = this.props;
+        const { currentTime, timeline, playStatus, speed } = this.props;
         const listNodes = this.speedList.map((item, index) => {
             const className = speed == index + 1 ? 'active' : '';
             return (
@@ -48,6 +45,7 @@ class ControlPanel extends Component {
             );
         });
         const showIcon = playStatus === 2 ? replayIcon : playStatus !== 0 ? playIcon : pauseIcon;
+        console.log('play status', playStatus);
         return (
             <div className="handwriting-control-panel">
                 <div className="control-button" onClick={() => this.onChangePlayStatus(playStatus)}>
@@ -57,7 +55,6 @@ class ControlPanel extends Component {
                     <div className="range-show">
                         <DragInput
                             playStatus={playStatus}
-                            comKey={comKey}
                             currentTime={currentTime}
                             timeline={timeline}
                             handleChangeCurrentTime={this.onSetCurrentTime}
