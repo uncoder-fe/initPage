@@ -57,8 +57,10 @@ class HandWriting extends Component {
     _dataAdapter = currentTime => {
         const { timeArry } = this.state;
         // 只有一画
-        if (timeArry.length === 1) {
+        if (currentTime == 1 && timeArry.length === 1) {
             return [0];
+        } else if (timeArry.length === 1) {
+            return [];
         }
         let index = [];
         for (let i = 0; i < timeArry.length; i++) {
