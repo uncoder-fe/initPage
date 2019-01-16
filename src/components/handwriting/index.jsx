@@ -56,7 +56,9 @@ class HandWriting extends Component {
     // 时间映射到数据
     _dataAdapter = currentTime => {
         const { timeArry } = this.state;
-        // 只有一画
+        // 只有一画，
+        // 这个地方会引起另一个bug，
+        // 由于我们过滤的后几秒，当时间为2秒，而我们暂停在播放时，计算就失误了
         if (currentTime == 1 && timeArry.length === 1) {
             return [0];
         } else if (timeArry.length === 1) {
