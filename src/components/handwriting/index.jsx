@@ -63,12 +63,8 @@ class HandWriting extends Component {
         let index = [];
         for (let i = 0; i < timeArry.length; i++) {
             if (currentTime == timeArry[i]) {
-                index.push(i - 1);
+                index.push(i);
             }
-        }
-        // 最后一个笔画
-        if (currentTime >= timeArry[timeArry.length - 1]) {
-            index = [timeArry.length - 1];
         }
         return index;
     };
