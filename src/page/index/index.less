@@ -1,0 +1,11 @@
+.loop(@counter) when (@counter > 0) {
+    .loop((@counter - 1)); // next iteration
+    @media screen and(max-width: 100px * @counter) {
+        font-size: (10px * @counter); // code for each iteration
+    }
+}
+
+body {
+    color: red;
+    .loop(5); // launch the loop
+}
