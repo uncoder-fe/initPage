@@ -10,8 +10,6 @@ import * as Api from 'common/api';
 import './index.less';
 import MyPromise from './promise';
 
-require('core-js/fn/array/find');
-
 class Index extends React.Component {
     constructor() {
         super();
@@ -21,7 +19,7 @@ class Index extends React.Component {
         };
     }
     handleLazyLoad() {
-        import(/* webpackChunkName: "lazyModule" */ '../../../common/lazy-module.js').then(module => {
+        import(/* webpackChunkName: "lazyModule" */ '../../common/lazy-module.js').then(module => {
             const sayFn = module.default;
             sayFn();
         });
