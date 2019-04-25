@@ -8,19 +8,19 @@ import React, { Component } from 'react';
 // import Api from 'common/service';
 
 export default class Login extends Component {
-    login = () => {
-        // Api.login();
-    };
-    render() {
-        return (
-            <div>
-                <div>
-                    <input type="text" />
-                    <input type="password" />
-                    <button onClick={this.login}>登陆</button>
-                    <button>忘记密码</button>
-                </div>
-            </div>
-        );
-    }
+	login = () => {
+		// Api.login();
+	};
+	render() {
+		return (
+			<div>
+				<div>
+					<input type="text" />
+					<input type="password" />
+					<button onClick={this.login}>登陆</button>
+					<button>忘记密码</button>
+				</div>
+			</div>
+		);
+	}
 }
