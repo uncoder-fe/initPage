@@ -5,6 +5,7 @@ import MathPage from './mathjax-test';
 import Tree from 'components/tree';
 import HandWriting from 'components/handwriting';
 import MyEditor from 'components/editor';
+import DragCanvas from 'components/drag-el-in-canvas/sss.jsx';
 import * as Api from 'common/api';
 // import SO from 'common/util/ps.js';
 import './index.less';
@@ -82,16 +83,17 @@ class Index extends React.Component {
 		const { handWrtingData } = this.state;
 		return (
 			<div>
-				<Test text="hello world" />
+				{/* <Test text="hello world" />
 				<button onClick={() => this.handleLazyLoad()}>click me to load lazy module</button>
 				<button onClick={() => this.handleJuqery()}>click me to check jquery</button>
-				<button onClick={this.handleToast}>click me to toast</button>
+				<button onClick={this.handleToast}>click me to toast</button> */}
 				{/* <div><MathPage /></div> */}
 				{/* <div><Tree /></div> */}
-				<div>{handWrtingData.length > 0 ? <HandWriting data={handWrtingData} /> : null}</div>
-				{/* <div>
-                    <MyEditor />
-                </div> */}
+				{/* <div>{handWrtingData.length > 0 ? <HandWriting data={handWrtingData} /> : null}</div> */}
+				{/* <div><MyEditor /></div> */}
+				<div>
+					<DragCanvas />
+				</div>
 			</div>
 		);
 	}
