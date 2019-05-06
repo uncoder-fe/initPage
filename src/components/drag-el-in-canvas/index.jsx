@@ -20,7 +20,7 @@ class Sprite {
 		// 内容
 		this.content = content;
 		// 校准位置
-		const { type, value } = content;
+		const { type } = content;
 		let x = 0;
 		let y = 0;
 		if (type.indexOf('Icon') > 0) {
@@ -43,7 +43,7 @@ class Sprite {
 	}
 	draw(ctx) {
 		const { x, y, content, width, height, active } = this;
-		const { type, words, image } = content;
+		const { type, textArry, image } = content;
 		ctx.fillStyle = 'red';
 		ctx.strokeStyle = 'red';
 		if (type.indexOf('Icon') > 0) {
@@ -52,17 +52,19 @@ class Sprite {
 				ctx.strokeRect(x, y, ICON.width, ICON.height);
 			}
 		} else if (type == 'text') {
-			for (let i = 0; i < words.length; i++) {
-				if (words[i]) {
-					ctx.fillText(words[i], x, y + i * 30);
+			for (let i = 0; i < textArry.length; i++) {
+				if (textArry[i]) {
+					ctx.fillText(textArry[i], x, y + i * 30 + 30);
 				}
 			}
 			if (active) {
-				ctx.strokeRect(x, y - 30, width, height);
+				ctx.strokeRect(x, y, width, height);
 			}
 		} else if (type == 'rect') {
 			ctx.strokeRect(x, y, width, height);
-			ctx.fillRect(x + width / 2 - 5, y + height - 5, 10, 10);
+			if (active) {
+				ctx.strokeRect(x - 2, y - 2, width + 4, height + 4);
+			}
 		}
 	}
 }
@@ -83,6 +85,7 @@ class Stage extends Component {
 		this.canMove = false;
 		this.currentSprite = null;
 		this.downPosition = { x: 0, y: 0 };
+		this.drawRect = false;
 	}
 	// 获取位置
 	getCanvasPoint(event) {
@@ -118,7 +121,13 @@ class Stage extends Component {
 		const hitArry = drawList.filter(item => {
 			const { x, y, content, width, height } = item;
 			const { type } = content;
-			if (type == 'text' && event.x > x && event.x < x + width && event.y > y - 30 && event.y < y + height - 30) {
+			if (
+				(type == 'text' || type == 'rect') &&
+				event.x > x &&
+				event.x < x + width &&
+				event.y > y &&
+				event.y < y + height
+			) {
 				return true;
 			} else if (
 				type.indexOf('Icon') > 0 &&
@@ -128,9 +137,6 @@ class Stage extends Component {
 				event.y < y + height
 			) {
 				// console.log('icon');
-				return true;
-			} else if (type == 'rect' && event.x > x && event.x < x + width && event.y > y && event.y < y + height) {
-				// console.log('rect');
 				return true;
 			}
 			// console.log('nothing');
@@ -149,10 +155,6 @@ class Stage extends Component {
 		if (y + height > imageInfo.height && content.type != 'text') {
 			reset.y = imageInfo.height - height;
 		}
-		// 锁住文字上面的区域
-		if (content.type == 'text' && reset.y < 30) {
-			reset.y = 30;
-		}
 		if (x <= 0) {
 			reset.x = 0;
 		}
@@ -170,36 +172,35 @@ class Stage extends Component {
 	// 检测文字是否需要换行
 	textOutArea(x, str) {
 		const { imageInfo } = this;
-		const words = [];
+		const textArry = [];
 		// 直接返回
 		if (x + this.getTextWidth(str) < imageInfo.width) {
-			words.push(str);
-			return words;
+			textArry.push(str);
+			return textArry;
 		}
 		// 超出
-		let word = '';
+		let text = '';
 		let start = 0;
 		const stringArry = str.split('');
 		for (let i = 0; i < stringArry.length; i++) {
-			word += stringArry[i];
-			if (x + this.getTextWidth(word) > imageInfo.width - 30) {
-				words.push(stringArry.slice(start, i + 1).join(''));
-				word = '';
+			text += stringArry[i];
+			if (x + this.getTextWidth(text) > imageInfo.width - 30) {
+				textArry.push(stringArry.slice(start, i + 1).join(''));
+				text = '';
 				start = i + 1;
 			}
 		}
 		// 最后剩余的一行
-		words.push(stringArry.slice(start, stringArry.length).join(''));
-		return words;
+		textArry.push(stringArry.slice(start, stringArry.length).join(''));
+		return textArry;
 	}
 	// 设置缓存
 	setCache() {
 		const { ctx, currentSprite, drawList, imageInfo } = this;
-		const filterArry = drawList.filter(item => item.key != currentSprite.key);
+		const filterArry = currentSprite ? drawList.filter(item => item.key != currentSprite.key) : drawList;
 		this.redraw(filterArry);
 		const imageData = ctx.getImageData(0, 0, imageInfo.width, imageInfo.height);
 		this.cache = imageData;
-		// this.cacheCtx.putImageData(imageData, 0, 0);
 	}
 	// 缓存重绘
 	redrawFromCache() {
@@ -232,14 +233,14 @@ class Stage extends Component {
 			if (value) {
 				const x = parseInt(left);
 				const y = parseInt(top);
-				const words = this.textOutArea(x, value);
+				const textArry = this.textOutArea(x, value);
 				let width = this.getTextWidth(value);
 				let height = 30;
-				if (words.length > 1) {
-					width = this.getTextWidth(words[0]);
-					height = words.length * 30;
+				if (textArry.length > 1) {
+					width = this.getTextWidth(textArry[0]);
+					height = textArry.length * 30;
 				}
-				const el = new Sprite(x, y, { type: 'text', value, words }, width, height);
+				const el = new Sprite(x, y, { type: 'text', textArry }, width, height);
 				this.drawList.push(el);
 				el.draw(this.ctx);
 				event.target.value = '';
@@ -259,12 +260,6 @@ class Stage extends Component {
 		if (hitArry.length > 0) {
 			// 命中不新建
 			const currentSprite = hitArry[hitArry.length - 1];
-			// 命中状态取反
-			// this.drawList.forEach(element => {
-			// 	if (currentSprite.key == element.key) {
-			// 		element.active = !element.active;
-			// 	}
-			// });
 			this.currentSprite = {
 				key: currentSprite.key,
 				x: currentSprite.x,
@@ -272,6 +267,7 @@ class Stage extends Component {
 				content: { ...currentSprite.content }
 			};
 			this.canMove = true;
+			this.drawRect = false;
 			this.downPosition = { ...this.downPosition, x, y };
 			this.setCache();
 			this.redraw();
@@ -308,8 +304,19 @@ class Stage extends Component {
 					});
 				});
 			} else if (actionName == 'rect') {
-				el = new Sprite(x, y, { type: 'rect' }, 50, 50);
+				// 如果是画框，需要特殊处理
+				this.setCache();
+				el = new Sprite(x, y, { type: 'rect' });
+				this.downPosition = { ...this.downPosition, x, y };
 				this.drawList.push(el);
+				this.drawRect = true;
+				this.canMove = true;
+				this.currentSprite = {
+					key: el.key,
+					x,
+					y,
+					content: { ...el.content }
+				};
 				el.draw(this.ctx);
 			}
 		}
@@ -324,22 +331,16 @@ class Stage extends Component {
 			const { currentSprite, drawList } = this;
 			const { type } = currentSprite.content;
 			const index = drawList.findIndex(item => currentSprite.key == item.key);
-			drawList[index].x = this.currentSprite.x + distanceX;
-			drawList[index].y = this.currentSprite.y + distanceY;
-			if (false) {
-				// 如果是文字，重新计算宽高
-				// const words = this.textOutArea(x, value);
-				// let width = this.getTextWidth(value);
-				// let height = 30;
-				// if (words.length > 1) {
-				// 	width = this.getTextWidth(words[0]);
-				// 	height = words.length * 30;
-				// }
-				// drawList[index].content.words = words;
-				// drawList[index].width = width;
-				// drawList[index].height = height;
-				// console.log(drawList[index]);
-			} else if (type == 'text' || type.indexOf('Icon') > 0 || type == 'rect') {
+			if (type != 'rect' || (type == 'rect' && !this.drawRect)) {
+				drawList[index].x = this.currentSprite.x + distanceX;
+				drawList[index].y = this.currentSprite.y + distanceY;
+			}
+			// 如果是框，在绘制状态，更新宽高
+			if (type == 'rect' && this.drawRect) {
+				drawList[index].width = distanceX;
+				drawList[index].height = distanceY;
+			}
+			if (type == 'text' || type.indexOf('Icon') > 0 || type == 'rect') {
 				const isOuter = this.outArea(drawList[index]);
 				drawList[index].x = isOuter.x;
 				drawList[index].y = isOuter.y;
@@ -347,7 +348,6 @@ class Stage extends Component {
 			// 重绘
 			this.redrawFromCache();
 		}
-		return;
 		const hitArry = this.hitEl({ x, y });
 		if (hitArry.length > 0) {
 			this.upperCanvas.style.cursor = 'move';
@@ -372,7 +372,6 @@ class Stage extends Component {
 	};
 	componentDidMount() {
 		const { width, height } = this.imageInfo;
-		this.upperCtx = this.upperCanvas.getContext('2d');
 		this.ctx = this.introCanvas.getContext('2d');
 		this.introCanvas.height = height;
 		this.introCanvas.width = width;
@@ -384,14 +383,18 @@ class Stage extends Component {
 		this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
 		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 10));
 		this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
-		document.addEventListener('keydown', event => this.handleKeyboard(event));
 		// this.upperCanvas.addEventListener('mouseout', event => this.handleMouseup(event));
+		document.addEventListener('keydown', event => this.handleKeyboard(event));
 	}
 	componentWillReceiveProps(nextProps) {
 		if (this.state.actionName != nextProps.actionName) {
 			this.setState({
 				actionName: nextProps.actionName
 			});
+			if (nextProps.actionName == 'clear') {
+				this.drawList = [];
+				this.redraw();
+			}
 		}
 	}
 	render() {

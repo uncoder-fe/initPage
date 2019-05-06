@@ -24,6 +24,7 @@ class SSS extends React.Component {
 					<button onClick={this.handleClick('wrongIcon')}>wrongicon</button>
 					<button onClick={this.handleClick('text')}>text</button>
 					<button onClick={this.handleClick('rect')}>rect</button>
+					<button onClick={this.handleClick('clear')}>clear</button>
 				</div>
 				<DragCanvas actionName={actionName} getDrawMap={this.getData} />
 			</div>
