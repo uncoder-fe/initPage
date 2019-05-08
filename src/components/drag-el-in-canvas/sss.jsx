@@ -20,8 +20,8 @@ class SSS extends React.Component {
 		return (
 			<div>
 				<div>
-					<button onClick={this.handleClick('rightIcon')}>righticon</button>
-					<button onClick={this.handleClick('wrongIcon')}>wrongicon</button>
+					<button onClick={this.handleClick('right')}>righticon</button>
+					<button onClick={this.handleClick('wrong')}>wrongicon</button>
 					<button onClick={this.handleClick('text')}>text</button>
 					<button onClick={this.handleClick('rect')}>rect</button>
 					<button onClick={this.handleClick('clear')}>clear</button>

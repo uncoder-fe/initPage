@@ -24,7 +24,7 @@ class Sprite {
 		const { type } = content;
 		let x = 0;
 		let y = 0;
-		if (type.indexOf('Icon') > 0) {
+		if (type == 'right' || type == 'wrong' || type == 'half') {
 			x = eventX - ICON.width / 2;
 			y = eventY - ICON.height / 2;
 		} else if (type == 'text' || type == 'rect') {
@@ -47,7 +47,7 @@ class Sprite {
 		const { type, textArry, image } = content;
 		ctx.fillStyle = 'red';
 		ctx.strokeStyle = 'red';
-		if (type.indexOf('Icon') > 0) {
+		if (type == 'right' || type == 'wrong' || type == 'half') {
 			ctx.drawImage(image, x, y, ICON.width, ICON.height);
 			if (active) {
 				ctx.strokeRect(x, y, ICON.width, ICON.height);
@@ -131,7 +131,7 @@ class Stage extends Component {
 			) {
 				return true;
 			} else if (
-				type.indexOf('Icon') > 0 &&
+				(type == 'right' || type == 'wrong' || type == 'half') &&
 				event.x > x &&
 				event.x < x + width &&
 				event.y > y &&
@@ -277,17 +277,17 @@ class Stage extends Component {
 			const { actionName } = this.state;
 			let el = null;
 			switch (actionName) {
-				case 'rightIcon':
+				case 'right':
 					el = new Sprite(x, y, { type: actionName, image: this.rightIcon }, 50, 50);
 					el.draw(this.ctx);
 					this.drawList.push(el);
 					break;
-				case 'wrongIcon':
+				case 'wrong':
 					el = new Sprite(x, y, { type: actionName, image: this.wrongIcon }, 50, 50);
 					el.draw(this.ctx);
 					this.drawList.push(el);
 					break;
-				case 'halfIcon':
+				case 'half':
 					el = new Sprite(x, y, { type: actionName, image: this.halfIcon }, 50, 50);
 					el.draw(this.ctx);
 					this.drawList.push(el);
@@ -341,7 +341,7 @@ class Stage extends Component {
 				drawList[index].width = distanceX;
 				drawList[index].height = distanceY;
 			}
-			if (type == 'text' || type.indexOf('Icon') > 0 || type == 'rect') {
+			if (type == 'text' || type == 'right' || type == 'wrong' || type == 'half' || type == 'rect') {
 				const isOuter = this.outArea(drawList[index]);
 				drawList[index].x = isOuter.x;
 				drawList[index].y = isOuter.y;
