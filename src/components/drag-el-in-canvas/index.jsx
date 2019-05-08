@@ -9,6 +9,7 @@ const ICON = {
 	height: 50,
 	width: 50
 };
+const fontSize = 30;
 
 // 定义基础元素
 class Sprite {
@@ -54,7 +55,7 @@ class Sprite {
 		} else if (type == 'text') {
 			for (let i = 0; i < textArry.length; i++) {
 				if (textArry[i]) {
-					ctx.fillText(textArry[i], x, y + i * 30 + 30);
+					ctx.fillText(textArry[i], x, y + i * fontSize + fontSize);
 				}
 			}
 			if (active) {
@@ -165,7 +166,7 @@ class Stage extends Component {
 	}
 	getTextWidth(str) {
 		const { ctx } = this;
-		ctx.font = '30px serif';
+		ctx.font = `${fontSize}px serif`;
 		const text = this.ctx.measureText(str);
 		return text.width;
 	}
@@ -184,14 +185,16 @@ class Stage extends Component {
 		const stringArry = str.split('');
 		for (let i = 0; i < stringArry.length; i++) {
 			text += stringArry[i];
-			if (x + this.getTextWidth(text) > imageInfo.width - 30) {
+			if (x + this.getTextWidth(text) > imageInfo.width - fontSize) {
 				textArry.push(stringArry.slice(start, i + 1).join(''));
 				text = '';
 				start = i + 1;
 			}
 		}
 		// 最后剩余的一行
-		textArry.push(stringArry.slice(start, stringArry.length).join(''));
+		if (stringArry.slice(start, stringArry.length) != '') {
+			textArry.push(stringArry.slice(start, stringArry.length).join(''));
+		}
 		return textArry;
 	}
 	// 设置缓存
@@ -228,17 +231,15 @@ class Stage extends Component {
 		event.stopPropagation();
 		const code = event.keyCode || event.which || event.charCode;
 		const value = event.target.value;
-		const { left, top } = event.target.parentNode.style;
+		const { x, y } = this.downPosition;
 		if (code == 13) {
 			if (value) {
-				const x = parseInt(left);
-				const y = parseInt(top);
 				const textArry = this.textOutArea(x, value);
 				let width = this.getTextWidth(value);
-				let height = 30;
+				let height = fontSize;
 				if (textArry.length > 1) {
 					width = this.getTextWidth(textArry[0]);
-					height = textArry.length * 30;
+					height = textArry.length * fontSize;
 				}
 				const el = new Sprite(x, y, { type: 'text', textArry }, width, height);
 				this.drawList.push(el);
@@ -257,6 +258,7 @@ class Stage extends Component {
 	handleMousedown(event) {
 		const { x, y, left, top } = this.getCanvasPoint(event);
 		const hitArry = this.hitEl({ x, y });
+		this.downPosition = { ...this.downPosition, x, y };
 		if (hitArry.length > 0) {
 			// 命中不新建
 			const currentSprite = hitArry[hitArry.length - 1];
@@ -268,7 +270,6 @@ class Stage extends Component {
 			};
 			this.canMove = true;
 			this.drawRect = false;
-			this.downPosition = { ...this.downPosition, x, y };
 			this.setCache();
 			this.redraw();
 		} else {
@@ -294,7 +295,8 @@ class Stage extends Component {
 			}
 			if (actionName == 'text') {
 				this.setState({ showInputModal: true }, () => {
-					this.myInput.style.left = `${left}px`;
+					// 如果输入框放不下，左移动
+					this.myInput.style.left = `${this.imageInfo.width - left < 120 ? left - 120 : left}px`;
 					this.myInput.style.top = `${top}px`;
 					this.myInput.removeEventListener('keydown', this.handleInput);
 					this.myInput.addEventListener('keydown', event => this.handleInput(event));
@@ -307,7 +309,6 @@ class Stage extends Component {
 				// 如果是画框，需要特殊处理
 				this.setCache();
 				el = new Sprite(x, y, { type: 'rect' });
-				this.downPosition = { ...this.downPosition, x, y };
 				this.drawList.push(el);
 				this.drawRect = true;
 				this.canMove = true;
@@ -362,6 +363,13 @@ class Stage extends Component {
 		this.currentSprite = null;
 		this.cache = null;
 	}
+	// 鼠标out事件监听
+	handleMouseout() {
+		this.redraw();
+		this.canMove = false;
+		this.currentSprite = null;
+		this.cache = null;
+	}
 	// 键盘
 	handleKeyboard = event => {
 		const code = event.keyCode || event.which || event.charCode;
@@ -383,7 +391,7 @@ class Stage extends Component {
 		this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
 		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 10));
 		this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
-		// this.upperCanvas.addEventListener('mouseout', event => this.handleMouseup(event));
+		this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
 		document.addEventListener('keydown', event => this.handleKeyboard(event));
 	}
 	componentWillReceiveProps(nextProps) {
@@ -413,7 +421,7 @@ class Stage extends Component {
 					style={{ display: showInputModal ? 'block' : 'none', position: 'absolute' }}
 					ref={input => (this.myInput = input)}
 				>
-					<input type="text" placeholder="最多输入20个字" onEn />
+					<input type="text" placeholder="最多输入20个字" />
 				</div>
 			</div>
 		);
