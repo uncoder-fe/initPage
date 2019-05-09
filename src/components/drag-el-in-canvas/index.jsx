@@ -276,22 +276,29 @@ class Stage extends Component {
 			// 创建
 			const { actionName } = this.state;
 			let el = null;
-			switch (actionName) {
-				case 'right':
-					el = new Sprite(x, y, { type: actionName, image: this.rightIcon }, 50, 50);
-					el.draw(this.ctx);
-					this.drawList.push(el);
-					break;
-				case 'wrong':
-					el = new Sprite(x, y, { type: actionName, image: this.wrongIcon }, 50, 50);
-					el.draw(this.ctx);
-					this.drawList.push(el);
-					break;
-				case 'half':
-					el = new Sprite(x, y, { type: actionName, image: this.halfIcon }, 50, 50);
-					el.draw(this.ctx);
-					this.drawList.push(el);
-					break;
+			if (actionName == 'right' || actionName == 'wrong' || actionName == 'half') {
+				let image = this.rightIcon;
+				if (actionName == 'wrong') {
+					image = this.wrongIcon;
+				} else if (actionName == 'half') {
+					image = this.halfIcon;
+				}
+				// 校验点击位置，是否icon超出了边界
+				const xx =
+					x < ICON.width
+						? ICON.width / 2
+						: x > this.imageInfo.width - ICON.width / 2
+						? this.imageInfo.width - ICON.width / 2
+						: x;
+				const yy =
+					y < ICON.height
+						? ICON.height / 2
+						: y > this.imageInfo.height - ICON.height / 2
+						? this.imageInfo.height - ICON.height / 2
+						: y;
+				el = new Sprite(xx, yy, { type: actionName, image }, 50, 50);
+				el.draw(this.ctx);
+				this.drawList.push(el);
 			}
 			if (actionName == 'text') {
 				this.setState({ showInputModal: true }, () => {
