@@ -241,7 +241,7 @@ class Stage extends Component {
 					width = this.getTextWidth(textArry[0]);
 					height = textArry.length * fontSize;
 				}
-				const el = new Sprite(x, y, { type: 'text', textArry }, width, height);
+				const el = new Sprite(x, y, { type: 'text', text: value, textArry }, width, height);
 				this.drawList.push(el);
 				el.draw(this.ctx);
 				event.target.value = '';
@@ -348,6 +348,20 @@ class Stage extends Component {
 				drawList[index].width = distanceX;
 				drawList[index].height = distanceY;
 			}
+			// 字体重新计算换行
+			if (type == 'text') {
+				const strArry = this.textOutArea(drawList[index].x, drawList[index].content.text);
+				let width = this.getTextWidth(drawList[index].content.text);
+				let height = fontSize;
+				if (strArry.length > 1) {
+					width = this.getTextWidth(strArry[0]);
+					height = strArry.length * fontSize;
+				}
+				drawList[index].width = width;
+				drawList[index].height = height;
+				drawList[index].content.textArry = strArry;
+			}
+			// 边界计算
 			if (type == 'text' || type == 'right' || type == 'wrong' || type == 'half' || type == 'rect') {
 				const isOuter = this.outArea(drawList[index]);
 				drawList[index].x = isOuter.x;
@@ -396,7 +410,7 @@ class Stage extends Component {
 		this.upperCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
 		// this.ctx.scale(2, 2);
 		this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
-		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 10));
+		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
 		this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
 		this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
 		document.addEventListener('keydown', event => this.handleKeyboard(event));
