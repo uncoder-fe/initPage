@@ -3,12 +3,13 @@ import querystring from 'querystring';
 import _ from 'lodash';
 import wrongIcon from './asset/wrong.png';
 import rightIcon from './asset/right.png';
+import halfIcon from './asset/half.png';
 import './index.less';
 
 // 定义icon
 const ICON = {
-	height: 50,
-	width: 50
+	height: 49,
+	width: 76
 };
 const fontSize = 30;
 
@@ -473,6 +474,7 @@ class Stage extends Component {
 				<div className="pre-load" style={{ display: 'none' }}>
 					<img src={rightIcon} alt="" ref={img => (this.rightIcon = img)} />
 					<img src={wrongIcon} alt="" ref={img => (this.wrongIcon = img)} />
+					<img src={halfIcon} alt="" ref={img => (this.halfIcon = img)} />
 				</div>
 				<div
 					style={{ display: showInputModal ? 'block' : 'none', position: 'absolute' }}
