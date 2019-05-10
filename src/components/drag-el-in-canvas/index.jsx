@@ -8,10 +8,10 @@ import './index.less';
 
 // 定义icon
 const ICON = {
-	height: 49,
-	width: 76
+	height: 49 * 2,
+	width: 76 * 2
 };
-const fontSize = 30;
+const fontSize = 18;
 
 // 定义基础元素
 class Sprite {
@@ -47,21 +47,24 @@ class Sprite {
 	draw(ctx) {
 		const { x, y, content, width, height, active } = this;
 		const { type, textArry, image } = content;
-		ctx.fillStyle = 'red';
-		ctx.strokeStyle = 'red';
+		ctx.fillStyle = 'rgba(255,125,113,0.1)';
+		ctx.strokeStyle = '#FF6337';
 		if (type == 'right' || type == 'wrong' || type == 'half') {
 			ctx.drawImage(image, x, y, ICON.width, ICON.height);
 			if (active) {
+				ctx.fillRect(x, y, ICON.width, ICON.height);
 				ctx.strokeRect(x, y, ICON.width, ICON.height);
 			}
 		} else if (type == 'text') {
+			if (active) {
+				ctx.fillRect(x, y, width, height);
+				ctx.strokeRect(x, y, width, height);
+			}
 			for (let i = 0; i < textArry.length; i++) {
 				if (textArry[i]) {
+					ctx.fillStyle = '#ff6337';
 					ctx.fillText(textArry[i], x, y + i * fontSize + fontSize);
 				}
-			}
-			if (active) {
-				ctx.strokeRect(x, y, width, height);
 			}
 		} else if (type == 'rect') {
 			ctx.strokeRect(x, y, width, height);
@@ -82,10 +85,11 @@ class Stage extends Component {
 			actionName: props.actionName,
 			imgUrl: props.imgUrl
 		};
+		const scale = props.scale || 1;
 		const { height, width } = { ...querystring.parse(props.imgUrl.split('?')[1]) };
 		this.imageInfo = {
-			width: parseInt(width) * props.scale,
-			height: parseInt(height) * props.scale
+			width: parseInt(width) * scale,
+			height: parseInt(height) * scale
 		};
 		this.drawList = [];
 		this.canMove = false;
@@ -301,7 +305,7 @@ class Stage extends Component {
 						: y > this.imageInfo.height - ICON.height / 2
 						? this.imageInfo.height - ICON.height / 2
 						: y;
-				el = new Sprite(xx, yy, { type: actionName, image }, 50, 50);
+				el = new Sprite(xx, yy, { type: actionName, image }, ICON.width, ICON.height);
 				el.draw(this.ctx);
 				this.drawList.push(el);
 			}
