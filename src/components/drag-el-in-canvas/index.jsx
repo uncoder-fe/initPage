@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import querystring from 'querystring';
 import _ from 'lodash';
 import wrongIcon from './asset/wrong.png';
 import rightIcon from './asset/right.png';
@@ -71,16 +72,19 @@ class Sprite {
 }
 // 定义拖拽元素容器
 class Stage extends Component {
-	constructor() {
+	constructor(props) {
 		super();
 		this.state = {
-			showInputModal: false,
-			actionName: ''
+			isImageLoad: false, // 是否图片已全部加载
+			isImageLoadFail: false, // 是否有图片加载失败
+			showInputModal: false, // 是否显示输入框
+			actionName: props.actionName,
+			imgUrl: props.imgUrl
 		};
+		const { height, width } = { ...querystring.parse(props.imgUrl.split('?')[1]) };
 		this.imageInfo = {
-			height: 300,
-			width: 300,
-			url: ''
+			width: parseInt(width) * props.scale,
+			height: parseInt(height) * props.scale
 		};
 		this.drawList = [];
 		this.canMove = false;
@@ -399,21 +403,42 @@ class Stage extends Component {
 			this.redraw();
 		}
 	};
+	// 预加载图片
+	preLoadImage = imgUrl => {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.src = imgUrl;
+			img.onload = resolve;
+			img.onerror = reject;
+		});
+	};
 	componentDidMount() {
-		const { width, height } = this.imageInfo;
-		this.ctx = this.introCanvas.getContext('2d');
-		this.introCanvas.height = height;
-		this.introCanvas.width = width;
-		this.introCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
-		this.upperCanvas.height = height;
-		this.upperCanvas.width = width;
-		this.upperCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
-		// this.ctx.scale(2, 2);
-		this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
-		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
-		this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
-		this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
-		document.addEventListener('keydown', event => this.handleKeyboard(event));
+		const { imgUrl } = this.props;
+		this.preLoadImage(imgUrl)
+			.then(() => {
+				this.setState({ isImageLoad: true }, () => {
+					const { width, height } = this.imageInfo;
+					this.ctx = this.introCanvas.getContext('2d');
+					this.introCanvas.height = height;
+					this.introCanvas.width = width;
+					this.introCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
+					this.upperCanvas.height = height;
+					this.upperCanvas.width = width;
+					this.upperCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
+					// this.ctx.scale(2, 2);
+					this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
+					this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
+					this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
+					this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
+					document.addEventListener('keydown', event => this.handleKeyboard(event));
+				});
+			})
+			.catch(() => {
+				this.setState({
+					isImageLoad: true,
+					isImageLoadFail: true
+				});
+			});
 	}
 	componentWillReceiveProps(nextProps) {
 		if (this.state.actionName != nextProps.actionName) {
@@ -427,12 +452,23 @@ class Stage extends Component {
 		}
 	}
 	render() {
-		const { showInputModal } = this.state;
+		const { isImageLoad, isImageLoadFail, showInputModal, imgUrl } = this.state;
+		const { height, width } = this.imageInfo;
+		if (!isImageLoad) {
+			return (
+				<div className="component-draw-tools">
+					<div className="component-draw-tools-info">
+						{isImageLoadFail ? '图片加载失败' : '图片加载中'}...
+					</div>
+				</div>
+			);
+		}
 		return (
 			<div className="component-draw-tools" style={{ position: 'relative' }}>
-				<div style={{ position: 'relative', height: this.imageInfo.height, width: this.imageInfo.width }}>
+				<div style={{ position: 'relative', height, width }}>
 					<canvas id="intro-canvas" ref={canvas => (this.introCanvas = canvas)} />
 					<canvas id="upper-canvas" ref={canvas => (this.upperCanvas = canvas)} />
+					<img src={imgUrl} alt="" style={{ height, width }} />
 				</div>
 				<div className="pre-load" style={{ display: 'none' }}>
 					<img src={rightIcon} alt="" ref={img => (this.rightIcon = img)} />
