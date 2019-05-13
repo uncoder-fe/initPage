@@ -392,6 +392,8 @@ class Stage extends Component {
 		this.canMove = false;
 		this.currentSprite = null;
 		this.cache = null;
+		// 踢出数据
+		this.props.getContext(this.drawList);
 	}
 	// 鼠标out事件监听
 	handleMouseout() {
@@ -399,6 +401,8 @@ class Stage extends Component {
 		this.canMove = false;
 		this.currentSprite = null;
 		this.cache = null;
+		// 踢出数据
+		this.props.getContext(this.drawList);
 	}
 	// 键盘
 	handleKeyboard = event => {
@@ -417,25 +421,31 @@ class Stage extends Component {
 			img.onerror = reject;
 		});
 	};
+	tryLoadAgain = () => {
+		this.componentDidMount();
+	};
+	initStage() {
+		const { width, height } = this.imageInfo;
+		this.ctx = this.introCanvas.getContext('2d');
+		this.introCanvas.height = height;
+		this.introCanvas.width = width;
+		this.introCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
+		this.upperCanvas.height = height;
+		this.upperCanvas.width = width;
+		this.upperCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
+		// this.ctx.scale(2, 2);
+		this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
+		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
+		this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
+		this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
+		document.addEventListener('keydown', event => this.handleKeyboard(event));
+	}
 	componentDidMount() {
 		const { imgUrl } = this.props;
 		this.preLoadImage(imgUrl)
 			.then(() => {
 				this.setState({ isImageLoad: true }, () => {
-					const { width, height } = this.imageInfo;
-					this.ctx = this.introCanvas.getContext('2d');
-					this.introCanvas.height = height;
-					this.introCanvas.width = width;
-					this.introCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
-					this.upperCanvas.height = height;
-					this.upperCanvas.width = width;
-					this.upperCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
-					// this.ctx.scale(2, 2);
-					this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
-					this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
-					this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
-					this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
-					document.addEventListener('keydown', event => this.handleKeyboard(event));
+					this.initStage();
 				});
 			})
 			.catch(() => {
@@ -462,8 +472,14 @@ class Stage extends Component {
 		if (!isImageLoad) {
 			return (
 				<div className="component-draw-tools">
-					<div className="component-draw-tools-info">
-						{isImageLoadFail ? '加载失败，请点击重试' : '加载中'}...
+					<div className="component-draw-tools-info" style={{ height, width }}>
+						{isImageLoadFail ? (
+							<div onClick={this.tryLoadAgain}>
+								<span>旋转</span>加载失败，请点击重试...
+							</div>
+						) : (
+							<div>加载中...</div>
+						)}
 					</div>
 				</div>
 			);
@@ -484,7 +500,7 @@ class Stage extends Component {
 					style={{ display: showInputModal ? 'block' : 'none', position: 'absolute' }}
 					ref={input => (this.myInput = input)}
 				>
-					<input type="text" placeholder="最多输入20个字" />
+					<input type="text" placeholder="最多输入20个字..." maxLength="20" />
 				</div>
 			</div>
 		);
