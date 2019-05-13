@@ -1,4 +1,6 @@
 .component-draw-tools {
+    display: inline-block;
+
     canvas {
         position: absolute;
         top: 0;
@@ -10,9 +12,15 @@
     }
 
     input {
+        padding-left: 4px;
+        height: 30px;
         color: #ff6337;
         background: transparent;
         border: 1px solid #ff7d71;
         outline-color: #ff7d71;
+    }
+
+    input::placeholder {
+        color: #a3b4cc;
     }
 }

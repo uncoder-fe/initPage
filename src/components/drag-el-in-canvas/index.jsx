@@ -8,8 +8,8 @@ import './index.less';
 
 // 定义icon
 const ICON = {
-	height: 49 * 2,
-	width: 76 * 2
+	height: 98,
+	width: 152
 };
 const fontSize = 18;
 
@@ -463,7 +463,7 @@ class Stage extends Component {
 			return (
 				<div className="component-draw-tools">
 					<div className="component-draw-tools-info">
-						{isImageLoadFail ? '图片加载失败' : '图片加载中'}...
+						{isImageLoadFail ? '加载失败，请点击重试' : '加载中'}...
 					</div>
 				</div>
 			);
