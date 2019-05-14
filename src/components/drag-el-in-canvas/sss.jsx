@@ -30,7 +30,7 @@ class SSS extends React.Component {
 				<br />
 				<DragCanvas
 					getContext={this.getData}
-					scale={0.5}
+					scale={1}
 					actionName={actionName}
 					imgUrl="https://www.baidu.com/img/bd_logo1.png?width=540&height=258"
 				/>
