@@ -11,7 +11,10 @@ const ICON = {
 	height: 98,
 	width: 152
 };
+// 定义字体大小
 const fontSize = 18;
+// 定义拖放框大小
+const rectSize = 5;
 
 // 定义基础元素
 class Sprite {
@@ -69,7 +72,15 @@ class Sprite {
 		} else if (type == 'rect') {
 			ctx.strokeRect(x, y, width, height);
 			if (active) {
-				ctx.strokeRect(x - 2, y - 2, width + 4, height + 4);
+				ctx.fillStyle = '#FF6337';
+				// 上中
+				ctx.fillRect(x + width / 2 - rectSize, y, rectSize * 2, rectSize * 2);
+				// 右中
+				ctx.fillRect(x + width - 2 * rectSize, y + height / 2 - rectSize, rectSize * 2, rectSize * 2);
+				// 左中
+				ctx.fillRect(x, y + height / 2 - rectSize, rectSize * 2, rectSize * 2);
+				// 下中
+				ctx.fillRect(x + width / 2 - rectSize, y + height - rectSize * 2, rectSize * 2, rectSize * 2);
 			}
 		}
 	}
@@ -126,7 +137,7 @@ class Stage extends Component {
 		};
 	}
 	// 检测是否命中已存在的区域
-	hitEl(event) {
+	hitSprite(event) {
 		const { drawList } = this;
 		const hitArry = drawList.filter(item => {
 			const { x, y, content, width, height } = item;
@@ -153,6 +164,43 @@ class Stage extends Component {
 			return false;
 		});
 		return hitArry;
+	}
+	// 检测命中放大区域
+	hitSpriteGrow(sprite, eventX, eventY) {
+		const { x, y, height, width } = sprite;
+		if (
+			x + width / 2 - rectSize < eventX &&
+			eventX < x + width / 2 + rectSize &&
+			y < eventY &&
+			eventY < y + rectSize * 2
+		) {
+			return 'topCenter';
+		}
+		if (
+			x + width - 2 * rectSize < eventX &&
+			eventX < x + width &&
+			y + height / 2 - rectSize < eventY &&
+			eventY < y + height / 2 + rectSize
+		) {
+			return 'rightCenter';
+		}
+		if (
+			x < eventX &&
+			eventX < x + rectSize * 2 &&
+			y + height / 2 - rectSize < eventY &&
+			eventY < y + height / 2 + rectSize
+		) {
+			return 'leftCenter';
+		}
+		if (
+			x + width / 2 - rectSize < eventX &&
+			eventX < x + width / 2 + rectSize &&
+			y + height - rectSize * 2 < eventY &&
+			eventY < y + height
+		) {
+			return 'bottomCenter';
+		}
+		return null;
 	}
 	// 检测绘制区域是否超出
 	outArea(el) {
@@ -266,7 +314,7 @@ class Stage extends Component {
 	// 鼠标down事件监听
 	handleMousedown(event) {
 		const { x, y, left, top } = this.getCanvasPoint(event);
-		const hitArry = this.hitEl({ x, y });
+		const hitArry = this.hitSprite({ x, y });
 		this.downPosition = { ...this.downPosition, x, y };
 		if (hitArry.length > 0) {
 			// 命中不新建
@@ -275,6 +323,8 @@ class Stage extends Component {
 				key: currentSprite.key,
 				x: currentSprite.x,
 				y: currentSprite.y,
+				width: currentSprite.width || 1,
+				height: currentSprite.height || 1,
 				content: { ...currentSprite.content }
 			};
 			this.canMove = true;
@@ -332,6 +382,8 @@ class Stage extends Component {
 					key: el.key,
 					x,
 					y,
+					width: 1,
+					height: 1,
 					content: { ...el.content }
 				};
 				el.draw(this.ctx);
@@ -348,7 +400,8 @@ class Stage extends Component {
 			const { currentSprite, drawList } = this;
 			const { type } = currentSprite.content;
 			const index = drawList.findIndex(item => currentSprite.key == item.key);
-			if (type != 'rect' || (type == 'rect' && !this.drawRect)) {
+			// 非框
+			if (type != 'rect') {
 				drawList[index].x = this.currentSprite.x + distanceX;
 				drawList[index].y = this.currentSprite.y + distanceY;
 			}
@@ -356,6 +409,43 @@ class Stage extends Component {
 			if (type == 'rect' && this.drawRect) {
 				drawList[index].width = distanceX;
 				drawList[index].height = distanceY;
+			}
+			// 如果是框且非绘制阶段，判定状态
+			if (type == 'rect' && !this.drawRect) {
+				const growDirection = this.hitSpriteGrow(drawList[index], x, y);
+				if (!growDirection) {
+					// 移动状态
+					drawList[index].x = this.currentSprite.x + distanceX;
+					drawList[index].y = this.currentSprite.y + distanceY;
+				} else {
+					// 增长状态
+					switch (growDirection) {
+						case 'topCenter':
+							if (distanceY > 0) {
+								drawList[index].y = this.currentSprite.y + Math.abs(distanceY);
+								drawList[index].height = this.currentSprite.height - Math.abs(distanceY);
+							} else {
+								drawList[index].y = this.currentSprite.y - Math.abs(distanceY);
+								drawList[index].height = this.currentSprite.height + Math.abs(distanceY);
+							}
+							break;
+						case 'bottomCenter':
+							drawList[index].height = this.currentSprite.height + distanceY;
+							break;
+						case 'leftCenter':
+							if (distanceX > 0) {
+								drawList[index].x = this.currentSprite.x + Math.abs(distanceX);
+								drawList[index].width = this.currentSprite.width - Math.abs(distanceX);
+							} else {
+								drawList[index].x = this.currentSprite.x - Math.abs(distanceX);
+								drawList[index].width = this.currentSprite.width + Math.abs(distanceX);
+							}
+							break;
+						case 'rightCenter':
+							drawList[index].width = this.currentSprite.width + distanceX;
+							break;
+					}
+				}
 			}
 			// 字体重新计算换行
 			if (type == 'text') {
@@ -379,7 +469,7 @@ class Stage extends Component {
 			// 重绘
 			this.redrawFromCache();
 		}
-		const hitArry = this.hitEl({ x, y });
+		const hitArry = this.hitSprite({ x, y });
 		if (hitArry.length > 0) {
 			this.upperCanvas.style.cursor = 'move';
 		} else {
@@ -435,7 +525,8 @@ class Stage extends Component {
 		this.upperCanvas.style = `position:absolute;top:0;left:0;touch-action: none;user-select: none;cursor: default;`;
 		// this.ctx.scale(2, 2);
 		this.upperCanvas.addEventListener('mousedown', event => this.handleMousedown(event));
-		this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
+		// this.upperCanvas.addEventListener('mousemove', _.throttle(this.handleMousemove, 50));
+		this.upperCanvas.addEventListener('mousemove', event => this.handleMousemove(event));
 		this.upperCanvas.addEventListener('mouseup', event => this.handleMouseup(event));
 		this.upperCanvas.addEventListener('mouseout', event => this.handleMouseout(event));
 		document.addEventListener('keydown', event => this.handleKeyboard(event));
