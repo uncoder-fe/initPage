@@ -111,6 +111,10 @@ class Stage extends Component {
 			width: parseInt(width) * scale,
 			height: parseInt(height) * scale
 		};
+		this.originImageInfo = {
+			width: parseInt(width),
+			height: parseInt(height)
+		};
 		// 绘制内容
 		this.drawList = [];
 		// 是否可移动
@@ -513,10 +517,6 @@ class Stage extends Component {
 			// 更新坐标
 			sprite.x = currentSprite.x + distanceX;
 			sprite.y = currentSprite.y + distanceY;
-			// 边界计算
-			const isOuter = this.outArea(sprite);
-			sprite.x = isOuter.x;
-			sprite.y = isOuter.y;
 			// 字体
 			if (type == 'text') {
 				const strArry = this.textOutArea(sprite.x, sprite.content.text);
@@ -530,6 +530,10 @@ class Stage extends Component {
 				sprite.height = height;
 				sprite.content.textArry = strArry;
 			}
+			// 边界计算
+			const isOuter = this.outArea(sprite);
+			sprite.x = isOuter.x;
+			sprite.y = isOuter.y;
 			// 重绘
 			this.redrawFromCache();
 		}
@@ -546,7 +550,19 @@ class Stage extends Component {
 		this.upperCanvas.style.cursor = CURSOR['default'];
 		this.redraw();
 		// 踢出数据
-		this.props.getContext(this.drawList);
+		const { width, height } = this.imageInfo;
+		const list = this.drawList.map(item => {
+			const sprite = {
+				key: item.key,
+				x: (item.x / width) * this.originImageInfo.width,
+				y: (item.y / height) * this.originImageInfo.height,
+				width: item.width || 1,
+				height: item.height || 1,
+				content: { ...item.content }
+			};
+			return sprite;
+		});
+		this.props.getContext(list);
 	}
 	// 鼠标out事件监听
 	handleMouseout() {
@@ -560,7 +576,19 @@ class Stage extends Component {
 		this.upperCanvas.style.cursor = CURSOR['default'];
 		this.redraw();
 		// 踢出数据
-		this.props.getContext(this.drawList);
+		const { width, height } = this.imageInfo;
+		const list = this.drawList.map(item => {
+			const sprite = {
+				key: item.key,
+				x: (item.x / width) * this.originImageInfo.width,
+				y: (item.y / height) * this.originImageInfo.height,
+				width: item.width || 1,
+				height: item.height || 1,
+				content: { ...item.content }
+			};
+			return sprite;
+		});
+		this.props.getContext(list);
 	}
 	// 键盘
 	handleKeyboard = event => {
