@@ -387,8 +387,10 @@ class Stage extends Component {
 			if (actionName == 'text') {
 				this.setState({ showInputModal: true }, () => {
 					// 如果输入框放不下，左移动
-					this.myInput.style.left = `${this.imageInfo.width - left < 120 ? left - 120 : left}px`;
-					this.myInput.style.top = `${top}px`;
+					const rleft = this.imageInfo.width - left < 120 ? left - 120 : left;
+					const rtop = top < 0 ? 0 : top > this.imageInfo.height - 30 ? this.imageInfo.height - 40 : top;
+					this.myInput.style.left = `${rleft < 0 ? 0 : rleft - 10}px`;
+					this.myInput.style.top = `${rtop}px`;
 					this.myInput.removeEventListener('keydown', this.handleInput);
 					this.myInput.addEventListener('keydown', event => this.handleInput(event));
 					const focusTimer = setTimeout(() => {
