@@ -21,7 +21,7 @@ const CURSOR = {
 	leftCenter: 'w-resize',
 	bottomCenter: 's-resize',
 	topCenter: 'n-resize',
-	default: 'defalut',
+	default: 'default',
 	move: 'move'
 };
 
@@ -332,6 +332,9 @@ class Stage extends Component {
 		const { x, y, left, top } = this.getCanvasPoint(event);
 		const hitArry = this.hitSprite({ x, y });
 		this.downPosition = { ...this.downPosition, x, y };
+		this.rectGrowing = null;
+		this.canMove = false;
+		this.rectDrawing = false;
 		if (hitArry.length > 0) {
 			// 命中
 			const currentSprite = hitArry[hitArry.length - 1];
@@ -349,8 +352,7 @@ class Stage extends Component {
 				height: currentSprite.height || 1,
 				content: { ...currentSprite.content }
 			};
-			this.canMove = true;
-			this.rectDrawing = false;
+			this.canMove = this.rectGrowing ? false : true;
 			this.setCache();
 			this.redraw();
 		} else {
@@ -397,7 +399,6 @@ class Stage extends Component {
 				el = new Sprite(x, y, { type: 'rect' });
 				this.drawList.push(el);
 				this.rectDrawing = true;
-				this.canMove = true;
 				this.currentSprite = {
 					key: el.key,
 					x,
@@ -419,13 +420,12 @@ class Stage extends Component {
 		const distanceX = x - this.downPosition.x;
 		const distanceY = y - this.downPosition.y;
 		const { currentSprite, drawList } = this;
-		let sprite = null;
 		// 鼠标形状
 		const hitArry = this.hitSprite({ x, y });
 		if (hitArry.length <= 0) {
 			this.upperCanvas.style.cursor = CURSOR['default'];
 		} else {
-			sprite = hitArry[hitArry.length - 1];
+			const sprite = hitArry[hitArry.length - 1];
 			// 如果是框
 			if (sprite.content.type == 'rect') {
 				const growDirection = this.hitSpriteGrow(sprite, x, y);
@@ -444,8 +444,12 @@ class Stage extends Component {
 			const index = drawList.findIndex(item => currentSprite.key == item.key);
 			// 如果是框，在绘制状态，只更新宽高
 			if (type == 'rect') {
-				drawList[index].width = distanceX;
-				drawList[index].height = distanceY;
+				const newX = currentSprite.x + distanceX;
+				const newY = currentSprite.y + distanceY;
+				drawList[index].x = Math.min(currentSprite.x, newX);
+				drawList[index].y = Math.min(currentSprite.y, newY);
+				drawList[index].width = Math.abs(distanceX);
+				drawList[index].height = Math.abs(distanceY);
 				// 重绘
 				this.redrawFromCache();
 			}
@@ -453,35 +457,46 @@ class Stage extends Component {
 		}
 		// 变形吧，我的框
 		if (this.rectGrowing) {
-			sprite = drawList[drawList.findIndex(item => currentSprite.key == item.key)];
 			//设定鼠标当前形状
 			this.upperCanvas.style.cursor = CURSOR[this.rectGrowing];
+			const sprite = drawList[drawList.findIndex(item => currentSprite.key == item.key)];
 			// 增长状态
 			switch (this.rectGrowing) {
 				case 'topCenter':
 					if (distanceY > 0) {
-						sprite.y = this.currentSprite.y + Math.abs(distanceY);
-						sprite.height = this.currentSprite.height - Math.abs(distanceY);
+						// 变小
+						if (currentSprite.height - Math.abs(distanceY) > 20) {
+							sprite.y = currentSprite.y + Math.abs(distanceY);
+							sprite.height = currentSprite.height - Math.abs(distanceY);
+						}
 					} else {
-						sprite.y = this.currentSprite.y - Math.abs(distanceY);
-						sprite.height = this.currentSprite.height + Math.abs(distanceY);
+						// 变大
+						sprite.y = currentSprite.y - Math.abs(distanceY);
+						sprite.height = currentSprite.height + Math.abs(distanceY);
 					}
 					break;
 				case 'bottomCenter':
-					sprite.height = this.currentSprite.height + distanceY;
+					if (currentSprite.height + distanceY > 20) {
+						sprite.height = currentSprite.height + distanceY;
+					}
 					break;
 				case 'leftCenter':
 					if (distanceX > 0) {
-						sprite.x = this.currentSprite.x + Math.abs(distanceX);
-						sprite.width = this.currentSprite.width - Math.abs(distanceX);
+						// 变小
+						if (this.currentSprite.width - Math.abs(distanceX) > 20) {
+							sprite.x = currentSprite.x + Math.abs(distanceX);
+							sprite.width = this.currentSprite.width - Math.abs(distanceX);
+						}
 					} else {
-						sprite.x = this.currentSprite.x - Math.abs(distanceX);
-						sprite.width = this.currentSprite.width + Math.abs(distanceX);
+						// 变大
+						sprite.x = currentSprite.x - Math.abs(distanceX);
+						sprite.width = currentSprite.width + Math.abs(distanceX);
 					}
 					break;
 				case 'rightCenter':
-					console.log(this.currentSprite, 'this.currentSprite');
-					sprite.width = this.currentSprite.width + distanceX;
+					if (currentSprite.width + distanceX > 20) {
+						sprite.width = currentSprite.width + distanceX;
+					}
 					break;
 			}
 			// 重绘
@@ -489,13 +504,9 @@ class Stage extends Component {
 			return;
 		}
 		// 移动
-		if (!currentSprite) {
-			return;
-		}
-		const { type } = currentSprite.content;
-		// 移动
-		if (this.canMove) {
-			this.upperCanvas.style.cursor = CURSOR['move'];
+		if (this.canMove && currentSprite) {
+			const sprite = drawList[drawList.findIndex(item => currentSprite.key == item.key)];
+			const { type } = currentSprite.content;
 			// 更新坐标
 			sprite.x = currentSprite.x + distanceX;
 			sprite.y = currentSprite.y + distanceY;
