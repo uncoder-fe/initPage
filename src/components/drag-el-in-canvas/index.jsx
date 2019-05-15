@@ -3,13 +3,13 @@ import querystring from 'querystring';
 import _ from 'lodash';
 import wrongIcon from './asset/wrong.png';
 import rightIcon from './asset/right.png';
-import halfIcon from './asset/half.png';
+import halfIcon from './asset/half_right.png';
 import './index.less';
 
 // 定义icon
 const ICON = {
-	height: 98,
-	width: 152
+	width: 180,
+	height: 120
 };
 // 定义字体大小
 const fontSize = 18;
@@ -39,8 +39,8 @@ class Sprite {
 		let x = 0;
 		let y = 0;
 		if (type == 'right' || type == 'wrong' || type == 'half') {
-			x = eventX - ICON.width / 2;
-			y = eventY - ICON.height / 2;
+			x = eventX - width / 2;
+			y = eventY - height / 2;
 		} else if (type == 'text' || type == 'rect') {
 			x = eventX;
 			y = eventY;
@@ -62,10 +62,10 @@ class Sprite {
 		ctx.fillStyle = 'rgba(255,125,113,0.1)';
 		ctx.strokeStyle = '#FF6337';
 		if (type == 'right' || type == 'wrong' || type == 'half') {
-			ctx.drawImage(image, x, y, ICON.width, ICON.height);
+			ctx.drawImage(image, x, y, width, height);
 			if (active) {
-				ctx.fillRect(x, y, ICON.width, ICON.height);
-				ctx.strokeRect(x, y, ICON.width, ICON.height);
+				ctx.fillRect(x, y, width, height);
+				ctx.strokeRect(x, y, width, height);
 			}
 		} else if (type == 'text') {
 			if (active) {
@@ -367,19 +367,20 @@ class Stage extends Component {
 					image = this.halfIcon;
 				}
 				// 校验点击位置，是否icon超出了边界
+				const { scale } = this.props;
 				const xx =
-					x < ICON.width
-						? ICON.width / 2
-						: x > this.imageInfo.width - ICON.width / 2
-						? this.imageInfo.width - ICON.width / 2
+					x < ICON.width * scale
+						? (ICON.width * scale) / 2
+						: x > this.imageInfo.width - (ICON.width * scale) / 2
+						? this.imageInfo.width - (ICON.width * scale) / 2
 						: x;
 				const yy =
-					y < ICON.height
-						? ICON.height / 2
-						: y > this.imageInfo.height - ICON.height / 2
-						? this.imageInfo.height - ICON.height / 2
+					y < ICON.height * scale
+						? (ICON.height * scale) / 2
+						: y > this.imageInfo.height - (ICON.height * scale) / 2
+						? this.imageInfo.height - (ICON.height * scale) / 2
 						: y;
-				el = new Sprite(xx, yy, { type: actionName, image }, ICON.width, ICON.height);
+				el = new Sprite(xx, yy, { type: actionName, image }, ICON.width * scale, ICON.height * scale);
 				el.draw(this.ctx);
 				this.drawList.push(el);
 			}
