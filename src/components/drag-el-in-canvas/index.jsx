@@ -121,6 +121,8 @@ class Stage extends Component {
 		this.downPosition = { x: 0, y: 0 };
 		// 是否在画框
 		this.rectDrawing = false;
+		// 放大框的方向
+		this.rectGrowing = null;
 	}
 	// 获取位置
 	getCanvasPoint(event) {
@@ -331,8 +333,14 @@ class Stage extends Component {
 		const hitArry = this.hitSprite({ x, y });
 		this.downPosition = { ...this.downPosition, x, y };
 		if (hitArry.length > 0) {
-			// 命中不新建
+			// 命中
 			const currentSprite = hitArry[hitArry.length - 1];
+			// 命中框的靶心
+			if (currentSprite.content.type == 'rect') {
+				this.rectGrowing = this.hitSpriteGrow(currentSprite, x, y);
+			} else {
+				this.rectGrowing = null;
+			}
 			this.currentSprite = {
 				key: currentSprite.key,
 				x: currentSprite.x,
@@ -410,107 +418,106 @@ class Stage extends Component {
 		// 更新当前元素位置
 		const distanceX = x - this.downPosition.x;
 		const distanceY = y - this.downPosition.y;
-		let growDirection = null;
 		const { currentSprite, drawList } = this;
-		// 默认鼠标形状
-		if (!this.rectDrawing) {
-			const hitArry = this.hitSprite({ x, y });
-			if (hitArry.length <= 0) {
-				this.upperCanvas.style.cursor = CURSOR['default'];
-				if (currentSprite && currentSprite.content == 'rect') {
-					console.log('画框，我就放你一马');
-				} else {
-					return;
-				}
-			} else {
-				this.upperCanvas.style.cursor = 'move';
-			}
-			if (!currentSprite) {
-				return;
-			}
-			const { type } = currentSprite.content;
-			const index = drawList.findIndex(item => currentSprite.key == item.key);
-			if (type == 'rect') {
-				growDirection = this.hitSpriteGrow(drawList[index], x, y);
-				// 修改鼠标形状
+		let sprite = null;
+		// 鼠标形状
+		const hitArry = this.hitSprite({ x, y });
+		if (hitArry.length <= 0) {
+			this.upperCanvas.style.cursor = CURSOR['default'];
+		} else {
+			sprite = hitArry[hitArry.length - 1];
+			// 如果是框
+			if (sprite.content.type == 'rect') {
+				const growDirection = this.hitSpriteGrow(sprite, x, y);
 				if (growDirection) {
 					this.upperCanvas.style.cursor = CURSOR[growDirection];
 				} else {
 					this.upperCanvas.style.cursor = CURSOR['move'];
 				}
+			} else {
+				this.upperCanvas.style.cursor = CURSOR['move'];
 			}
-			if (this.canMove) {
-				// 非框
-				if (type != 'rect') {
-					drawList[index].x = this.currentSprite.x + distanceX;
-					drawList[index].y = this.currentSprite.y + distanceY;
-				}
-				// 如果是框且非绘制阶段，判定状态
-				if (type == 'rect') {
-					if (!growDirection) {
-						// 移动状态
-						drawList[index].x = this.currentSprite.x + distanceX;
-						drawList[index].y = this.currentSprite.y + distanceY;
-					} else {
-						// 增长状态
-						switch (growDirection) {
-							case 'topCenter':
-								if (distanceY > 0) {
-									drawList[index].y = this.currentSprite.y + Math.abs(distanceY);
-									drawList[index].height = this.currentSprite.height - Math.abs(distanceY);
-								} else {
-									drawList[index].y = this.currentSprite.y - Math.abs(distanceY);
-									drawList[index].height = this.currentSprite.height + Math.abs(distanceY);
-								}
-								break;
-							case 'bottomCenter':
-								drawList[index].height = this.currentSprite.height + distanceY;
-								break;
-							case 'leftCenter':
-								if (distanceX > 0) {
-									drawList[index].x = this.currentSprite.x + Math.abs(distanceX);
-									drawList[index].width = this.currentSprite.width - Math.abs(distanceX);
-								} else {
-									drawList[index].x = this.currentSprite.x - Math.abs(distanceX);
-									drawList[index].width = this.currentSprite.width + Math.abs(distanceX);
-								}
-								break;
-							case 'rightCenter':
-								drawList[index].width = this.currentSprite.width + distanceX;
-								break;
-						}
-					}
-				}
-				// 字体重新计算换行
-				if (type == 'text') {
-					const strArry = this.textOutArea(drawList[index].x, drawList[index].content.text);
-					let width = this.getTextWidth(drawList[index].content.text);
-					let height = fontSize;
-					if (strArry.length > 1) {
-						width = this.getTextWidth(strArry[0]);
-						height = strArry.length * fontSize;
-					}
-					drawList[index].width = width;
-					drawList[index].height = height;
-					drawList[index].content.textArry = strArry;
-				}
-				// 边界计算
-				const isOuter = this.outArea(drawList[index]);
-				drawList[index].x = isOuter.x;
-				drawList[index].y = isOuter.y;
-				// 重绘
-				this.redrawFromCache();
-			}
-		} else {
+		}
+		// 画框
+		if (this.rectDrawing) {
 			const { type } = currentSprite.content;
 			const index = drawList.findIndex(item => currentSprite.key == item.key);
 			// 如果是框，在绘制状态，只更新宽高
-			if (type == 'rect' && this.rectDrawing) {
+			if (type == 'rect') {
 				drawList[index].width = distanceX;
 				drawList[index].height = distanceY;
 				// 重绘
 				this.redrawFromCache();
 			}
+			return;
+		}
+		// 变形吧，我的框
+		if (this.rectGrowing) {
+			sprite = drawList[drawList.findIndex(item => currentSprite.key == item.key)];
+			//设定鼠标当前形状
+			this.upperCanvas.style.cursor = CURSOR[this.rectGrowing];
+			// 增长状态
+			switch (this.rectGrowing) {
+				case 'topCenter':
+					if (distanceY > 0) {
+						sprite.y = this.currentSprite.y + Math.abs(distanceY);
+						sprite.height = this.currentSprite.height - Math.abs(distanceY);
+					} else {
+						sprite.y = this.currentSprite.y - Math.abs(distanceY);
+						sprite.height = this.currentSprite.height + Math.abs(distanceY);
+					}
+					break;
+				case 'bottomCenter':
+					sprite.height = this.currentSprite.height + distanceY;
+					break;
+				case 'leftCenter':
+					if (distanceX > 0) {
+						sprite.x = this.currentSprite.x + Math.abs(distanceX);
+						sprite.width = this.currentSprite.width - Math.abs(distanceX);
+					} else {
+						sprite.x = this.currentSprite.x - Math.abs(distanceX);
+						sprite.width = this.currentSprite.width + Math.abs(distanceX);
+					}
+					break;
+				case 'rightCenter':
+					console.log(this.currentSprite, 'this.currentSprite');
+					sprite.width = this.currentSprite.width + distanceX;
+					break;
+			}
+			// 重绘
+			this.redrawFromCache();
+			return;
+		}
+		// 移动
+		if (!currentSprite) {
+			return;
+		}
+		const { type } = currentSprite.content;
+		// 移动
+		if (this.canMove) {
+			this.upperCanvas.style.cursor = CURSOR['move'];
+			// 更新坐标
+			sprite.x = currentSprite.x + distanceX;
+			sprite.y = currentSprite.y + distanceY;
+			// 边界计算
+			const isOuter = this.outArea(sprite);
+			sprite.x = isOuter.x;
+			sprite.y = isOuter.y;
+			// 字体
+			if (type == 'text') {
+				const strArry = this.textOutArea(sprite.x, sprite.content.text);
+				let width = this.getTextWidth(sprite.content.text);
+				let height = fontSize;
+				if (strArry.length > 1) {
+					width = this.getTextWidth(strArry[0]);
+					height = strArry.length * fontSize;
+				}
+				sprite.width = width;
+				sprite.height = height;
+				sprite.content.textArry = strArry;
+			}
+			// 重绘
+			this.redrawFromCache();
 		}
 	};
 	// 鼠标up事件监听
@@ -521,6 +528,7 @@ class Stage extends Component {
 		this.canMove = false;
 		this.cache = null;
 		this.rectDrawing = false;
+		this.rectGrowing = null;
 		this.upperCanvas.style.cursor = CURSOR['default'];
 		this.redraw();
 		// 踢出数据
@@ -534,6 +542,7 @@ class Stage extends Component {
 		this.canMove = false;
 		this.cache = null;
 		this.rectDrawing = false;
+		this.rectGrowing = null;
 		this.upperCanvas.style.cursor = CURSOR['default'];
 		this.redraw();
 		// 踢出数据
